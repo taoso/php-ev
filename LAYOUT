@@ -1,0 +1,423 @@
+PHP API LAYOUT
+
+Files
+=====
+
+libev/*			Source code of libev
+php_ev.c		The main implementation of the extension
+php_ev.h		Extension metadata and common includes
+php_ev_embed.h	Embeds libev
+php_ev_fe.c		Function entries and their ARGINFO
+php_ev_fe.h		The extention API function prototypes.
+php_ev_pe.c		Property entries & their read and write handlers
+php_ev_priv.h	Extension's private stuff -- typedefs, marcos, prototypes etc.
+php_ev_macros.h	Macros
+php_ev_types.h	Typedefs
+
+
+Global functions
+================
+
+EvLoop ev_default_loop();
+Returns object representing default loop.
+Attention! This is a factory method, which is described in `Using Factory
+Methods', Advanced_php_programming.George Schlossnagle, p.562
+
+EvLoop ev_loop_new([int $flags = EVLAG_AUTO[, $data = NULL[, double $io_collect_interval = 0.[, double
+$timeout_collect_interval = 0.]]]]);
+Calls the same function as EvLoop::__construct internally. See
+EvLoop::__construct below.
+
+The following functions do just the same as libev's counterparts:
+* void ev_sleep(double $interval);
+* double ev_time();
+* double ev_now();
+* void ev_verify(EvLoop $loop);
+* void ev_now_update(EvLoop $loop);
+* void ev_suspend(EvLoop $loop);
+* void ev_run(EvLoop $loop[, int $flags = 0])
+* void ev_break(EvLoop $loop[, int $how = EVBREAK_ONE]);
+* void ev_ref(EvLoop $loop);
+* void ev_unref(EvLoop $loop);
+* string ev_version_major();
+* string ev_version_minor();
+* int ev_supported_backends();
+* int ev_recommended_backends();
+* int ev_embeddable_backends();
+* void ev_feed_signal(int $signum);
+* void ev_invoke_pending(EvLoop $loop);
+* int ev_backend(EvLoop $loop);
+* int ev_pending_count(EvLoop $loop);
+* int ev_depth(EvLoop $loop);
+* int ev_is_default_loop(EvLoop $loop);
+* int ev_iteration(EvLoop $loop);
+
+Watcher functions:
+* void ev_watcher_start(EvWatcher $w);
+* void ev_watcher_stop(EvWatcher $w);
+	are mapped to EvWatcher::start() and EvWatcher::stop() methods
+* bool ev_watcher_is_active(EvWatcher $w);
+	is mapped to EvWatcher::$is_active property
+* bool ev_watcher_is_pending(EvWatcher $w);
+	is mapped to EvWatcher::$is_pending property
+* mixed ev_watcher_get_data(EvWatcher $w);
+* void ev_watcher_set_data(EvWatcher $w, mixed $data);
+	do the same as get- and set- internal functions restrieving EvWatcher::$data
+	property value.
+* void ev_watcher_invoke(EvWatcher $w, int revents)
+	Does the same as EvWatcher::invoke()
+* int ev_watcher_clear_pending();
+	Does the same as EvWatcher::clear()
+* void ev_watcher_feed_event(EvWatcher $w, int revents);
+	Does the same as EvWatcher::feed()
+* callback ev_watcher_get_callback(EvWatcher $w);
+* void ev_watcher_set_callback(EvWatcher $w, callback $callback);
+	are mapped to EvWatcher::$callback property
+* int ev_watcher_get_priority(EvWatcher $w); 
+* void ev_watcher_set_priority(EvWatcher $w, int $priority);
+	are mapped to EvWatcher::$priority property
+
+
+* EvIO ev_watcher_io(resource $fd, int $events, callback $callback[, mixed $data =
+NULL[, int $priority = 0]])
+	Mapped to EvIO::__construct()
+* void ev_watcher_io_set(resource $fd, int events);
+	Mapped to EvIO::set()
+* resource ev_watcher_io_fd_get(EvIO $w);
+	mapped to EvIO::$fd property
+* int ev_watcher_io_events_get(EvIO $w);
+	mapped to EvIO::$events property
+
+* EvTimer ev_watcher_timer(double $after, double $repeat, EvLoop $loop, callback
+$callback [, $data = NULL[, int $priority = 0]]);
+	Mapped to EvTimer::__construct()
+* void ev_watcher_timer_set(double $after, double $repeat);
+	Mapped to EvTimer::set()
+* void ev_watcher_timer_again(EvTimer $w);
+	Mapped to EvTimer::again()
+* double ev_watcher_timer_remaining(EvTimer $w);
+	Mapped to EvTimer::remaining()
+
+* EvPeriodic ev_watcher_periodic(double $offset, double $interval, EvLoop $loop[, mixed
+$data[, int $priority = 0]]);
+	Mapped to EvPeriodic::__construct()
+* void ev_watcher_periodic_set(EvPeriodic $w, double $offset, double $interval);
+	Mapped to EvPeriodic::set()
+* void ev_watcher_periodic_again(EvPeriodic $w);
+* double ev_watcher_periodic_at(EvPeriodic $w);
+
+
+* EvScheduler ev_watcher_schedule(callback $scheduler, EvLoop $loop, callback $callback[, mixed
+$data = NULL[, int $priority = 0]]);
+	Mapped to EvScheduler::__construct()
+* void ev_watcher_scheduler_set(EvScheduler $w, double $offset, double $interval);
+	Mapped to EvScheduler::set()
+* void ev_watcher_scheduler_again(EvScheduler $w);
+* double ev_watcher_scheduler(EvScheduler $w);
+
+
+* EvSignal ev_watcher_signal(int $signum, EvLoop $loop, callback $callback[, mixed $data = NULL[,
+	Mapped to EvSignal::__construct()
+* void ev_watcher_signal_set(EvSignal $w, int $signum);
+	Mapped to EvSignal::set()
+* ev_watcher_signal_set(EvSignal $w, int $signum);
+* ev_watcher_signal_get(EvSignal $w);
+	Mapped to EvSignal::$signum property
+
+...........
+
+Classes
+=======
+
+* EvLoop
+* EvException
+
+Watcher classes:
+
+* EvWatcher - base class for the rest of watcher classes
+* EvTimer
+* EvIO
+* EvTimer
+* EvPeriodic
+* EvScheduler
+* EvSignal
+* EvChild
+* EvStat
+* EvIdle
+* EvPrepare
+* EvCheck
+* EvEmbed
+* EvFork
+* EvAsync
+
+
+EvLoop
+======
+
+
+EvLoop Properties:
+------------------
+
+public $data = NULL;
+Internal property get- and set- functions call 
+ev_set_userdata(loop, data) and ev_userdata(loop).
+Is set in EvLoop::__construct as well.
+
+protected int $backend;
+is mapped from ev_backend();
+
+protected int $pending;
+is mapped from ev_pending_count();
+
+protected int $depth;
+is mapped from ev_depth();
+
+protected int $is_default_loop;
+is mapped from ev_is_default_loop();
+
+protected int $iteration; 
+is mapped from ev_iteration();
+
+EvLoop Methods:
+---------------
+(DONE) __construct([int $flags = EVLAG_AUTO[, $callback = NULL[, $data = NULL[, double $io_collect_interval = 0.[, double
+$timeout_collect_interval = 0.]]]]]);
+- $data is a variable attached to the event loop object.
+- When $io_collect_interval, or $timeout_collect_interval are greater than zero,
+	ev_io_collect_interval(), or ev_timeout_collect_interval() libev functions
+	will be called internally.
+- If omitted or NULL, the loop will fall back to its default behaviour of calling
+	ev_invoke_pending() when required. If it is a callable, then the loop will
+	execute it instead, and it becomes the user's responsibility to call
+	EvLoop::invoke_pending(), or ev_invoke_pending() to invoke pending events.
+	The callback must match the following prototype:
+		void callback(EvLoop $loop);
+
+
+EvLoop ev_default_loop([int $flags = EVLAG_AUTO]);
+is mapped from ev_default_loop
+
+(DONE) void loop_fork();
+
+(DONE) void verify();
+is mapped from ev_verify();
+
+(DONE) void invoke_pending();
+
+(DONE) void now_update();
+(DONE) void suspend();
+(DONE) void resume();
+
+(DONE) int supported_backends();
+(DONE) int recommended_backends();
+(DONE) int embeddable_backends();
+are mapped from their ev_* counterparts.
+
+(DONE) void sleep(double $seconds);
+calls ev_sleep().
+
+(DONE) double time();
+(DONE) double now();
+
+(DONE) void run([int $flags = 0]);
+(DONE) void break([int $flags = 0]);
+(DONE) void feed_signal(int $signum);
+are mapped from their ev_*() counterparts.
+(DONE) void feed_signal_event(int $signum);
+
+
+EvWatcher
+=========
+
+EvWatcher is the base class for all watcher classes.
+
+EvWatcher Properties 
+--------------------
+
+(DONE) protected bool $is_active;
+mapped from ev_watcher_is_active;
+
+(DONE) protected bool $is_pending;
+mapped from ev_watcher_is_pending;
+
+(DONE) public int $priority;
+Calls ev_priority() and ev_set_priority() internally to get and set the watcher
+priority. Mapped from ev_watcher_get_priority() and ev_watcher_set_priority().
+
+public callback $callback;
+calls ev_cb() internally. Mapped from ev_watcher_callback.
+callback must match the following prorotype: 
+	void function callback(EvWatcher $w, int revents);
+	$w should be a subclass of EvWatcher
+
+public mixed $data;
+Internal get- and set- functions retrieve corresponding field of custom watcher
+structure. See
+http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#ASSOCIATING_CUSTOM_DATA_WITH_A_WATCH
+
+
+EvWatcher Methods
+-----------------
+
+void start(void);
+mapped from ev_watcher_start
+
+void stop(void);
+mapped from ev_watcher_stop
+
+void invoke(int $revents);
+Invoke the watcher callback with the given revents. Calls ev_invoke()
+internally. 
+
+int clear(int revents);
+Calls ev_clear_pending() internally.
+
+void feed(int revents);
+Calls ev_feed_event() internally. 
+
+
+EvIO
+====
+
+EvIO is a class derived from EvWatcher. Represents libev's IO watcher.
+
+Properties:
+
+protected resource $fd;
+protected int $events;
+
+
+Methods:
+
+public __construct(resource $fd, int $events, callback $callback[, mixed $data =
+NULL[, int $priority = 0]]);
+
+public set(resource $fd, events);
+Reconfigures the watcher, see the constructor above for details. Can be called
+at any time.
+
+
+EvTimer
+=======
+
+Methods: 
+
+EvTimer __construct(double $after, double $repeat, EvLoop $loop, callback
+$callback [, $data = NULL[, int $priority = 0]]);
+
+void set(double $after, double $repeat);
+Reconfigures the watcher, see the constructor above for details. Can be called
+at any time.
+
+void again();
+Calls ev_timer_again() internally
+
+double remaining();
+Calls ev_timer_remaining() internally 
+
+
+EvPeriodic
+==========
+
+Properties:
+
+Methods: 
+
+EvPeriodic __construct(double $offset, double $interval, EvLoop $loop[, mixed
+$data[, int $priority = 0]]);
+
+set(double $offset, double $interval);
+Reconfigures the watcher, see the constructor above for details. Can be called at
+any time.
+
+void again();
+Calls ev_periodic_again() internally.
+
+double at();
+Calls ev_periodic_at() internally.
+
+
+EvScheduler
+===========
+
+EvScheduler is a special type of EvPeriodic watchers. It allows to reschedule
+time the watcher will be scheduled next time via callback.
+
+Methods: 
+
+__construct(callback $scheduler, EvLoop $loop, callback $callback[, mixed
+$data = NULL[, int $priority = 0]]);
+$scheduler - rescheduler callback. Must match the following proto:
+	function scheduler(EvScheduler $watcher, double $now);
+
+
+set(double $offset, double $interval);
+Reconfigures the watcher, see the constructor above for details. Can be called at
+any time.
+
+void again();
+Mapped to EvPeriodic::again()
+
+double at();
+Mapped to EvPeriodic::at()
+
+
+EvSignal
+========
+
+Properties:
+
+public int $signum;
+
+Methods: 
+
+EvSignal __construct(int $signum, EvLoop $loop, callback $callback[, mixed $data = NULL[,
+$priority = 0]]);
+
+void set(int $signum);
+calls ev_signal_set() internally
+
+
+EvChild
+=======
+
+Properties: 
+
+protected int $pid; 
+protected int $rpid; 
+protected int $rstatus; 
+
+Methods:
+
+EvChild::__construct(int $pid, bool $trace, EvLoop $loop, callback $callback[,
+mixed $data = NULL[, int priority = 0]]);
+
+voi set(int $pid, bool $trace);
+Reconfigures the watcher, see the constructor above for details. Can be called
+at any time.
+
+
+EvStat
+======
+
+Properties: 
+
+protected string $path;
+protected int $interval;
+
+Methods:
+
+__construct(string $path, double $interval, EvLoop $loop, callback $callback[,
+mixed $data = NULL[, int $priority = 0]]);
+
+void set($string $path, double $interval);
+Reconfigures the watcher, see the constructor above for details. Can be called
+at any time.
+
+
+.................
+
+
+
+
+vim: ts=4 sts=4 sw=4 tw=80
