@@ -7,13 +7,9 @@ function cb($watcher, $revents) {
 	$watcher->stop();
 	return FALSE;
 }
-$fd = fopen('php://stdin', 'r');
 $loop       = EvLoop::default_loop();
 $io_watcher = new EvIo(STDIN, EV_READ, $loop, "cb");
 $io_watcher->start();
 $loop->run();
-echo "closing fd\n";
-fclose($fd);
-
 ?>
 --EXPECT--

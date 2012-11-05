@@ -18,8 +18,8 @@
 #ifndef PHP_EV_EMBED_H
 #define PHP_EV_EMBED_H
 
-#include "php_ev_common.h"
-#include "php_ev_types.h"
+#include "common.h"
+#include "types.h"
 
 /* EV_STANDALONE isn't needed, since we use libev/libev.m4
  * #define EV_STANDALONE 1 */
@@ -46,21 +46,23 @@
 /* Thread context. With it we are getting rid of need 
  * to call the heavy TSRMLS_FETCH() */
 #ifdef ZTS
-# define PHP_EV_EMBED_THREAD_CTX void ***thread_ctx
+# define PHP_EV_COMMON_THREAD_CTX void ***thread_ctx
 #else
-# define PHP_EV_EMBED_THREAD_CTX
+# define PHP_EV_COMMON_THREAD_CTX
 #endif
 
 /* Override `data` member of the watcher structs.
- * See php_ev_types.h and libev/ev.h */
-#define EV_COMMON                                                           \
-    zval                       *self;   /* this struct */                   \
-    zval                       *data;   /* custom var attached by user */   \
-    zval                       *loop;                                       \
-    zend_fcall_info            *fci;    /* fci &fcc serve $callback arg */  \
-    zend_fcall_info_cache      *fcc;                                        \
-    int                         type;   /* EV_ *constant from libev/ev.h */ \
-    PHP_EV_EMBED_THREAD_CTX;                                                \
+ * See types.h and libev/ev.h */
+#define EV_COMMON                                                         \
+    zval                        *self;      /* this struct */                        \
+    zval                        *data;      /* custom var attached by user */        \
+    php_ev_loop                 *loop;                                               \
+    zend_fcall_info             *fci;       /* fci &fcc serve $callback arg */       \
+    zend_fcall_info_cache       *fcc;                                                \
+    int                          type;      /* EV_ *constant from libev/ev.h */      \
+    int                          e_flags;                                            \
+    void                        *e_prev;    /* Linked list of ev_watcher pointers */ \
+    PHP_EV_COMMON_THREAD_CTX;                                                        \
 
 #include "libev/ev.h"
 

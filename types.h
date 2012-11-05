@@ -19,37 +19,35 @@
 #ifndef PHP_EV_TYPES_H
 #define PHP_EV_TYPES_H
 
+struct ev_watcher;
+
 /* Represents Ev* class object. Extends zend_object */
 typedef struct php_ev_object {
 	zend_object  zo;
 	HashTable   *prop_handler;
-	void        *ptr;
+	void        *ptr; /* Pointer to ev_watcher or php_ev_loop */
 } php_ev_object;
 
-/*
- * 
- * If timeout_collect_interval > 0,
- * ev_timeout_collect_interval will be called internally 
- */
-typedef struct php_ev_object_loop {
+typedef struct php_ev_loop {
 	struct ev_loop        *loop;
 	zval                  *data;                       /* User custom data attached to event loop                  */
 	zend_fcall_info       *fci;                        /* fci and fcc serve callbacks                              */
 	zend_fcall_info_cache *fcc;
 	double                 io_collect_interval;        /* If > 0, ev_io_collect_interval is called internally      */
 	double                 timeout_collect_interval;   /* If > 0, ev_timeout_collect_interval is called internally */
-} php_ev_object_loop;
+	struct ev_watcher     *w;                          /* Head of linked list                                      */
+} php_ev_loop;
 
-typedef int (*php_ev_read_t)(php_ev_object *obj, zval **retval TSRMLS_DC);
-typedef int (*php_ev_write_t)(php_ev_object *obj, zval *newval TSRMLS_DC);
+/* Property handlers */
+typedef int (*php_ev_read_t)(php_ev_object  *obj, zval **retval TSRMLS_DC);
+typedef int (*php_ev_write_t)(php_ev_object *obj, zval *newval  TSRMLS_DC);
 
 /* Property of an Ev* class */
-typedef struct php_ev_property_entry {
-	const char *name;
-	size_t      name_length;
-
-	int (*read_func)(php_ev_object *obj, zval **retval TSRMLS_DC);
-	int (*write_func)(php_ev_object *obj, zval *value TSRMLS_DC);
+typedef struct {
+	const char     *name;
+	size_t          name_length;
+	php_ev_read_t   read_func;
+	php_ev_write_t  write_func;
 } php_ev_property_entry;
 
 typedef struct {
@@ -57,7 +55,7 @@ typedef struct {
 	size_t          name_len;
 	php_ev_read_t   read_func;
 	php_ev_write_t  write_func;
-} ev_prop_handler;
+} php_ev_prop_handler;
 
 #endif /* PHP_EV_TYPES_H */
 

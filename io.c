@@ -23,10 +23,11 @@ PHP_METHOD(EvIo, __construct)
 	zval          *self;
 	zval          *z_stream;
 	php_ev_object *o_self;
+	php_ev_object *o_loop;
 	ev_io         *io_watcher;
 
 	zval                  *loop;
-	zval                  *data;
+	zval                  *data      = NULL;
 	php_stream            *fd_stream;
 	zend_fcall_info        fci       = empty_fcall_info;
 	zend_fcall_info_cache  fcc       = empty_fcall_info_cache;
@@ -46,7 +47,9 @@ PHP_METHOD(EvIo, __construct)
 
 	self    = getThis();
 	o_self  = (php_ev_object *)zend_object_store_get_object(self TSRMLS_CC);
-	io_watcher = (ev_io *)php_ev_new_watcher(sizeof(ev_io), self, loop,
+	o_loop  = (php_ev_object *)zend_object_store_get_object(loop TSRMLS_CC);
+	io_watcher = (ev_io *)php_ev_new_watcher(sizeof(ev_io), self,
+			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
 	io_watcher->type = EV_IO;

@@ -16,9 +16,9 @@
    +----------------------------------------------------------------------+
 */
 
-#include "ev_embed.h"
-#include "php_ev_priv.h"
-#include "php_ev_watcher.h"
+#include "embed.h"
+#include "priv.h"
+#include "watcher.h"
 
 
 /* {{{ EvLoop property handlers */

@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2012 The PHP Group                                |
+   | Copyright (c) 1997-2011 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -15,31 +15,52 @@
    | Author: Ruslan Osmanov <osmanov@php.net>                             |
    +----------------------------------------------------------------------+
 */
-#ifndef PHP_EV_COMMON_H
-#define PHP_EV_COMMON_H
+#ifndef PHP_EV_FE_H
+#define PHP_EV_FE_H
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "embed.h"
 
-#include <php.h>
-#include <php_ini.h>
-#include <SAPI.h>
-#include "zend_interfaces.h"
-#include "ext/standard/info.h"
-#include "ext/standard/php_string.h"
-#include <Zend/zend_extensions.h>
+/* {{{ EvLoop */
+PHP_METHOD(EvLoop, __construct);
+PHP_METHOD(EvLoop, default_loop);
+PHP_METHOD(EvLoop, loop_fork);
+PHP_METHOD(EvLoop, verify);
+PHP_METHOD(EvLoop, invoke_pending);
+PHP_METHOD(EvLoop, now_update);
+PHP_METHOD(EvLoop, suspend);
+PHP_METHOD(EvLoop, resume);
+PHP_METHOD(EvLoop, supported_backends);
+PHP_METHOD(EvLoop, recommended_backends);
+PHP_METHOD(EvLoop, embeddable_backends);
+PHP_METHOD(EvLoop, sleep);
+PHP_METHOD(EvLoop, time);
+PHP_METHOD(EvLoop, now);
+PHP_METHOD(EvLoop, run);
+PHP_METHOD(EvLoop, break);
+PHP_METHOD(EvLoop, feed_signal);
+PHP_METHOD(EvLoop, feed_signal_event);
+/* }}} */
 
-#ifdef ZTS
-# include "TSRM.h"
-#endif
+/* {{{ EvWatcher */
+/* PHP_METHOD(EvWatcher, __construct); */
+PHP_METHOD(EvWatcher, start);
+PHP_METHOD(EvWatcher, stop);
+PHP_METHOD(EvWatcher, clear);
+PHP_METHOD(EvWatcher, invoke);
+PHP_METHOD(EvWatcher, feed);
+PHP_METHOD(EvWatcher, getLoop);
+/* }}} */
 
-#endif /* PHP_EV_COMMON_H */
-/*
+/* {{{ EvIo */
+PHP_METHOD(EvIo, __construct);
+/* }}} */
+
+#endif /* PHP_EV_FE_H */
+
+/* 
  * Local variables:
  * tab-width: 4
  * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
+ * vim600: fdm=marker
+ * vim: noet sts=4 sw=4 ts=4
  */

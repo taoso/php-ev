@@ -144,8 +144,8 @@
     }                                            \
 }
 
-#define PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj) (obj ? (php_ev_object_loop *)obj->ptr : NULL)
-#define PHP_EV_WATCHER_FETCH_FROM_OBJECT(o)       ((ev_watcher *)o->ptr)
+#define PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj) (obj ? (php_ev_loop *) obj->ptr : NULL)
+#define PHP_EV_WATCHER_FETCH_FROM_OBJECT(o)       ((ev_watcher *) o->ptr)
 
 #define PHP_EV_LOOP_FETCH_FROM_OBJECT(obj) (obj ? PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->loop : NULL)
 #define PHP_EV_LOOP_FETCH_FROM_THIS                                                             \

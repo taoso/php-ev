@@ -15,35 +15,31 @@
    | Author: Ruslan Osmanov <osmanov@php.net>                             |
    +----------------------------------------------------------------------+
 */
+#ifndef PHP_EV_COMMON_H
+#define PHP_EV_COMMON_H
 
-#ifndef PHP_EV_PRIV_H
-#define PHP_EV_PRIV_H
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-#include "php_ev_types.h"
-#include "php_ev_macros.h"
+#include <php.h>
+#include <php_ini.h>
+#include <SAPI.h>
+#include <zend_interfaces.h>
+#include <ext/standard/info.h>
+#include <ext/standard/php_string.h>
+#include <Zend/zend_extensions.h>
 
+#ifdef ZTS
+# include "TSRM.h"
+#endif
 
-extern const zend_function_entry ev_functions[];
-extern const zend_function_entry ev_loop_class_entry_functions[];
-extern const zend_function_entry ev_watcher_class_entry_functions[];
-extern const zend_function_entry ev_io_class_entry_functions[];
-
-extern const php_ev_property_entry ev_test_property_entries[];
-extern const php_ev_property_entry ev_loop_property_entries[];
-extern const php_ev_property_entry ev_watcher_property_entries[];
-extern const php_ev_property_entry ev_io_property_entries[];
-
-extern const zend_property_info ev_test_property_entry_info[];
-extern const zend_property_info ev_loop_property_entry_info[];
-extern const zend_property_info ev_watcher_property_entry_info[];
-extern const zend_property_info ev_io_property_entry_info[];
-
-#endif /* PHP_EV_PRIV_H */
-
+#endif /* PHP_EV_COMMON_H */
 /*
  * Local variables:
  * tab-width: 4
  * c-basic-offset: 4
- * vim600: fdm=marker
- * vim: noet sts=4 sw=4 ts=4
+ * End:
+ * vim600: noet sw=4 ts=4 fdm=marker
+ * vim<600: noet sw=4 ts=4
  */

@@ -42,19 +42,19 @@ zend_module_entry ev_module_entry = {
 #elif ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
 #endif
-	"Ev",
-	ev_functions,
-	PHP_MINIT(ev),
-	PHP_MSHUTDOWN(ev),
-	PHP_RINIT(ev),     /* Replace with NULL if there is nothing to do at request start */
-	PHP_RSHUTDOWN(ev), /* Replace with NULL if there is nothing to do at request end   */
-	PHP_MINFO(ev),
-	PHP_EV_VERSION, 
-	PHP_MODULE_GLOBALS(ev),
-	PHP_GINIT(ev),
-	NULL,
-	NULL,
-	STANDARD_MODULE_PROPERTIES_EX
+    "Ev",
+    ev_functions,
+    PHP_MINIT(ev),
+    PHP_MSHUTDOWN(ev),
+    NULL,                         /* PHP_RINIT(ev)     */
+    NULL,                         /* PHP_RSHUTDOWN(ev) */
+    PHP_MINFO(ev),
+    PHP_EV_VERSION,
+    PHP_MODULE_GLOBALS(ev),
+    PHP_GINIT(ev),
+    NULL,
+    NULL,
+    STANDARD_MODULE_PROPERTIES_EX
 };
 /* }}} */
 
@@ -83,27 +83,27 @@ static int php_ev_prop_write_default(php_ev_object *obj, zval *newval TSRMLS_DC)
 
 /* {{{ php_ev_add_property */
 static void php_ev_add_property(HashTable *h, const char *name, size_t name_len, php_ev_read_t read_func, php_ev_write_t write_func TSRMLS_DC) {
-	ev_prop_handler p;
+	php_ev_prop_handler p;
 
 	p.name       = (char *) name;
 	p.name_len   = name_len;
 	p.read_func  = (read_func) ? read_func : php_ev_prop_read_default;
 	p.write_func = (write_func) ? write_func: php_ev_prop_write_default;
-	zend_hash_add(h, name, name_len + 1, &p, sizeof(ev_prop_handler), NULL);
+	zend_hash_add(h, name, name_len + 1, &p, sizeof(php_ev_prop_handler), NULL);
 }
 /* }}} */
 
 /* {{{ php_ev_read_property */
 static zval *php_ev_read_property(zval *object, zval *member, int type, const zend_literal *key TSRMLS_DC)
 {
-	zval				tmp_member;
-	zval				*retval;
-	php_ev_object		*obj;
-	ev_prop_handler		*hnd;
-	int					ret;
+	zval            tmp_member;
+	zval            *retval;
+	php_ev_object   *obj;
+	php_ev_prop_handler *hnd;
+	int             ret;
 
 	ret = FAILURE;
-	obj = (php_ev_object *)zend_objects_get_address(object TSRMLS_CC);
+	obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
 
 	if (member->type != IS_STRING) {
 	    tmp_member = *member;
@@ -139,10 +139,10 @@ static zval *php_ev_read_property(zval *object, zval *member, int type, const ze
 /* {{{ php_ev_write_property */
 void php_ev_write_property(zval *object, zval *member, zval *value, const zend_literal *key TSRMLS_DC)
 {
-	zval				tmp_member;
-	php_ev_object		*obj;
-	ev_prop_handler		*hnd;
-	int					ret;
+	zval             tmp_member;
+	php_ev_object   *obj;
+	php_ev_prop_handler *hnd;
+	int              ret;
 
 	if (member->type != IS_STRING) {
 	    tmp_member = *member;
@@ -152,10 +152,10 @@ void php_ev_write_property(zval *object, zval *member, zval *value, const zend_l
 	}
 
 	ret = FAILURE;
-	obj = (php_ev_object *)zend_objects_get_address(object TSRMLS_CC);
+	obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
 
 	if (obj->prop_handler != NULL) {
-	    ret = zend_hash_find((HashTable *)obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member)+1, (void **) &hnd);
+	    ret = zend_hash_find((HashTable *) obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member)+1, (void **) &hnd);
 	}
 	if (ret == SUCCESS) {
 	    hnd->write_func(obj, value TSRMLS_CC);
@@ -177,11 +177,11 @@ void php_ev_write_property(zval *object, zval *member, zval *value, const zend_l
 /* {{{ php_ev_has_property */
 static int php_ev_has_property(zval *object, zval *member, int has_set_exists, const zend_literal *key TSRMLS_DC)
 {
-	php_ev_object *obj = (php_ev_object *)zend_objects_get_address(object TSRMLS_CC);
-	ev_prop_handler p;
-	int ret = 0;
+	php_ev_object   *obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
+	int              ret = 0;
+	php_ev_prop_handler  p;
 
-	if (zend_hash_find(obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member) + 1, (void **)&p) == SUCCESS) {
+	if (zend_hash_find(obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member) + 1, (void **) &p) == SUCCESS) {
 	    switch (has_set_exists) {
 	        case 2:
 	            ret = 1;
@@ -221,16 +221,16 @@ static int php_ev_has_property(zval *object, zval *member, int has_set_exists, c
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3
 static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS_DC)
 {
-	php_ev_object *obj = (php_ev_object *)zend_objects_get_address(object TSRMLS_CC); 
+	php_ev_object *obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC); 
 	HashTable *retval, *props = obj->prop_handler;
 	HashPosition pos;
-	ev_prop_handler *entry;
+	php_ev_prop_handler *entry;
 
 	ALLOC_HASHTABLE(retval);
 	ZEND_INIT_SYMTABLE_EX(retval, zend_hash_num_elements(props) + 1, 0);
 
 	zend_hash_internal_pointer_reset_ex(props, &pos);
-	while (zend_hash_get_current_data_ex(props, (void **)&entry, &pos) == SUCCESS) {
+	while (zend_hash_get_current_data_ex(props, (void **) &entry, &pos) == SUCCESS) {
 	    zval member;
 	    zval *value;
 	    INIT_ZVAL(member);
@@ -238,7 +238,7 @@ static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS
 	    value = php_ev_read_property(object, &member, BP_VAR_IS, 0 TSRMLS_CC);
 	    if (value != EG(uninitialized_zval_ptr)) {
 	        Z_ADDREF_P(value);
-	        zend_hash_add(retval, entry->name, entry->name_len + 1, &value, sizeof(zval *), NULL);
+	        zend_hash_add(retval, entry->name, entry->name_len + 1, &value, sizeof(zval *) , NULL);
 	    }       
 	    zend_hash_move_forward_ex(props, &pos);
 	}               
@@ -252,51 +252,57 @@ static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS
 
 /* {{{ php_ev_object_free_storage 
  * Common Ev object cleaner */
-static void php_ev_object_free_storage(void *object TSRMLS_DC)
+static void php_ev_object_free_storage(void *obj_ TSRMLS_DC)
 {
-	php_ev_object *intern = (php_ev_object *) object;
+	php_ev_object *obj = (php_ev_object *) obj_;
 
-	zend_object_std_dtor(&intern->zo TSRMLS_CC);
+	zend_object_std_dtor(&obj->zo TSRMLS_CC);
 
-	if (intern->ptr) {
-		efree(intern->ptr);
+	if (obj->ptr) {
+		efree(obj->ptr);
 	}
 
-	efree(intern);
+	efree(obj);
 }
 /* }}} */
 
-/* {{{ php_ev_loop_free_storage*/
-static void php_ev_loop_free_storage(void *object TSRMLS_DC)
+/* {{{ php_ev_loop_free_storage */
+static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
 {
-	php_printf("php_ev_loop_free_storage\n");
-	php_ev_object *obj_ptr = (php_ev_object *) object;
+	php_ev_object *obj = (php_ev_object *) obj_;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
-	php_ev_object_loop *ptr = (php_ev_object_loop *) obj_ptr->ptr;
-
-	if (ptr->fci && ptr->fcc) {
-		PHP_EV_FREE_FCALL_INFO(ptr->fci, ptr->fcc);
-	}
+	PHP_EV_ASSERT(obj->ptr);
+	php_ev_loop *ptr = (php_ev_loop *) obj->ptr;
 
 	if (ptr->loop) {
+		/* Stop all watchers associated with this loop.  But don't free their memory. 
+		 * They have special automatically called handlers for this purpose */
+		ev_watcher *w = ptr->w;
+		while (w) {
+			php_ev_stop_watcher(w TSRMLS_CC);
+			w = php_ev_watcher_prev(w);
+		}
+
 		if (ev_is_default_loop(ptr->loop)) {
 			zval **default_loop_ptr_ptr = &MyG(default_loop);
 			if (*default_loop_ptr_ptr) {
 				zval_ptr_dtor(default_loop_ptr_ptr);
-				default_loop_ptr_ptr = NULL;
+				*default_loop_ptr_ptr = NULL;
 			}
 		}
+
 		ev_loop_destroy(ptr->loop);
 		ptr->loop = NULL;
 	}
+
+	PHP_EV_FREE_FCALL_INFO(ptr->fci, ptr->fcc);
 
 	if (ptr->data) {
 		zval_ptr_dtor(&ptr->data);
 		ptr->data = NULL;
 	}
 
-	php_ev_object_free_storage(object TSRMLS_CC);
+	php_ev_object_free_storage(obj TSRMLS_CC);
 }
 /* }}} */
 
@@ -305,10 +311,11 @@ static void php_ev_loop_free_storage(void *object TSRMLS_DC)
  * This is a helper for derived watcher class objects. */
 static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 {
-	php_printf("php_ev_watcher_free_storage\n");
 	zval *data, *self;
 
+	/* This is done in php_ev_loop_free_storage()
 	php_ev_stop_watcher(ptr TSRMLS_CC);
+	*/
 
 	PHP_EV_FREE_FCALL_INFO(php_ev_watcher_fci(ptr), php_ev_watcher_fcc(ptr));
 	
@@ -325,14 +332,13 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 /* {{{ php_ev_io_free_storage() */
 static void php_ev_io_free_storage(void *object TSRMLS_DC)
 {
-	php_printf("php_ev_io_free_storage\n");
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
 	PHP_EV_ASSERT(obj_ptr->ptr);
-	ev_io *ptr = (ev_io *)obj_ptr->ptr;
+	ev_io *ptr = (ev_io *) obj_ptr->ptr;
 
 	/* Free base class members */
-	php_ev_watcher_free_storage((ev_watcher *)ptr TSRMLS_CC);
+	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
 
 	/* Free common Ev object members and the object itself */
 	php_ev_object_free_storage(object TSRMLS_CC);
@@ -548,8 +554,8 @@ PHP_MINFO_FUNCTION(ev)
 /* }}} */
 
 
-#include "php_ev_loop.c" 
-#include "php_ev_io.c"
+#include "loop.c" 
+#include "io.c"
 
 #endif /* HAVE_EV */
 

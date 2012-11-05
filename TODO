@@ -1,46 +1,46 @@
 Problem: move the class code separate files, then simply
 ========================================================
 
-#include "php_ev_loop.c"
-#include "php_ev_watcher.c"
-#include "php_ev_io.c"
-#include "php_ev_timer.c"
+#include "loop.c"
+#include "watcher.c"
+#include "io.c"
+#include "timer.c"
 #if EV_PERIODIC_ENABLE
-#include "php_ev_periodic.c"
+#include "periodic.c"
 #endif
 #if EV_PREPARE_ENABLE
-#include "php_ev_scheduler.c"
+#include "scheduler.c"
 #endif
 #endif
 #if EV_SIGNAL_ENABLE
-#include "php_ev_signal.c"
+#include "signal.c"
 #endif
 #if EV_CHILD_ENABLE
-#include "php_ev_child.c"
+#include "child.c"
 #endif
 #if EV_STAT_ENABLE
-#include "php_ev_stat.c"
+#include "stat.c"
 #endif
 #if EV_IDLE_ENABLE
-#include "php_ev_idle.c"
+#include "idle.c"
 #endif
 #if EV_PREPARE_ENABLE
-#include "php_ev_prepare.c"
+#include "prepare.c"
 #endif
 #if EV_CHECK_ENABLE
-#include "php_ev_check.c"
+#include "check.c"
 #endif
 #if EV_EMBED_ENABLE
-#include "php_ev_embed.c"
+#include "embed.c"
 #endif
 #if EV_FORK_ENABLE
-#include "php_ev_fork.c"
+#include "fork.c"
 #endif
 #if EV_ASYNC_ENABLE
-#include "php_ev_async.c"
+#include "async.c"
 #endif
 
-Somewhere in php_ev.c, or php_ev.h
+Somewhere in ev.c, or php_ev.h
 
 ========================================================
 C++? 

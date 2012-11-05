@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2011 The PHP Group                                |
+   | Copyright (c) 1997-2012 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -15,49 +15,32 @@
    | Author: Ruslan Osmanov <osmanov@php.net>                             |
    +----------------------------------------------------------------------+
 */
-#ifndef PHP_EV_FE_H
-#define PHP_EV_FE_H
 
-#include "ev_embed.h"
+#ifndef PHP_EV_PRIV_H
+#define PHP_EV_PRIV_H
 
-/* {{{ EvLoop */
-PHP_METHOD(EvLoop, __construct);
-PHP_METHOD(EvLoop, default_loop);
-PHP_METHOD(EvLoop, loop_fork);
-PHP_METHOD(EvLoop, verify);
-PHP_METHOD(EvLoop, invoke_pending);
-PHP_METHOD(EvLoop, now_update);
-PHP_METHOD(EvLoop, suspend);
-PHP_METHOD(EvLoop, resume);
-PHP_METHOD(EvLoop, supported_backends);
-PHP_METHOD(EvLoop, recommended_backends);
-PHP_METHOD(EvLoop, embeddable_backends);
-PHP_METHOD(EvLoop, sleep);
-PHP_METHOD(EvLoop, time);
-PHP_METHOD(EvLoop, now);
-PHP_METHOD(EvLoop, run);
-PHP_METHOD(EvLoop, break);
-PHP_METHOD(EvLoop, feed_signal);
-PHP_METHOD(EvLoop, feed_signal_event);
-/* }}} */
+#include "types.h"
+#include "macros.h"
 
-/* {{{ EvWatcher */
-/* PHP_METHOD(EvWatcher, __construct); */
-PHP_METHOD(EvWatcher, start);
-PHP_METHOD(EvWatcher, stop);
-PHP_METHOD(EvWatcher, clear);
-PHP_METHOD(EvWatcher, invoke);
-PHP_METHOD(EvWatcher, feed);
-PHP_METHOD(EvWatcher, getLoop);
-/* }}} */
 
-/* {{{ EvIo */
-PHP_METHOD(EvIo, __construct);
-/* }}} */
+extern const zend_function_entry ev_functions[];
+extern const zend_function_entry ev_loop_class_entry_functions[];
+extern const zend_function_entry ev_watcher_class_entry_functions[];
+extern const zend_function_entry ev_io_class_entry_functions[];
 
-#endif /* PHP_EV_FE_H */
+extern const php_ev_property_entry ev_test_property_entries[];
+extern const php_ev_property_entry ev_loop_property_entries[];
+extern const php_ev_property_entry ev_watcher_property_entries[];
+extern const php_ev_property_entry ev_io_property_entries[];
 
-/* 
+extern const zend_property_info ev_test_property_entry_info[];
+extern const zend_property_info ev_loop_property_entry_info[];
+extern const zend_property_info ev_watcher_property_entry_info[];
+extern const zend_property_info ev_io_property_entry_info[];
+
+#endif /* PHP_EV_PRIV_H */
+
+/*
  * Local variables:
  * tab-width: 4
  * c-basic-offset: 4

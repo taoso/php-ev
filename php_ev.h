@@ -19,9 +19,9 @@
 #ifndef PHP_EV_H
 #define PHP_EV_H
 
-#include "ev_embed.h"
-#include "php_ev_priv.h"
-#include "php_ev_watcher.h"
+#include "embed.h"
+#include "priv.h"
+#include "watcher.h"
 
 PHP_MINIT_FUNCTION(ev);
 PHP_MSHUTDOWN_FUNCTION(ev);

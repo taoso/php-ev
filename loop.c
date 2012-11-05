@@ -16,24 +16,23 @@
    +----------------------------------------------------------------------+
 */
 
-
 /* {{{ php_ev_loop_object_ctor
  * Creates an instance of EvLoop class and puts it in retval
  * in_ctor: whether called from constructor of a loop class 
  * default_loop: whether to return/create the default loop */
 static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_bool in_ctor, const zend_bool is_default_loop)
 {
-	ev_loop			*loop;
-	php_ev_object	*ev_obj;
-	zval			**default_loop_ptr_ptr = NULL;
-	zval			*self = getThis();
+	php_ev_object          *ev_obj;
+	ev_loop                *loop;
+	zval                  **default_loop_ptr_ptr     = NULL;
+	zval                   *self                     = getThis();
 
-	long flags                      = EVFLAG_AUTO;
-	zend_fcall_info fci             = empty_fcall_info;
-	zend_fcall_info_cache fcc       = empty_fcall_info_cache;
-	zval *data                      = NULL;
-	double io_collect_interval      = 0.;
-	double timeout_collect_interval = 0.;
+	long                    flags                    = EVFLAG_AUTO;
+	double                  io_collect_interval      = 0.;
+	double                  timeout_collect_interval = 0.;
+	zval                   *data                     = NULL;
+	zend_fcall_info         fci                      = empty_fcall_info;
+	zend_fcall_info_cache   fcc                      = empty_fcall_info_cache;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|lf!z!dd",
 				&flags, &fci, &fcc, &data, 
@@ -60,7 +59,8 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 
 		if (!loop) {
 			php_error_docref(NULL TSRMLS_CC, E_ERROR,
-					"Failed to instanciate default loop, bad $LIBEV_FLAGS in environment?");
+					"Failed to instanciate default loop, "
+					"bad $LIBEV_FLAGS in environment?");
 			return;
 		}
 
@@ -70,7 +70,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 		Z_SET_REFCOUNT_P(return_value, 1);
 		Z_UNSET_ISREF_P(return_value);
 
-		ev_obj = (php_ev_object *)zend_object_store_get_object(return_value TSRMLS_CC);
+		ev_obj = (php_ev_object *) zend_object_store_get_object(return_value TSRMLS_CC);
 
 		/* Save return_value in MyG(default_loop) */
 		if (!*default_loop_ptr_ptr) {
@@ -82,19 +82,17 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 		loop = ev_loop_new(flags);
 		if (!loop) {
 			php_error_docref(NULL TSRMLS_CC, E_ERROR,
-					"Failed to instanciate loop, bad backend, or bad $LIBEV_FLAGS in environment?");
+					"Failed to instanciate loop, bad backend, "
+					"or bad $LIBEV_FLAGS in environment?");
 			return;
 		}
 
-		ev_obj = (php_ev_object *)zend_object_store_get_object(self TSRMLS_CC);
-
+		ev_obj = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
 	}
 
-	php_ev_object_loop *ptr = (php_ev_object_loop *)emalloc(sizeof(php_ev_object_loop));
-	/*memset(ptr, 0, sizeof(php_ev_object_loop));*/
+	php_ev_loop *ptr = (php_ev_loop *) emalloc(sizeof(php_ev_loop));
+	memset(ptr, 0, sizeof(php_ev_loop));
 	ptr->loop = loop;
-	ptr->fci  = NULL;
-	ptr->fcc  = NULL;
 
 	PHP_EV_COPY_FCALL_INFO(ptr->fci, ptr->fcc, &fci, &fcc);
 
@@ -104,9 +102,9 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 	ptr->data                     = data;
 	ptr->io_collect_interval      = io_collect_interval;
 	ptr->timeout_collect_interval = timeout_collect_interval;
-	ev_obj->ptr                   = (void *)ptr;
+	ev_obj->ptr                   = (void *) ptr;
 
-	ev_set_userdata(loop, (void *)ptr);
+	ev_set_userdata(loop, (void *) return_value); 
 }
 /* }}} */
 
@@ -128,37 +126,37 @@ PHP_METHOD(EvLoop, __construct)
 /* }}} */
 
 
-#define PHP_EV_LOOP_METHOD_VOID(name) \
-	PHP_METHOD(EvLoop, name) \
-	{ \
-		PHP_EV_LOOP_FETCH_FROM_THIS; \
-		\
-		if (zend_parse_parameters_none() == FAILURE) { \
-			return; \
-		} \
-		\
-		ev_##name(EV_A); \
-	}
+#define PHP_EV_LOOP_METHOD_VOID(name)                  \
+    PHP_METHOD(EvLoop, name)                           \
+    {                                                  \
+        PHP_EV_LOOP_FETCH_FROM_THIS;                   \
+                                                       \
+        if (zend_parse_parameters_none() == FAILURE) { \
+            return;                                    \
+        }                                              \
+                                                       \
+        ev_##name(EV_A);                               \
+    }
 
-#define PHP_EV_LOOP_METHOD_INT_VOID(name) \
-	PHP_METHOD(EvLoop, name) \
-	{ \
-		if (zend_parse_parameters_none() == FAILURE) { \
-			return; \
-		} \
-		\
-		RETURN_LONG((long)ev_##name()); \
-	}
+#define PHP_EV_LOOP_METHOD_INT_VOID(name)              \
+    PHP_METHOD(EvLoop, name)                           \
+    {                                                  \
+        if (zend_parse_parameters_none() == FAILURE) { \
+            return;                                    \
+        }                                              \
+                                                       \
+        RETURN_LONG((long)ev_##name());                \
+    }
 
-#define PHP_EV_LOOP_METHOD_DOUBLE_VOID(name) \
-	PHP_METHOD(EvLoop, name) \
-	{ \
-		if (zend_parse_parameters_none() == FAILURE) { \
-			return; \
-		} \
-		\
-		RETURN_DOUBLE((double)ev_##name()); \
-	}
+#define PHP_EV_LOOP_METHOD_DOUBLE_VOID(name)           \
+    PHP_METHOD(EvLoop, name)                           \
+    {                                                  \
+        if (zend_parse_parameters_none() == FAILURE) { \
+            return;                                    \
+        }                                              \
+                                                       \
+        RETURN_DOUBLE((double)ev_##name());            \
+    }
 
 PHP_EV_LOOP_METHOD_VOID(loop_fork)
 PHP_EV_LOOP_METHOD_VOID(verify)
@@ -256,7 +254,7 @@ PHP_METHOD(EvLoop, feed_signal_event)
 	}
 
 	/* Fetch the default loop */
-	ev_obj = (php_ev_object *)zend_object_store_get_object(*default_loop_ptr_ptr TSRMLS_CC);
+	ev_obj = (php_ev_object *) zend_object_store_get_object(*default_loop_ptr_ptr TSRMLS_CC);
 	EV_P = PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &signum) == FAILURE) {
@@ -266,9 +264,6 @@ PHP_METHOD(EvLoop, feed_signal_event)
 	ev_feed_signal_event(EV_A_ signum);
 }
 /* }}} */
-
-
-#undef PHP_EV_LOOP_METHOD_VOID
 
 /*
  * Local variables:
