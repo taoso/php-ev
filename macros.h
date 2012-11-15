@@ -52,7 +52,7 @@
     INIT_PZVAL(zconst);                                       \
     ZVAL_LONG(zconst, name);                                  \
     zend_hash_add(&ce->constants_table, #name, sizeof(#name), \
-            (void*)&zconst, sizeof(zval*), NULL);
+            (void*) &zconst, sizeof(zval*), NULL);
 
 #define PHP_EV_REGISTER_CLASS_ENTRY(name, ce, ce_functions) \
 {                                                           \
@@ -98,37 +98,37 @@
 #if PHP_VERSION_ID >= 50300
 # define PHP_EV_FCI_ADDREF(pfci)          \
 {                                         \
+	Z_ADDREF_P(pfci->function_name);      \
     if (pfci->object_ptr) {               \
         Z_ADDREF_P(pfci->object_ptr);     \
     }                                     \
 }
 # define PHP_EV_FCI_DELREF(pfci)          \
 {                                         \
+	zval_ptr_dtor(&pfci->function_name);  \
     if (pfci->object_ptr) {               \
         zval_ptr_dtor(&pfci->object_ptr); \
     }                                     \
 }
 #else
-# define PHP_EV_FCI_ADDREF(pfci)
-# define PHP_EV_FCI_DELREF(pfci)
+# define PHP_EV_FCI_ADDREF(pfci) Z_ADDREF_P(pfci_dst->function_name)
+# define PHP_EV_FCI_DELREF(pfci) zval_ptr_dtor(&pfci->function_name)
 #endif
 
-#define PHP_EV_COPY_FCALL_INFO(pfci_dst, pfcc_dst, pfci, pfcc)                                        \
-{                                                                                                     \
-    if (ZEND_FCI_INITIALIZED(*pfci)) {                                                                \
-        pfci_dst = (zend_fcall_info *) safe_emalloc(1, sizeof(zend_fcall_info), 0);                   \
-        pfcc_dst = (zend_fcall_info_cache *) safe_emalloc(1, sizeof(zend_fcall_info_cache), 0);       \
-                                                                                                      \
-        memcpy(pfci_dst, pfci, sizeof(zend_fcall_info));                                              \
-        memcpy(pfcc_dst, pfcc, sizeof(zend_fcall_info_cache));                                        \
-                                                                                                      \
-        /* Prevent auto-destruction of the zvals within */                                            \
-        Z_ADDREF_P(pfci_dst->function_name);                                                          \
-        PHP_EV_FCI_ADDREF(pfci_dst);                                                                  \
-    } else {                                                                                          \
-        pfci_dst = NULL;                                                                              \
-        pfcc_dst = NULL;                                                                              \
-    }                                                                                                 \
+#define PHP_EV_COPY_FCALL_INFO(pfci_dst, pfcc_dst, pfci, pfcc)                                  \
+{                                                                                               \
+    if (ZEND_FCI_INITIALIZED(*pfci)) {                                                          \
+        pfci_dst = (zend_fcall_info *) safe_emalloc(1, sizeof(zend_fcall_info), 0);             \
+        pfcc_dst = (zend_fcall_info_cache *) safe_emalloc(1, sizeof(zend_fcall_info_cache), 0); \
+                                                                                                \
+        memcpy(pfci_dst, pfci, sizeof(zend_fcall_info));                                        \
+        memcpy(pfcc_dst, pfcc, sizeof(zend_fcall_info_cache));                                  \
+                                                                                                \
+        PHP_EV_FCI_ADDREF(pfci_dst);                                                            \
+    } else {                                                                                    \
+        pfci_dst = NULL;                                                                        \
+        pfcc_dst = NULL;                                                                        \
+    }                                                                                           \
 }
 
 #define PHP_EV_FREE_FCALL_INFO(pfci, pfcc)       \
@@ -137,7 +137,6 @@
         efree(pfcc);                             \
                                                  \
         if (ZEND_FCI_INITIALIZED(*pfci)) {       \
-            zval_ptr_dtor(&pfci->function_name); \
             PHP_EV_FCI_DELREF(pfci);             \
         }                                        \
         efree(pfci);                             \
@@ -146,6 +145,8 @@
 
 #define PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj) (obj ? (php_ev_loop *) obj->ptr : NULL)
 #define PHP_EV_WATCHER_FETCH_FROM_OBJECT(o)       ((ev_watcher *) o->ptr)
+#define PHP_EV_WATCHER_FETCH_FROM_THIS()          \
+	(PHP_EV_WATCHER_FETCH_FROM_OBJECT(((php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC))))
 
 #define PHP_EV_LOOP_FETCH_FROM_OBJECT(obj) (obj ? PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->loop : NULL)
 #define PHP_EV_LOOP_FETCH_FROM_THIS                                                             \

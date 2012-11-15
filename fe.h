@@ -48,11 +48,14 @@ PHP_METHOD(EvWatcher, stop);
 PHP_METHOD(EvWatcher, clear);
 PHP_METHOD(EvWatcher, invoke);
 PHP_METHOD(EvWatcher, feed);
-PHP_METHOD(EvWatcher, getLoop);
+PHP_METHOD(EvWatcher, get_loop);
+PHP_METHOD(EvWatcher, keepalive);
+PHP_METHOD(EvWatcher, set_callback);
 /* }}} */
 
 /* {{{ EvIo */
 PHP_METHOD(EvIo, __construct);
+PHP_METHOD(EvIo, set);
 /* }}} */
 
 #endif /* PHP_EV_FE_H */

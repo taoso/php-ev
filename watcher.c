@@ -23,25 +23,6 @@
 /* Defined in ev.c */
 extern zend_class_entry *ev_loop_class_entry_ptr;
 
-#if 0
-inline php_ev_object *php_ev_watcher_loop_obj(const ev_watcher *w TSRMLS_DC)
-{
-	if (w->loop) {
-		/* ????????? */
-		return (php_ev_object *) zend_object_store_get_object(w->loop TSRMLS_CC);
-	}
-
-	return NULL;
-}
-
-inline struct ev_loop *php_ev_watcher_loop_ptr(const ev_watcher *w TSRMLS_DC)
-{
-	php_ev_object *o_loop = php_ev_watcher_loop_obj(w TSRMLS_CC);
-
-	return PHP_EV_LOOP_FETCH_FROM_OBJECT(o_loop);
-}
-#endif
-
 /* {{{ php_ev_set_watcher_priority() */
 inline void php_ev_set_watcher_priority(ev_watcher *watcher, long priority TSRMLS_DC)
 {
@@ -127,9 +108,10 @@ void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *loop, const zend_
 		Z_ADDREF_P(data);
 	}
 
-	php_ev_watcher_self(w) = self;
-	php_ev_watcher_data(w) = data;
-	php_ev_watcher_loop(w) = loop;
+	php_ev_watcher_self(w)  = self;
+	php_ev_watcher_data(w)  = data;
+	php_ev_watcher_loop(w)  = loop;
+	php_ev_watcher_flags(w) = PHP_EV_WATCHER_FLAG_KEEP_ALIVE;
 
 	PHP_EV_COPY_FCALL_INFO(php_ev_watcher_fci(w), php_ev_watcher_fcc(w), pfci, pfcc);
 
@@ -361,15 +343,15 @@ PHP_METHOD(EvWatcher, feed)
 }
 /* }}} */
 
-/* {{{ proto EvLoop EvWatcher::getLoop(void) */
-PHP_METHOD(EvWatcher, getLoop)
+/* {{{ proto EvLoop EvWatcher::get_loop(void) */
+PHP_METHOD(EvWatcher, get_loop)
 {
 	/*
 	 * RETURNING REFERENCES - 
 	 * Sara Goleman, ... p.71
 	 */
 
-	php_ev_object *o_self, *o_loop;
+	php_ev_object *o_self;
 	php_ev_loop *loop;
 	ev_watcher *w;
 
@@ -389,6 +371,7 @@ PHP_METHOD(EvWatcher, getLoop)
 	RETVAL_ZVAL(zloop, 1, 0);
 
 #if 0
+	php_ev_object *o_loop;
 	Z_TYPE_P(return_value) = IS_OBJECT;
 	object_init_ex(return_value, ev_loop_class_entry_ptr);
 	Z_SET_REFCOUNT_P(return_value, 1);
@@ -403,7 +386,6 @@ PHP_METHOD(EvWatcher, getLoop)
 
 	if (loop->fci) {
 		if (ZEND_FCI_INITIALIZED(*loop->fci)) {
-			Z_ADDREF_P(loop->fci);
 			PHP_EV_FCI_ADDREF(loop->fci);
 		}
 	}
@@ -429,6 +411,51 @@ PHP_METHOD(EvWatcher, getLoop)
 	RETVAL_ZVAL(loop, 1, 0);
 #endif /* }}} */
 
+}
+/* }}} */
+
+/* {{{ proto int EvWatcher::keepalive(int value = 1) */
+PHP_METHOD(EvWatcher, keepalive)
+{
+	ev_watcher    *w;
+	long           n_value = 1;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l",
+				&n_value) == FAILURE) {
+		return;
+	}
+
+	w = PHP_EV_WATCHER_FETCH_FROM_THIS();
+
+	/* Returning previous state */
+	RETVAL_LONG((w->e_flags & PHP_EV_WATCHER_FLAG_KEEP_ALIVE));
+	n_value = n_value ? PHP_EV_WATCHER_FLAG_KEEP_ALIVE : 0;
+
+	/* Update watcher flags, if keepalive flag changed */
+	if ((n_value ^ w->e_flags) & PHP_EV_WATCHER_FLAG_KEEP_ALIVE) {
+		w->e_flags = (w->e_flags & ~PHP_EV_WATCHER_FLAG_KEEP_ALIVE) | n_value;
+		PHP_EV_WATCHER_REF(w);
+		PHP_EV_WATCHER_UNREF(w);
+	}
+}
+/* }}} */
+
+/* {{{ proto void EvWatcher::set_callback(callable callback) */
+PHP_METHOD(EvWatcher, set_callback)
+{
+	ev_watcher            *w;
+	zend_fcall_info        fci;
+	zend_fcall_info_cache  fcc;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f",
+				&fci, &fcc) == FAILURE) {
+		return;
+	}
+
+	w = PHP_EV_WATCHER_FETCH_FROM_THIS();
+
+	PHP_EV_FREE_FCALL_INFO(w->fci, w->fcc);
+	PHP_EV_COPY_FCALL_INFO(w->fci, w->fcc, &fci, &fcc);
 }
 /* }}} */
 

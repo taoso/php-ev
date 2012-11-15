@@ -21,12 +21,15 @@
 
 struct ev_watcher;
 
-/* Represents Ev* class object. Extends zend_object */
+/* php_ev_object represents Ev* class object. Extends zend_object */
+
 typedef struct php_ev_object {
 	zend_object  zo;
 	HashTable   *prop_handler;
 	void        *ptr; /* Pointer to ev_watcher or php_ev_loop */
 } php_ev_object;
+
+/* php_ev_loop pointer is stored in php_ev_object.ptr struct member */
 
 typedef struct php_ev_loop {
 	struct ev_loop        *loop;
@@ -39,11 +42,13 @@ typedef struct php_ev_loop {
 } php_ev_loop;
 
 /* Property handlers */
+
 typedef int (*php_ev_read_t)(php_ev_object  *obj, zval **retval TSRMLS_DC);
 typedef int (*php_ev_write_t)(php_ev_object *obj, zval *newval  TSRMLS_DC);
 
 /* Property of an Ev* class */
-typedef struct {
+
+typedef struct php_ev_property_entry {
 	const char     *name;
 	size_t          name_length;
 	php_ev_read_t   read_func;

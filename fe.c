@@ -63,6 +63,13 @@ ZEND_END_ARG_INFO();
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_feed, 0, 0, 1)
 	ZEND_ARG_INFO(0, revents)
 ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_keepalive, 0, 0, 0)
+	ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_set_callback, 0, 0, 1)
+	ZEND_ARG_INFO(0, callback)
+ZEND_END_ARG_INFO();
+
 /* EvWatcher }}} */
 
 /* {{{ EvIo */
@@ -73,6 +80,10 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io, 0, 0, 3)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io_set, 0, 0, 2)
+	ZEND_ARG_INFO(0, fd)
+	ZEND_ARG_INFO(0, events)
 ZEND_END_ARG_INFO();
 /* EvIo }}} */
 /* ARGINFO }}} */
@@ -116,12 +127,14 @@ const zend_function_entry ev_loop_class_entry_functions[] = {
 const zend_function_entry ev_watcher_class_entry_functions[] = {
 	PHP_ABSTRACT_ME(EvWatcher, __construct, NULL)
 
-	PHP_ME(EvWatcher, start,   arginfo_ev__watcher_void,  ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, stop,    arginfo_ev__watcher_void,  ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, clear,   arginfo_ev__watcher_void,  ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, invoke,  arginfo_ev_watcher_invoke, ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, feed,    arginfo_ev_watcher_feed,   ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, getLoop, arginfo_ev__watcher_void,  ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, start,        arginfo_ev__watcher_void,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, stop,         arginfo_ev__watcher_void,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, clear,        arginfo_ev__watcher_void,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, invoke,       arginfo_ev_watcher_invoke,       ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, feed,         arginfo_ev_watcher_feed,         ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, get_loop,     arginfo_ev__watcher_void,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, keepalive,    arginfo_ev_watcher_keepalive,    ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, set_callback, arginfo_ev_watcher_set_callback, ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };
@@ -129,7 +142,8 @@ const zend_function_entry ev_watcher_class_entry_functions[] = {
 
 /* {{{ ev_io_class_entry_functions */
 const zend_function_entry ev_io_class_entry_functions[] = {
-	PHP_ME(EvIo, __construct, arginfo_ev_io, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(EvIo, __construct, arginfo_ev_io,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvIo, set,         arginfo_ev_io_set, ZEND_ACC_PUBLIC)
 	{ NULL, NULL, NULL }
 };
 /* }}} */

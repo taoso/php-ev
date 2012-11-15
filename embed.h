@@ -53,7 +53,7 @@
 
 /* Override `data` member of the watcher structs.
  * See types.h and libev/ev.h */
-#define EV_COMMON                                                         \
+#define EV_COMMON                                                                    \
     zval                        *self;      /* this struct */                        \
     zval                        *data;      /* custom var attached by user */        \
     php_ev_loop                 *loop;                                               \
