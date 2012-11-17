@@ -28,5 +28,5 @@ Makefile*
 tests/*
 !tests/*.phpt
 
-config*
+config.*
 !config.[m4,w32]
