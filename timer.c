@@ -88,8 +88,8 @@ PHP_METHOD(EvTimer, again)
 
 	timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
-	/*PHP_EV_WATCHER_RESET(ev_timer, timer_watcher, (timer_watcher, after, repeat));*/
 	PHP_EV_CHECK_REPEAT(timer_watcher->repeat);
+
 	ev_timer_again(php_ev_watcher_loop_ptr(timer_watcher), timer_watcher);
 	PHP_EV_WATCHER_UNREF(timer_watcher); 
 }

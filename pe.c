@@ -229,6 +229,59 @@ static int ev_io_prop_events_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 
 /* }}} */
 
+/* {{{ EvTimer property handlers */
+
+/* {{{ ev_timer_prop_repeat_read */
+static int ev_timer_prop_repeat_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_timer *timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_DOUBLE(*retval, timer_watcher->repeat);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_timer_prop_repeat_write */
+static int ev_timer_prop_repeat_write(php_ev_object *obj, zval *value TSRMLS_DC)
+{
+	ev_timer *timer_watcher;
+	double    repeat;
+
+	timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	PHP_EV_ASSERT(obj->ptr);
+
+	repeat = Z_DVAL_P(value);
+
+	PHP_EV_CHECK_REPEAT_RET(repeat, FAILURE);
+
+	timer_watcher->repeat = (ev_tstamp) repeat;
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_timer_prop_remaining_read */
+static int ev_timer_prop_remaining_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_timer *timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_DOUBLE(*retval, ev_timer_remaining(
+				php_ev_watcher_loop_ptr(timer_watcher), timer_watcher));
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* }}} */
+
 
 /* {{{ ev_loop_property_entries[] */
 const php_ev_property_entry ev_loop_property_entries[] = {
@@ -290,12 +343,16 @@ const zend_property_info ev_io_property_entry_info[] = {
 
 /* {{{ ev_timer_property_entries[] */
 const php_ev_property_entry ev_timer_property_entries[] = {
+	{"repeat",    sizeof("repeat")    - 1, ev_timer_prop_repeat_read,    ev_timer_prop_repeat_write},
+	{"remaining", sizeof("remaining") - 1, ev_timer_prop_remaining_read, NULL},
     {NULL, 0, NULL, NULL}
 };
 /* }}} */
 
 /* {{{ ev_timer_property_entry_info[] */
 const zend_property_info ev_timer_property_entry_info[] = {
+	{ZEND_ACC_PUBLIC, "repeat",    sizeof("repeat")    - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "remaining", sizeof("remaining") - 1, -1, 0, NULL, 0, NULL},
 	{0, NULL, 0, -1, 0, NULL, 0, NULL},
 };
 /* }}} */
