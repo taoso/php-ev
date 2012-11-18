@@ -357,6 +357,18 @@ const zend_property_info ev_timer_property_entry_info[] = {
 };
 /* }}} */
 
+/* {{{ ev_periodic_property_entries[] */
+const php_ev_property_entry ev_periodic_property_entries[] = {
+    {NULL, 0, NULL, NULL}
+};
+/* }}} */
+
+/* {{{ ev_periodic_property_entry_info[] */
+const zend_property_info ev_periodic_property_entry_info[] = {
+	{0, NULL, 0, -1, 0, NULL, 0, NULL},
+};
+/* }}} */
+
 /*
  * Local variables:
  * tab-width: 4

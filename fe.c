@@ -115,6 +115,22 @@ ZEND_BEGIN_ARG_INFO(arginfo_ev__timer_void, 0)
 ZEND_END_ARG_INFO();
 /* }}} */
 
+/* {{{ EvPeriodic */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic, 0, 0, 4)
+	ZEND_ARG_INFO(0, offset)
+	ZEND_ARG_INFO(0, interval)
+	ZEND_ARG_INFO(0, loop)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic_set, 0, 0, 2)
+	ZEND_ARG_INFO(0, offset)
+	ZEND_ARG_INFO(0, interval)
+ZEND_END_ARG_INFO();
+/* }}} */
+
 /* ARGINFO }}} */
 
 
@@ -182,6 +198,14 @@ const zend_function_entry ev_timer_class_entry_functions[] = {
 	PHP_ME(EvTimer, __construct, arginfo_ev_timer,       ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvTimer, set,         arginfo_ev_timer_set,   ZEND_ACC_PUBLIC)
 	PHP_ME(EvTimer, again,       arginfo_ev__timer_void, ZEND_ACC_PUBLIC)
+	{ NULL, NULL, NULL }
+};
+/* }}} */
+
+/* {{{ ev_periodic_class_entry_functions */
+const zend_function_entry ev_periodic_class_entry_functions[] = {
+	PHP_ME(EvPeriodic, __construct, arginfo_ev_periodic,       ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvPeriodic, set,         arginfo_ev_periodic_set,   ZEND_ACC_PUBLIC)
 	{ NULL, NULL, NULL }
 };
 /* }}} */

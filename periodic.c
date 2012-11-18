@@ -17,15 +17,15 @@
 */
 #include "watcher.h"
 
-/* {{{ proto EvTimer::__construct(double after, double repeat, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
-PHP_METHOD(EvTimer, __construct)
+/* {{{ proto EvPeriodic::__construct(double offset, double interval, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvPeriodic, __construct)
 {
-	double         after;
-	double         repeat;
+	double         offset;
+	double         interval;
 	zval          *self;
 	php_ev_object *o_self;
 	php_ev_object *o_loop;
-	ev_timer      *timer_watcher;
+	ev_periodic   *periodic_watcher;
 
 	zval                  *loop;
 	zval                  *data       = NULL;
@@ -34,63 +34,46 @@ PHP_METHOD(EvTimer, __construct)
 	long                   priority   = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ddOf|z!l",
-				&after, &repeat, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
+				&offset, &interval, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
 				&data, &priority) == FAILURE) {
 		return;
 	}
 
-	PHP_EV_CHECK_REPEAT(repeat);
+	PHP_EV_CHECK_REPEAT(interval);
 
-	self          = getThis();
-	o_self        = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop        = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
-	timer_watcher = (ev_timer *) php_ev_new_watcher(sizeof(ev_timer), self,
+	self             = getThis();
+	o_self           = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop           = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	periodic_watcher = (ev_periodic *) php_ev_new_watcher(sizeof(ev_periodic), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	timer_watcher->type = EV_TIMER;
+	periodic_watcher->type = EV_PERIODIC;
 	
-	ev_timer_set(timer_watcher, after, repeat);
+	php_printf("ev_periodic_set(%f, %f)\n", offset, interval);
+	ev_periodic_set(periodic_watcher, offset, interval, 0);
 
-	o_self->ptr = (void *) timer_watcher;
+	o_self->ptr = (void *) periodic_watcher;
 }
 /* }}} */
 
-/* {{{ proto void EvTimer::set(double after, double repeat) */
-PHP_METHOD(EvTimer, set)
+/* {{{ proto void EvPeriodic::set(double offset, double interval) */
+PHP_METHOD(EvPeriodic, set)
 {
-	double      after;
-	double      repeat;
-	ev_timer   *timer_watcher;
+	double       offset;
+	double       interval;
+	ev_periodic *periodic_watcher;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "dd",
-				&after, &repeat) == FAILURE) {
+				&offset, &interval) == FAILURE) {
 		return;
 	}
 
-	PHP_EV_CHECK_REPEAT(repeat);
+	PHP_EV_CHECK_REPEAT(interval);
 
-	timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	periodic_watcher = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
-	PHP_EV_WATCHER_RESET(ev_timer, timer_watcher, (timer_watcher, after, repeat));
-}
-/* }}} */
-
-/* {{{ proto void EvTimer::again(void) */
-PHP_METHOD(EvTimer, again)
-{
-	ev_timer *timer_watcher;
-
-	if (zend_parse_parameters_none() == FAILURE) {
-		return;
-	}
-
-	timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_THIS();
-
-	PHP_EV_CHECK_REPEAT(timer_watcher->repeat);
-
-	ev_timer_again(php_ev_watcher_loop_ptr(timer_watcher), timer_watcher);
-	PHP_EV_WATCHER_UNREF(timer_watcher); 
+	PHP_EV_WATCHER_RESET(ev_periodic, periodic_watcher, (periodic_watcher, offset, interval, 0));
 }
 /* }}} */
 
