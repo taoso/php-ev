@@ -58,6 +58,12 @@ PHP_METHOD(EvIo, __construct);
 PHP_METHOD(EvIo, set);
 /* }}} */
 
+/* {{{ EvTimer */
+PHP_METHOD(EvTimer, __construct);
+PHP_METHOD(EvTimer, set);
+PHP_METHOD(EvTimer, again);
+/* }}} */
+
 #endif /* PHP_EV_FE_H */
 
 /* 

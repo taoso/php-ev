@@ -189,6 +189,14 @@
         REPLACE_ZVAL_VALUE(ppz, value, 1);                              \
     } while (0)
 
+#define PHP_EV_CHECK_REPEAT(repeat)                                                  \
+{                                                                                    \
+    if (repeat < 0.) {                                                               \
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, # repeat " value must be >= 0."); \
+        return;                                                                      \
+    }                                                                                \
+}
+
 #endif /* PHP_EV_MACROS_H*/
 
 /*

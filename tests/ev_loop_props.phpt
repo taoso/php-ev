@@ -12,7 +12,7 @@ function cb($watcher, $revents) {
 $loop       = EvLoop::default_loop();
 $loop->data = "ld";
 $io_watcher = new EvIo(STDIN, EV_READ, $loop, "cb", "data", 2);
-var_dump($io_watcher->getLoop());
+var_dump($io_watcher->get_loop());
 var_dump($io_watcher->priority);
 var_dump($io_watcher->data);
 

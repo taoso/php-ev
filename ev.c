@@ -26,11 +26,13 @@ static PHP_GINIT_FUNCTION(ev);
 zend_class_entry *ev_loop_class_entry_ptr;
 zend_class_entry *ev_watcher_class_entry_ptr;
 zend_class_entry *ev_io_class_entry_ptr;
+zend_class_entry *ev_timer_class_entry_ptr;
 
 static HashTable classes;
 static HashTable php_ev_properties;
 static HashTable php_ev_watcher_properties;
 static HashTable php_ev_io_properties;
+static HashTable php_ev_timer_properties;
 
 static zend_object_handlers ev_object_handlers;
 
@@ -233,17 +235,21 @@ static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS
 	while (zend_hash_get_current_data_ex(props, (void **) &entry, &pos) == SUCCESS) {
 	    zval member;
 	    zval *value;
+
 	    INIT_ZVAL(member);
 	    ZVAL_STRINGL(&member, entry->name, entry->name_len, 0);
+
 	    value = php_ev_read_property(object, &member, BP_VAR_IS, 0 TSRMLS_CC);
 	    if (value != EG(uninitialized_zval_ptr)) {
 	        Z_ADDREF_P(value);
 	        zend_hash_add(retval, entry->name, entry->name_len + 1, &value, sizeof(zval *) , NULL);
 	    }       
+
 	    zend_hash_move_forward_ex(props, &pos);
 	}               
 
 	*is_temp = 1;   
+
 	return retval;
 }               
 #endif    
@@ -345,6 +351,22 @@ static void php_ev_io_free_storage(void *object TSRMLS_DC)
 }
 /* }}} */
 
+/* {{{ php_ev_timer_free_storage() */
+static void php_ev_timer_free_storage(void *object TSRMLS_DC)
+{
+	php_ev_object *obj_ptr = (php_ev_object *) object;
+
+	PHP_EV_ASSERT(obj_ptr->ptr);
+	ev_timer *ptr = (ev_timer *) obj_ptr->ptr;
+
+	/* Free base class members */
+	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
+
+	/* Free common Ev object members and the object itself */
+	php_ev_object_free_storage(object TSRMLS_CC);
+}
+/* }}} */
+
 /* {{{ php_ev_register_object 
  * Is called AFTER php_ev_object_new() */
 zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *intern TSRMLS_DC)
@@ -358,6 +380,9 @@ zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *in
 	} else if (instanceof_function(ce, ev_io_class_entry_ptr TSRMLS_CC)) {
 		/* EvIo */
 	 	func_free_storage = php_ev_io_free_storage;
+	} else if (instanceof_function(ce, ev_timer_class_entry_ptr TSRMLS_CC)) {
+		/* EvTimer */
+	 	func_free_storage = php_ev_timer_free_storage;
 	} else {
 	 	func_free_storage = php_ev_object_free_storage;
 	}
@@ -383,12 +408,17 @@ php_ev_object *php_ev_object_new(zend_class_entry *ce TSRMLS_DC)
 	intern->ptr          = NULL;
 	intern->prop_handler = NULL;
 
+#if 0
 	while (ce_parent) {
 	    if (ce_parent == ev_watcher_class_entry_ptr
 	    		|| ce_parent == ev_loop_class_entry_ptr) {
 	    	break;
 	    }
 	    ce_parent = ce_parent->parent;
+	}
+#endif
+	while (ce_parent->type != ZEND_INTERNAL_CLASS && ce_parent->parent != NULL) {
+		ce_parent = ce_parent->parent;
 	}
 	zend_hash_find(&classes, ce_parent->name, ce_parent->name_length + 1,
 	        (void **) &intern->prop_handler);
@@ -440,8 +470,19 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	ce = ev_io_class_entry_ptr;
 	zend_hash_init(&php_ev_io_properties, 0, NULL, NULL, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_io_properties, ev_io_property_entries);
+	zend_hash_merge(&php_ev_io_properties, &php_ev_watcher_properties, NULL, NULL, sizeof(php_ev_prop_handler), 0);
 	PHP_EV_DECL_CLASS_PROPERTIES(ce, ev_io_property_entry_info);
 	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_io_properties, sizeof(php_ev_io_properties), NULL);
+	/* }}} */
+
+	/* {{{ EvTimer */
+	PHP_EV_REGISTER_CLASS_ENTRY_EX("EvTimer", ev_timer_class_entry_ptr, ev_timer_class_entry_functions, ev_watcher_class_entry_ptr);
+	ce = ev_timer_class_entry_ptr;
+	zend_hash_init(&php_ev_timer_properties, 0, NULL, NULL, 1);
+	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_timer_properties, ev_timer_property_entries);
+	zend_hash_merge(&php_ev_timer_properties, &php_ev_watcher_properties, NULL, NULL, sizeof(php_ev_prop_handler), 0);
+	PHP_EV_DECL_CLASS_PROPERTIES(ce, ev_timer_property_entry_info);
+	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_timer_properties, sizeof(php_ev_timer_properties), NULL);
 	/* }}} */
 }
 /* }}} */
@@ -556,6 +597,7 @@ PHP_MINFO_FUNCTION(ev)
 
 #include "loop.c" 
 #include "io.c"
+#include "timer.c"
 
 #endif /* HAVE_EV */
 

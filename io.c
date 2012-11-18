@@ -17,7 +17,7 @@
 */
 #include "watcher.h"
 
-/* {{{ proto EvIo::__construct(resource fd, int events, EvLoop loop, callback callback[, mixed data = NULL[, int priority = 0]]) */
+/* {{{ proto EvIo::__construct(resource fd, int events, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvIo, __construct)
 {
 	zval                  *self;

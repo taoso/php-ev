@@ -60,12 +60,15 @@ ZEND_END_ARG_INFO();
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_invoke, 0, 0, 1)
 	ZEND_ARG_INFO(0, revents)
 ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_feed, 0, 0, 1)
 	ZEND_ARG_INFO(0, revents)
 ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_keepalive, 0, 0, 0)
 	ZEND_ARG_INFO(0, value)
 ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_set_callback, 0, 0, 1)
 	ZEND_ARG_INFO(0, callback)
 ZEND_END_ARG_INFO();
@@ -73,7 +76,7 @@ ZEND_END_ARG_INFO();
 /* EvWatcher }}} */
 
 /* {{{ EvIo */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io, 0, 0, 4)
 	ZEND_ARG_INFO(0, fd)
 	ZEND_ARG_INFO(0, events)
 	ZEND_ARG_INFO(0, loop)
@@ -81,11 +84,37 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io, 0, 0, 3)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
 ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io_set, 0, 0, 2)
 	ZEND_ARG_INFO(0, fd)
 	ZEND_ARG_INFO(0, events)
 ZEND_END_ARG_INFO();
 /* EvIo }}} */
+
+/* {{{ EvTimer */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_timer, 0, 0, 4)
+	ZEND_ARG_INFO(0, after)
+	ZEND_ARG_INFO(0, repeat)
+	ZEND_ARG_INFO(0, loop)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_timer_set, 0, 0, 2)
+	ZEND_ARG_INFO(0, after)
+	ZEND_ARG_INFO(0, repeat)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_timer_again, 0, 0, 0)
+	ZEND_ARG_INFO(0, after)
+	ZEND_ARG_INFO(0, repeat)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO(arginfo_ev__timer_void, 0)
+ZEND_END_ARG_INFO();
+/* }}} */
+
 /* ARGINFO }}} */
 
 
@@ -144,6 +173,15 @@ const zend_function_entry ev_watcher_class_entry_functions[] = {
 const zend_function_entry ev_io_class_entry_functions[] = {
 	PHP_ME(EvIo, __construct, arginfo_ev_io,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvIo, set,         arginfo_ev_io_set, ZEND_ACC_PUBLIC)
+	{ NULL, NULL, NULL }
+};
+/* }}} */
+
+/* {{{ ev_timer_class_entry_functions */
+const zend_function_entry ev_timer_class_entry_functions[] = {
+	PHP_ME(EvTimer, __construct, arginfo_ev_timer,       ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvTimer, set,         arginfo_ev_timer_set,   ZEND_ACC_PUBLIC)
+	PHP_ME(EvTimer, again,       arginfo_ev__timer_void, ZEND_ACC_PUBLIC)
 	{ NULL, NULL, NULL }
 };
 /* }}} */

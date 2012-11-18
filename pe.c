@@ -243,12 +243,12 @@ const php_ev_property_entry ev_loop_property_entries[] = {
 
 /* {{{ ev_loop_property_entry_info[] */
 const zend_property_info ev_loop_property_entry_info[] = {
-	{ZEND_ACC_PUBLIC, "data",            sizeof("data") - 1,            -1, 0, NULL, 0, NULL},
-	{ZEND_ACC_PUBLIC, "backend",         sizeof("backend") - 1,         -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "data",            sizeof("data")            - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "backend",         sizeof("backend")         - 1, -1, 0, NULL, 0, NULL},
 	{ZEND_ACC_PUBLIC, "is_default_loop", sizeof("is_default_loop") - 1, -1, 0, NULL, 0, NULL},
-	{ZEND_ACC_PUBLIC, "iteration",       sizeof("iteration") - 1,       -1, 0, NULL, 0, NULL},
-	{ZEND_ACC_PUBLIC, "pending",         sizeof("pending") - 1,         -1, 0, NULL, 0, NULL},
-	{0,                NULL,             0,                             -1, 0, NULL, 0, NULL}
+	{ZEND_ACC_PUBLIC, "iteration",       sizeof("iteration")       - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "pending",         sizeof("pending")         - 1, -1, 0, NULL, 0, NULL},
+	{0, NULL, 0, -1, 0, NULL, 0, NULL}
 };
 /* }}} */
 
@@ -284,6 +284,18 @@ const php_ev_property_entry ev_io_property_entries[] = {
 const zend_property_info ev_io_property_entry_info[] = {
 	{ZEND_ACC_PUBLIC, "fd",     sizeof("fd")     - 1, -1, 0, NULL, 0, NULL},
 	{ZEND_ACC_PUBLIC, "events", sizeof("events") - 1, -1, 0, NULL, 0, NULL},
+	{0, NULL, 0, -1, 0, NULL, 0, NULL},
+};
+/* }}} */
+
+/* {{{ ev_timer_property_entries[] */
+const php_ev_property_entry ev_timer_property_entries[] = {
+    {NULL, 0, NULL, NULL}
+};
+/* }}} */
+
+/* {{{ ev_timer_property_entry_info[] */
+const zend_property_info ev_timer_property_entry_info[] = {
 	{0, NULL, 0, -1, 0, NULL, 0, NULL},
 };
 /* }}} */
