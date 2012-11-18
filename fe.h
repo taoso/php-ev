@@ -68,6 +68,8 @@ PHP_METHOD(EvTimer, again);
 /* {{{ EvPeriodic */
 PHP_METHOD(EvPeriodic, __construct);
 PHP_METHOD(EvPeriodic, set);
+PHP_METHOD(EvPeriodic, again);
+PHP_METHOD(EvPeriodic, at);
 /* }}} */
 #endif
 

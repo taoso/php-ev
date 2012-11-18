@@ -77,6 +77,33 @@ PHP_METHOD(EvPeriodic, set)
 }
 /* }}} */
 
+/* {{{ proto void EvPeriodic::again(void) */
+PHP_METHOD(EvPeriodic, again)
+{
+	ev_periodic *periodic_watcher;
+
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
+	periodic_watcher = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+
+	ev_periodic_again(php_ev_watcher_loop_ptr(periodic_watcher), periodic_watcher);
+	PHP_EV_WATCHER_UNREF(periodic_watcher); 
+}
+/* }}} */
+
+/* {{{ proto double EvPeriodic::at(void) */
+PHP_METHOD(EvPeriodic, at)
+{
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
+	RETURN_DOUBLE(ev_periodic_at((ev_periodic *)PHP_EV_WATCHER_FETCH_FROM_THIS()));
+}
+/* }}} */
+
 /*
  * Local variables:
  * tab-width: 4

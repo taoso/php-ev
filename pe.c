@@ -285,6 +285,65 @@ static int ev_timer_prop_remaining_read(php_ev_object *obj, zval **retval TSRMLS
 #if EV_PERIODIC_ENABLE
 /* {{{ EvPeriodic property handlers */
 
+/* {{{ ev_periodic_prop_offset_read */
+static int ev_periodic_prop_offset_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_DOUBLE(*retval, w->offset);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_periodic_prop_offset_write */
+static int ev_periodic_prop_offset_write(php_ev_object *obj, zval *value TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	w->offset = (ev_tstamp) Z_DVAL_P(value);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_periodic_prop_interval_read */
+static int ev_periodic_prop_interval_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_DOUBLE(*retval, w->interval);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_periodic_prop_interval_write*/
+static int ev_periodic_prop_interval_write(php_ev_object *obj, zval *value TSRMLS_DC)
+{
+	double interval;
+
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+	interval       = (ev_tstamp) Z_DVAL_P(value);
+
+	PHP_EV_CHECK_REPEAT_RET(interval, FAILURE);
+
+	w->interval = interval;
+
+	return SUCCESS;
+}
+/* }}} */
+
 /* }}} */
 #endif
 
@@ -365,12 +424,16 @@ const zend_property_info ev_timer_property_entry_info[] = {
 #if EV_PERIODIC_ENABLE
 /* {{{ ev_periodic_property_entries[] */
 const php_ev_property_entry ev_periodic_property_entries[] = {
+	{"offset",   sizeof("offset")   - 1, ev_periodic_prop_offset_read,   ev_periodic_prop_offset_write},
+	{"interval", sizeof("interval") - 1, ev_periodic_prop_interval_read, ev_periodic_prop_interval_write},
     {NULL, 0, NULL, NULL}
 };
 /* }}} */
 
 /* {{{ ev_periodic_property_entry_info[] */
 const zend_property_info ev_periodic_property_entry_info[] = {
+	{ZEND_ACC_PUBLIC, "offset",   sizeof("offset")   - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "interval", sizeof("interval") - 1, -1, 0, NULL, 0, NULL},
 	{0, NULL, 0, -1, 0, NULL, 0, NULL},
 };
 /* }}} */
