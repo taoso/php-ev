@@ -27,14 +27,18 @@ zend_class_entry *ev_loop_class_entry_ptr;
 zend_class_entry *ev_watcher_class_entry_ptr;
 zend_class_entry *ev_io_class_entry_ptr;
 zend_class_entry *ev_timer_class_entry_ptr;
+#if EV_PERIODIC_ENABLE
 zend_class_entry *ev_periodic_class_entry_ptr;
+#endif
 
 static HashTable classes;
 static HashTable php_ev_properties;
 static HashTable php_ev_watcher_properties;
 static HashTable php_ev_io_properties;
 static HashTable php_ev_timer_properties;
+#if EV_PERIODIC_ENABLE
 static HashTable php_ev_periodic_properties;
+#endif
 
 static zend_object_handlers ev_object_handlers;
 
@@ -369,6 +373,7 @@ static void php_ev_timer_free_storage(void *object TSRMLS_DC)
 }
 /* }}} */
 
+#if EV_PERIODIC_ENABLE
 /* {{{ php_ev_periodic_free_storage() */
 static void php_ev_periodic_free_storage(void *object TSRMLS_DC)
 {
@@ -384,6 +389,7 @@ static void php_ev_periodic_free_storage(void *object TSRMLS_DC)
 	php_ev_object_free_storage(object TSRMLS_CC);
 }
 /* }}} */
+#endif
 
 /* {{{ php_ev_register_object 
  * Is called AFTER php_ev_object_new() */
@@ -401,9 +407,11 @@ zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *in
 	} else if (instanceof_function(ce, ev_timer_class_entry_ptr TSRMLS_CC)) {
 		/* EvTimer */
 	 	func_free_storage = php_ev_timer_free_storage;
+#if EV_PERIODIC_ENABLE
 	} else if (instanceof_function(ce, ev_periodic_class_entry_ptr TSRMLS_CC)) {
 		/* EvPeriodic */
 	 	func_free_storage = php_ev_periodic_free_storage;
+#endif
 	} else {
 	 	func_free_storage = php_ev_object_free_storage;
 	}
@@ -506,6 +514,7 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_timer_properties, sizeof(php_ev_timer_properties), NULL);
 	/* }}} */
 
+#if EV_PERIODIC_ENABLE
 	/* {{{ EvPeriodic */
 	PHP_EV_REGISTER_CLASS_ENTRY_EX("EvPeriodic", ev_periodic_class_entry_ptr, ev_periodic_class_entry_functions, ev_watcher_class_entry_ptr);
 	ce = ev_periodic_class_entry_ptr;
@@ -515,6 +524,8 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	PHP_EV_DECL_CLASS_PROPERTIES(ce, ev_periodic_property_entry_info);
 	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_periodic_properties, sizeof(php_ev_periodic_properties), NULL);
 	/* }}} */
+#endif
+
 }
 /* }}} */
 
@@ -583,7 +594,9 @@ PHP_MSHUTDOWN_FUNCTION(ev)
 	zend_hash_destroy(&php_ev_watcher_properties);
 	zend_hash_destroy(&php_ev_io_properties);
 	zend_hash_destroy(&php_ev_timer_properties);
+#if EV_PERIODIC_ENABLE
 	zend_hash_destroy(&php_ev_periodic_properties);
+#endif
 	zend_hash_destroy(&classes);
 
 	return SUCCESS;
@@ -631,7 +644,9 @@ PHP_MINFO_FUNCTION(ev)
 #include "loop.c" 
 #include "io.c"
 #include "timer.c"
-#include "periodic.c"
+#if EV_PERIODIC_ENABLE
+# include "periodic.c"
+#endif
 
 #endif /* HAVE_EV */
 

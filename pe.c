@@ -282,6 +282,11 @@ static int ev_timer_prop_remaining_read(php_ev_object *obj, zval **retval TSRMLS
 
 /* }}} */
 
+#if EV_PERIODIC_ENABLE
+/* {{{ EvPeriodic property handlers */
+
+/* }}} */
+#endif
 
 /* {{{ ev_loop_property_entries[] */
 const php_ev_property_entry ev_loop_property_entries[] = {
@@ -357,6 +362,7 @@ const zend_property_info ev_timer_property_entry_info[] = {
 };
 /* }}} */
 
+#if EV_PERIODIC_ENABLE
 /* {{{ ev_periodic_property_entries[] */
 const php_ev_property_entry ev_periodic_property_entries[] = {
     {NULL, 0, NULL, NULL}
@@ -368,6 +374,7 @@ const zend_property_info ev_periodic_property_entry_info[] = {
 	{0, NULL, 0, -1, 0, NULL, 0, NULL},
 };
 /* }}} */
+#endif
 
 /*
  * Local variables:

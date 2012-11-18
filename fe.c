@@ -115,6 +115,7 @@ ZEND_BEGIN_ARG_INFO(arginfo_ev__timer_void, 0)
 ZEND_END_ARG_INFO();
 /* }}} */
 
+#if EV_PERIODIC_ENABLE
 /* {{{ EvPeriodic */
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic, 0, 0, 4)
 	ZEND_ARG_INFO(0, offset)
@@ -130,6 +131,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic_set, 0, 0, 2)
 	ZEND_ARG_INFO(0, interval)
 ZEND_END_ARG_INFO();
 /* }}} */
+#endif
 
 /* ARGINFO }}} */
 
@@ -202,6 +204,7 @@ const zend_function_entry ev_timer_class_entry_functions[] = {
 };
 /* }}} */
 
+#if EV_PERIODIC_ENABLE
 /* {{{ ev_periodic_class_entry_functions */
 const zend_function_entry ev_periodic_class_entry_functions[] = {
 	PHP_ME(EvPeriodic, __construct, arginfo_ev_periodic,       ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
@@ -209,6 +212,7 @@ const zend_function_entry ev_periodic_class_entry_functions[] = {
 	{ NULL, NULL, NULL }
 };
 /* }}} */
+#endif
 
 /*
  * Local variables:

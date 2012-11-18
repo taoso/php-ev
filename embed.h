@@ -21,21 +21,14 @@
 #include "common.h"
 #include "types.h"
 
-/* EV_STANDALONE isn't needed, since we use libev/libev.m4
- * #define EV_STANDALONE 1 */
-#undef EV_USE_POLL
-/* We compile multiple source files. So we don't need static API
- * #define EV_API_STATIC 1 */
-#undef EV_API_STATIC
-
-#define EV_COMPAT3      0
-#define EV_FEATURES     8
 #define EV_MULTIPLICITY 1
-#define EV_USE_POLL     1
-#define EV_CHILD_ENABLE 1
-#define EV_ASYNC_ENABLE 1
+#define EV_COMPAT3      0
 #define EV_MINPRI       -2
 #define EV_MAXPRI       2
+
+#undef EV_FEATURES
+/* We compile multiple source files.So we don't need static API */
+#undef EV_API_STATIC
 
 #ifdef PHP_EV_DEBUG
 # define EV_VERIFY 2

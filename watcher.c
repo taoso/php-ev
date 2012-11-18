@@ -169,12 +169,12 @@ static void php_ev_start_watcher(ev_watcher *watcher TSRMLS_DC)
 			break;
 #endif
 #if EV_EMBED_ENABLE
-		case EV_EMBED_ENABLE:
+		case EV_EMBED:
 			PHP_EV_WATCHER_START(ev_embed, watcher);
 			break;
 #endif
 #if EV_FORK_ENABLE
-		case EV_FORK_ENABLE:
+		case EV_FORK:
 			PHP_EV_WATCHER_START(ev_fork, watcher);
 			break;
 #endif
@@ -235,12 +235,12 @@ void php_ev_stop_watcher(ev_watcher *watcher TSRMLS_DC)
 			break;
 #endif
 #if EV_EMBED_ENABLE
-		case EV_EMBED_ENABLE:
+		case EV_EMBED:
 			PHP_EV_WATCHER_STOP(ev_embed, watcher);
 			break;
 #endif
 #if EV_FORK_ENABLE
-		case EV_FORK_ENABLE:
+		case EV_FORK:
 			PHP_EV_WATCHER_STOP(ev_fork, watcher);
 			break;
 #endif

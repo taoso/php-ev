@@ -64,10 +64,12 @@ PHP_METHOD(EvTimer, set);
 PHP_METHOD(EvTimer, again);
 /* }}} */
 
+#if EV_PERIODIC_ENABLE
 /* {{{ EvPeriodic */
 PHP_METHOD(EvPeriodic, __construct);
 PHP_METHOD(EvPeriodic, set);
 /* }}} */
+#endif
 
 #endif /* PHP_EV_FE_H */
 
