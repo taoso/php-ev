@@ -130,6 +130,22 @@ ZEND_END_ARG_INFO();
 /* }}} */
 #endif
 
+#if EV_SIGNAL_ENABLE
+/* {{{ EvSignal*/
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_signal, 0, 0, 3)
+	ZEND_ARG_INFO(0, signum)
+	ZEND_ARG_INFO(0, loop)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_signal_set, 0, 0, 1)
+	ZEND_ARG_INFO(0, signum)
+ZEND_END_ARG_INFO();
+/* }}} */
+#endif
+
 /* ARGINFO }}} */
 
 
@@ -209,6 +225,17 @@ const zend_function_entry ev_periodic_class_entry_functions[] = {
 	PHP_ME(EvPeriodic, set,         arginfo_ev_periodic_set, ZEND_ACC_PUBLIC)
 	PHP_ME(EvPeriodic, again,       arginfo_ev__void,        ZEND_ACC_PUBLIC)
 	PHP_ME(EvPeriodic, at,          arginfo_ev__void,        ZEND_ACC_PUBLIC)
+
+	{ NULL, NULL, NULL }
+};
+/* }}} */
+#endif
+
+#if EV_SIGNAL_ENABLE
+/* {{{ ev_signal_class_entry_functions */
+const zend_function_entry ev_signal_class_entry_functions[] = {
+	PHP_ME(EvSignal, __construct, arginfo_ev_signal,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvSignal, set,         arginfo_ev_signal_set, ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };

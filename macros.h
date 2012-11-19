@@ -116,7 +116,6 @@
 #endif
 
 #define PHP_EV_COPY_FCALL_INFO(pfci_dst, pfcc_dst, pfci, pfcc)                                  \
-{                                                                                               \
     if (ZEND_FCI_INITIALIZED(*pfci)) {                                                          \
         pfci_dst = (zend_fcall_info *) safe_emalloc(1, sizeof(zend_fcall_info), 0);             \
         pfcc_dst = (zend_fcall_info_cache *) safe_emalloc(1, sizeof(zend_fcall_info_cache), 0); \
@@ -129,10 +128,8 @@
         pfci_dst = NULL;                                                                        \
         pfcc_dst = NULL;                                                                        \
     }                                                                                           \
-}
 
 #define PHP_EV_FREE_FCALL_INFO(pfci, pfcc)       \
-{                                                \
     if (pfci && pfcc) {                          \
         efree(pfcc);                             \
                                                  \
@@ -141,7 +138,6 @@
         }                                        \
         efree(pfci);                             \
     }                                            \
-}
 
 #define PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj) (obj ? (php_ev_loop *) obj->ptr : NULL)
 #define PHP_EV_WATCHER_FETCH_FROM_OBJECT(o)       ((ev_watcher *) o->ptr)
@@ -155,13 +151,11 @@
     EV_P = PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj) /* no ';' */
 
 #define PHP_EV_CHECK_PENDING_WATCHER(w)              \
-{                                                    \
     if (ev_is_pending(w)) {                          \
         php_error_docref(NULL TSRMLS_CC, E_ERROR,    \
                 "Failed modifying pending watcher"); \
         return;                                      \
     }                                                \
-}
 
 #define PHP_EV_EXIT_LOOP(__loop) ev_break((__loop), EVBREAK_ALL)
 
@@ -190,19 +184,23 @@
     } while (0)
 
 #define PHP_EV_CHECK_REPEAT(repeat)                                                 \
-{                                                                                   \
     if (repeat < 0.) {                                                              \
         php_error_docref(NULL TSRMLS_CC, E_ERROR, # repeat " value must be >= 0."); \
         return;                                                                     \
     }                                                                               \
-}
+
 #define PHP_EV_CHECK_REPEAT_RET(repeat, ret)                                        \
-{                                                                                   \
     if (repeat < 0.) {                                                              \
         php_error_docref(NULL TSRMLS_CC, E_ERROR, # repeat " value must be >= 0."); \
         return (ret);                                                               \
     }                                                                               \
-}
+
+#define PHP_EV_CHECK_SIGNUM(num)                                     \
+    if ((num) < 0) {                                                 \
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "invalid signum"); \
+        return;                                                      \
+    }                                                                \
+
 
 #endif /* PHP_EV_MACROS_H*/
 

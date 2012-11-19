@@ -73,6 +73,13 @@ PHP_METHOD(EvPeriodic, at);
 /* }}} */
 #endif
 
+#if EV_SIGNAL_ENABLE
+/* {{{ EvSignal */
+PHP_METHOD(EvSignal, __construct);
+PHP_METHOD(EvSignal, set);
+/* }}} */
+#endif
+
 #endif /* PHP_EV_FE_H */
 
 /* 

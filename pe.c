@@ -347,6 +347,26 @@ static int ev_periodic_prop_interval_write(php_ev_object *obj, zval *value TSRML
 /* }}} */
 #endif
 
+#if EV_SIGNAL_ENABLE
+/* {{{ EvSignal property handlers */
+
+/* {{{ ev_signal_prop_signum_read */
+static int ev_signal_prop_signum_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_signal *signal_watcher = (ev_signal *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_LONG(*retval, signal_watcher->signum);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* }}} */
+#endif
+
 /* {{{ ev_loop_property_entries[] */
 const php_ev_property_entry ev_loop_property_entries[] = {
 	{"data",            sizeof("data")            - 1, ev_loop_prop_data_read,            ev_loop_prop_data_write},
@@ -434,6 +454,22 @@ const php_ev_property_entry ev_periodic_property_entries[] = {
 const zend_property_info ev_periodic_property_entry_info[] = {
 	{ZEND_ACC_PUBLIC, "offset",   sizeof("offset")   - 1, -1, 0, NULL, 0, NULL},
 	{ZEND_ACC_PUBLIC, "interval", sizeof("interval") - 1, -1, 0, NULL, 0, NULL},
+	{0, NULL, 0, -1, 0, NULL, 0, NULL},
+};
+/* }}} */
+#endif
+
+#if EV_SIGNAL_ENABLE
+/* {{{ ev_signal_property_entries[] */
+const php_ev_property_entry ev_signal_property_entries[] = {
+	{"signum", sizeof("signum") - 1, ev_signal_prop_signum_read, NULL},
+    {NULL, 0, NULL, NULL}
+};
+/* }}} */
+
+/* {{{ ev_signal_property_entry_info[] */
+const zend_property_info ev_signal_property_entry_info[] = {
+	{ZEND_ACC_PUBLIC, "signum", sizeof("signum") - 1, -1, 0, NULL, 0, NULL},
 	{0, NULL, 0, -1, 0, NULL, 0, NULL},
 };
 /* }}} */

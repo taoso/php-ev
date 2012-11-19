@@ -77,6 +77,35 @@
         }                                                 \
     } while(0)
 
+
+#define PHP_EV_CHECK_SIGNAL_CAN_START(w)                                           \
+    do {                                                                           \
+        /* Pulled this part from EV module of Perl */                              \
+        if (signals [(w)->signum - 1].loop                                         \
+                && signals [(w)->signum - 1].loop != php_ev_watcher_loop_ptr(w)) { \
+            php_error_docref(NULL TSRMLS_CC, E_WARNING,                            \
+                    "Can't start signal watcher, signal %d already "               \
+                    "registered in another loop", w->signum);                      \
+        }                                                                          \
+    } while(0)
+
+#define PHP_EV_SIGNAL_START(w)              \
+    do {                                    \
+        PHP_EV_CHECK_SIGNAL_CAN_START(w);   \
+        PHP_EV_WATCHER_START(ev_signal, w); \
+    } while(0)
+
+#define PHP_EV_SIGNAL_RESET(w, seta)             \
+    do {                                         \
+        int active = ev_is_active(w);            \
+        if (active)                              \
+            PHP_EV_WATCHER_STOP(ev_signal, w);   \
+        ev_ ## signal ## _set seta;              \
+        if (active)                              \
+            PHP_EV_WATCHER_START(ev_signal, w);  \
+    } while(0)
+
+
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents);
 void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *loop,
 		const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC);
