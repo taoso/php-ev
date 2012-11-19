@@ -86,16 +86,13 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 }
 /* }}} */
 
-/* {{{ php_ev_new_watcher()
- * Create watcher of the specified type, initialize common watcher fields
+/* {{{ php_ev_set_watcher()
+ * Configure preallocated watcher of the specified type, initialize common watcher fields
  */
-void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *loop, const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC)
+void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *loop, const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC)
 {
-	void *w = emalloc(size);
-	memset(w, 0, size);
-
 	ev_watcher *w_prev = loop->w;
-	loop->w = (ev_watcher *) w;	
+	loop->w = w;
 
 	if (w_prev) {
 		php_ev_watcher_prev(w) = (void *) w_prev;
@@ -115,10 +112,22 @@ void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *loop, const zend_
 
 	PHP_EV_COPY_FCALL_INFO(php_ev_watcher_fci(w), php_ev_watcher_fcc(w), pfci, pfcc);
 
-	php_ev_set_watcher_priority((ev_watcher *) w, priority TSRMLS_CC);
+	php_ev_set_watcher_priority(w, priority TSRMLS_CC);
 
 	TSRMLS_SET_CTX(php_ev_watcher_thread_ctx(w));
-	
+}
+/* }}} */
+
+/* {{{ php_ev_new_watcher()
+ * Create watcher of the specified type, initialize common watcher fields
+ */
+void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *loop, const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC)
+{
+	void *w = emalloc(size);
+	memset(w, 0, size);
+
+	php_ev_set_watcher((ev_watcher *)w, size, self, loop, pfci, pfcc, data, priority TSRMLS_CC);
+
 	return w;
 }
 /* }}} */

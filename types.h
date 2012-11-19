@@ -26,7 +26,7 @@ struct ev_watcher;
 typedef struct php_ev_object {
 	zend_object  zo;
 	HashTable   *prop_handler;
-	void        *ptr; /* Pointer to ev_watcher or php_ev_loop */
+	void        *ptr; /* Pointer to ev_watcher, php_ev_loop or php_ev_periodic */
 } php_ev_object;
 
 /* php_ev_loop pointer is stored in php_ev_object.ptr struct member */
@@ -40,6 +40,19 @@ typedef struct php_ev_loop {
 	double                 timeout_collect_interval;   /* If > 0, ev_timeout_collect_interval is called internally */
 	struct ev_watcher     *w;                          /* Head of linked list                                      */
 } php_ev_loop;
+
+#if 0
+/* php_ev_periodic is special type for periodic watcher.
+ * I.e. we don't want to embed extra members into EV_COMMON
+ * Extends ev_watcher
+ */
+
+typedef struct php_ev_periodic {
+	struct ev_watcher      w;     /* Contains common watcher vars embedded         */
+	zend_fcall_info       *fci;   /* fci/fcc store specific "rescheduler" callback */
+	zend_fcall_info_cache *fcc;
+} php_ev_periodic;
+#endif
 
 /* Property handlers */
 

@@ -380,7 +380,10 @@ static void php_ev_periodic_free_storage(void *object TSRMLS_DC)
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
 	PHP_EV_ASSERT(obj_ptr->ptr);
-	ev_periodic *ptr = (ev_periodic *) obj_ptr->ptr;
+	ev_periodic *ptr              = (ev_periodic *) obj_ptr->ptr;
+	php_ev_periodic *periodic_ptr = (php_ev_periodic *) obj_ptr->ptr;
+
+	PHP_EV_FREE_FCALL_INFO(periodic_ptr->fci, periodic_ptr->fcc);
 
 	/* Free base class members */
 	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);

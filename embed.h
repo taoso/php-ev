@@ -59,6 +59,23 @@
 
 #include "libev/ev.h"
 
+
+/* 
+ * TODO: consider refactoring of embed.h and types.h.
+ * We can't declare this above #include "libev/ev.h", since we'll get
+ * `field 'periodic' has incomplete type' compilation error.
+ *
+ * php_ev_periodic is special type for periodic watcher.
+ * I.e. we don't want to embed extra members into EV_COMMON
+ * Extends ev_watcher
+ */
+
+typedef struct php_ev_periodic {
+	struct ev_periodic     periodic;     /* Contains common watcher vars embedded         */
+	zend_fcall_info       *fci;   /* fci/fcc store specific "rescheduler" callback */
+	zend_fcall_info_cache *fcc;
+} php_ev_periodic;
+
 #endif /* PHP_EV_EMBED_H */
 /*
  * Local variables:

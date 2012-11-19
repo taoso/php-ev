@@ -78,6 +78,8 @@
     } while(0)
 
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents);
+void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *loop,
+		const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC);
 void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *loop,
 		const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC);
 void php_ev_stop_watcher(ev_watcher *watcher TSRMLS_DC);
