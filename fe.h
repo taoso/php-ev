@@ -87,6 +87,13 @@ PHP_METHOD(EvChild, set);
 /* }}} */
 #endif
 
+#if EV_STAT_ENABLE
+/* {{{ EvStat */
+PHP_METHOD(EvStat, __construct);
+PHP_METHOD(EvStat, set);
+/* }}} */
+#endif
+
 #endif /* PHP_EV_FE_H */
 
 /* 

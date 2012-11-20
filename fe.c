@@ -164,6 +164,24 @@ ZEND_END_ARG_INFO();
 /* }}} */
 #endif
 
+#if EV_STAT_ENABLE
+/* {{{ EvStat */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_stat, 0, 0, 4)
+	ZEND_ARG_INFO(0, path)
+	ZEND_ARG_INFO(0, interval)
+	ZEND_ARG_INFO(0, loop)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_stat_set, 0, 0, 2)
+	ZEND_ARG_INFO(0, path)
+	ZEND_ARG_INFO(0, interval)
+ZEND_END_ARG_INFO();
+/* }}} */
+#endif
+
 /* ARGINFO }}} */
 
 
@@ -265,6 +283,17 @@ const zend_function_entry ev_signal_class_entry_functions[] = {
 const zend_function_entry ev_child_class_entry_functions[] = {
 	PHP_ME(EvChild, __construct, arginfo_ev_child,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvChild, set,         arginfo_ev_child_set, ZEND_ACC_PUBLIC)
+
+	{ NULL, NULL, NULL }
+};
+/* }}} */
+#endif
+
+#if EV_STAT_ENABLE
+/* {{{ ev_stat_class_entry_functions */
+const zend_function_entry ev_stat_class_entry_functions[] = {
+	PHP_ME(EvStat, __construct, arginfo_ev_stat,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvStat, set,         arginfo_ev_stat_set, ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };
