@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-  <name>ev</name>
+  <name>Ev</name>
   <channel>pecl.php.net</channel>
   <summary>Provides interface to libev library</summary>
   <description>
@@ -32,12 +32,20 @@
   <contents>
     <dir name="/">
       <file role="doc" name="CREDITS"/>
-      <file role="doc" name="EXPERIMENTAL"/>
       <file role="doc" name="INSTALL"/>
       <file role="doc" name="LICENSE"/>
-      <file role="doc" name="README"/>
-      <file role="src" name="config.m4"/>
+      <file role="doc" name="README.md"/>
       <file role="doc" name="libev/LICENSE"/>
+      <file role="doc" name="libev/README"/>
+      <file role="src" name="child.c"/>
+      <file role="src" name="common.h"/>
+      <file role="src" name="config.m4"/>
+      <file role="src" name="config.m4"/>
+      <file role="src" name="embed.h"/>
+      <file role="src" name="ev.c"/>
+      <file role="src" name="fe.c"/>
+      <file role="src" name="fe.h"/>
+      <file role="src" name="io.c"/>
       <file role="src" name="libev/ev.c"/>
       <file role="src" name="libev/ev.h"/>
       <file role="src" name="libev/ev_epoll.c"/>
@@ -51,16 +59,20 @@
       <file role="src" name="libev/event.h"/>
       <file role="src" name="libev/event_compat.h"/>
       <file role="src" name="libev/libev.m4"/>
-      <file role="src" name="php_ev.c"/>
+      <file role="src" name="loop.c"/>
+      <file role="src" name="macros.h"/>
+      <file role="src" name="package.xml"/>
+      <file role="src" name="pe.c"/>
+      <file role="src" name="periodic.c"/>
       <file role="src" name="php_ev.h"/>
-      <file role="src" name="php_ev_fe.c"/>
-      <file role="src" name="php_ev_fe.h"/>
-      <file role="src" name="php_ev_embed.h"/>
-      <file role="src" name="php_ev_priv.h"/>
-      <file role="src" name="php_ev_loop.c"/>
-      <file role="src" name="php_ev_pe.c"/>
-      <file role="src" name="php_ev_macros.h"/>
-      <file role="src" name="php_ev_types.h"/>
+      <file role="src" name="priv.h"/>
+      <file role="src" name="reconf.sh"/>
+      <file role="src" name="signal.c"/>
+      <file role="src" name="stat.c"/>
+      <file role="src" name="timer.c"/>
+      <file role="src" name="types.h"/>
+      <file role="src" name="watcher.c"/>
+      <file role="src" name="watcher.h"/>
     </dir>
   </contents>
   <!--}}}-->
@@ -77,7 +89,7 @@
       </os>
     </required>
   </dependencies>
-  <providesextension>ev</providesextension>
+  <providesextension>Ev</providesextension>
   <extsrcrelease>
     <configureoption default="no" name="enable-ev-debug" prompt="Enable internal debugging in Ev"/>
     <configureoption default="yes" name="enable-ev-libevent-api" prompt="Enable libevent compatibility API support in Ev"/>
