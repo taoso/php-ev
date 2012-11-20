@@ -146,6 +146,24 @@ ZEND_END_ARG_INFO();
 /* }}} */
 #endif
 
+#if EV_CHILD_ENABLE
+/* {{{ EvChild*/
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_child, 0, 0, 4)
+	ZEND_ARG_INFO(0, pid)
+	ZEND_ARG_INFO(0, trace)
+	ZEND_ARG_INFO(0, loop)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_child_set, 0, 0, 2)
+	ZEND_ARG_INFO(0, pid)
+	ZEND_ARG_INFO(0, trace)
+ZEND_END_ARG_INFO();
+/* }}} */
+#endif
+
 /* ARGINFO }}} */
 
 
@@ -241,6 +259,18 @@ const zend_function_entry ev_signal_class_entry_functions[] = {
 };
 /* }}} */
 #endif
+
+#if EV_CHILD_ENABLE
+/* {{{ ev_child_class_entry_functions */
+const zend_function_entry ev_child_class_entry_functions[] = {
+	PHP_ME(EvChild, __construct, arginfo_ev_child,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvChild, set,         arginfo_ev_child_set, ZEND_ACC_PUBLIC)
+
+	{ NULL, NULL, NULL }
+};
+/* }}} */
+#endif
+
 
 /*
  * Local variables:

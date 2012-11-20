@@ -367,6 +367,54 @@ static int ev_signal_prop_signum_read(php_ev_object *obj, zval **retval TSRMLS_D
 /* }}} */
 #endif
 
+#if EV_CHILD_ENABLE
+/* {{{ EvChild property handlers */
+
+/* {{{ ev_child_prop_pid_read */
+static int ev_child_prop_pid_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_child *child_watcher = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_LONG(*retval, child_watcher->pid);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_child_prop_rpid_read */
+static int ev_child_prop_rpid_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_child *child_watcher = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_LONG(*retval, child_watcher->rpid);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_child_prop_rstatus_read */
+static int ev_child_prop_rstatus_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	ev_child *child_watcher = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_LONG(*retval, child_watcher->rstatus);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* }}} */
+#endif
+
 /* {{{ ev_loop_property_entries[] */
 const php_ev_property_entry ev_loop_property_entries[] = {
 	{"data",            sizeof("data")            - 1, ev_loop_prop_data_read,            ev_loop_prop_data_write},
@@ -470,6 +518,26 @@ const php_ev_property_entry ev_signal_property_entries[] = {
 /* {{{ ev_signal_property_entry_info[] */
 const zend_property_info ev_signal_property_entry_info[] = {
 	{ZEND_ACC_PUBLIC, "signum", sizeof("signum") - 1, -1, 0, NULL, 0, NULL},
+	{0, NULL, 0, -1, 0, NULL, 0, NULL},
+};
+/* }}} */
+#endif
+
+#if EV_CHILD_ENABLE
+/* {{{ ev_child_property_entries[] */
+const php_ev_property_entry ev_child_property_entries[] = {
+	{"pid",     sizeof("pid")     - 1, ev_child_prop_pid_read,     NULL},
+	{"rpid",    sizeof("rpid")    - 1, ev_child_prop_rpid_read,    NULL},
+	{"rstatus", sizeof("rstatus") - 1, ev_child_prop_rstatus_read, NULL},
+    {NULL, 0, NULL, NULL}
+};
+/* }}} */
+
+/* {{{ ev_child_property_entry_info[] */
+const zend_property_info ev_child_property_entry_info[] = {
+	{ZEND_ACC_PUBLIC, "pid",     sizeof("pid")     - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "rpid",    sizeof("rpid")    - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "rstatus", sizeof("rstatus") - 1, -1, 0, NULL, 0, NULL},
 	{0, NULL, 0, -1, 0, NULL, 0, NULL},
 };
 /* }}} */

@@ -33,6 +33,9 @@ zend_class_entry *ev_periodic_class_entry_ptr;
 #if EV_SIGNAL_ENABLE
 zend_class_entry *ev_signal_class_entry_ptr;
 #endif
+#if EV_CHILD_ENABLE
+zend_class_entry *ev_child_class_entry_ptr;
+#endif
 
 static HashTable classes;
 static HashTable php_ev_properties;
@@ -44,6 +47,9 @@ static HashTable php_ev_periodic_properties;
 #endif
 #if EV_SIGNAL_ENABLE
 static HashTable php_ev_signal_properties;
+#endif
+#if EV_CHILD_ENABLE
+static HashTable php_ev_child_properties;
 #endif
 
 static zend_object_handlers ev_object_handlers;
@@ -418,6 +424,24 @@ static void php_ev_signal_free_storage(void *object TSRMLS_DC)
 /* }}} */
 #endif
 
+#if EV_CHILD_ENABLE
+/* {{{ php_ev_child_free_storage() */
+static void php_ev_child_free_storage(void *object TSRMLS_DC)
+{
+	php_ev_object *obj_ptr = (php_ev_object *) object;
+
+	PHP_EV_ASSERT(obj_ptr->ptr);
+	ev_child *ptr = (ev_child *) obj_ptr->ptr;
+
+	/* Free base class members */
+	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
+
+	/* Free common Ev object members and the object itself */
+	php_ev_object_free_storage(object TSRMLS_CC);
+}
+/* }}} */
+#endif
+
 /* {{{ php_ev_register_object 
  * Is called AFTER php_ev_object_new() */
 zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *intern TSRMLS_DC)
@@ -443,6 +467,11 @@ zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *in
 	} else if (instanceof_function(ce, ev_signal_class_entry_ptr TSRMLS_CC)) {
 		/* EvSignal*/
 	 	func_free_storage = php_ev_signal_free_storage;
+#endif
+#if EV_CHILD_ENABLE
+	} else if (instanceof_function(ce, ev_child_class_entry_ptr TSRMLS_CC)) {
+		/* EvChild */
+	 	func_free_storage = php_ev_child_free_storage;
 #endif
 	} else {
 	 	func_free_storage = php_ev_object_free_storage;
@@ -570,6 +599,17 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	/* }}} */
 #endif
 
+#if EV_CHILD_ENABLE
+	/* {{{ EvChild*/
+	PHP_EV_REGISTER_CLASS_ENTRY_EX("EvChild", ev_child_class_entry_ptr, ev_child_class_entry_functions, ev_watcher_class_entry_ptr);
+	ce = ev_child_class_entry_ptr;
+	zend_hash_init(&php_ev_child_properties, 0, NULL, NULL, 1);
+	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_child_properties, ev_child_property_entries);
+	zend_hash_merge(&php_ev_child_properties, &php_ev_watcher_properties, NULL, NULL, sizeof(php_ev_prop_handler), 0);
+	PHP_EV_DECL_CLASS_PROPERTIES(ce, ev_child_property_entry_info);
+	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_child_properties, sizeof(php_ev_child_properties), NULL);
+	/* }}} */
+#endif
 
 
 }
@@ -646,6 +686,9 @@ PHP_MSHUTDOWN_FUNCTION(ev)
 #if EV_SIGNAL_ENABLE
 	zend_hash_destroy(&php_ev_signal_properties);
 #endif
+#if EV_CHILD_ENABLE
+	zend_hash_destroy(&php_ev_child_properties);
+#endif
 	zend_hash_destroy(&classes);
 
 	return SUCCESS;
@@ -698,6 +741,9 @@ PHP_MINFO_FUNCTION(ev)
 #endif
 #if EV_SIGNAL_ENABLE
 # include "signal.c";
+#endif
+#if EV_CHILD_ENABLE
+# include "child.c";
 #endif
 
 #endif /* HAVE_EV */

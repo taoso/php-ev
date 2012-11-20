@@ -80,6 +80,13 @@ PHP_METHOD(EvSignal, set);
 /* }}} */
 #endif
 
+#if EV_CHILD_ENABLE
+/* {{{ EvChild */
+PHP_METHOD(EvChild, __construct);
+PHP_METHOD(EvChild, set);
+/* }}} */
+#endif
+
 #endif /* PHP_EV_FE_H */
 
 /* 
