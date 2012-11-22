@@ -104,12 +104,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_timer_set, 0, 0, 2)
 	ZEND_ARG_INFO(0, after)
 	ZEND_ARG_INFO(0, repeat)
 ZEND_END_ARG_INFO();
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_timer_again, 0, 0, 0)
-	ZEND_ARG_INFO(0, after)
-	ZEND_ARG_INFO(0, repeat)
-ZEND_END_ARG_INFO();
-
 /* }}} */
 
 #if EV_PERIODIC_ENABLE
@@ -294,6 +288,8 @@ const zend_function_entry ev_child_class_entry_functions[] = {
 const zend_function_entry ev_stat_class_entry_functions[] = {
 	PHP_ME(EvStat, __construct, arginfo_ev_stat,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvStat, set,         arginfo_ev_stat_set, ZEND_ACC_PUBLIC)
+	PHP_ME(EvStat, attr,        arginfo_ev__void,    ZEND_ACC_PUBLIC)
+	PHP_ME(EvStat, prev,        arginfo_ev__void,    ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };

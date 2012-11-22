@@ -50,12 +50,14 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 
 		PHP_EV_EXIT_LOOP(EV_A);
 	}
+#if 0
 #if EV_STAT_ENABLE
 	/* TODO: php_ev_stat_update()*/
 	else if (revents & EV_STAT /* && php_ev_stat_update(watcher) */) {
 		PHP_EV_EXIT_LOOP(EV_A);
 	}
 #endif
+#endif 
 	else if (ZEND_FCI_INITIALIZED(*pfci)) {
 		/* Setup callback args */
 		key1 = self;

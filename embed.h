@@ -76,6 +76,11 @@ typedef struct php_ev_periodic {
 	zend_fcall_info_cache *fcc;
 } php_ev_periodic;
 
+typedef struct php_ev_stat {
+	struct ev_stat  stat;   /* Contains common watcher vars embedded */
+	char *path;
+} php_ev_stat;
+
 #endif /* PHP_EV_EMBED_H */
 /*
  * Local variables:

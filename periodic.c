@@ -99,6 +99,7 @@ PHP_METHOD(EvPeriodic, __construct)
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
 	ev_periodic           *periodic_watcher;
+	php_ev_periodic       *periodic_ptr;
 
 	zval                  *loop;
 	zval                  *data             = NULL;
@@ -115,7 +116,7 @@ PHP_METHOD(EvPeriodic, __construct)
 
 	PHP_EV_CHECK_REPEAT(interval);
 
-	php_ev_periodic *periodic_ptr = (php_ev_periodic *) emalloc(sizeof(php_ev_periodic));
+	periodic_ptr = (php_ev_periodic *) emalloc(sizeof(php_ev_periodic));
 	memset(periodic_ptr, 0, sizeof(php_ev_periodic));
 
 	periodic_watcher = &periodic_ptr->periodic;

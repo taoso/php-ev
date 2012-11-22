@@ -455,7 +455,10 @@ static void php_ev_stat_free_storage(void *object TSRMLS_DC)
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
 	PHP_EV_ASSERT(obj_ptr->ptr);
-	ev_stat *ptr = (ev_stat *) obj_ptr->ptr;
+	ev_stat *ptr          = (ev_stat *) obj_ptr->ptr;
+	php_ev_stat *stat_ptr = (php_ev_stat *) obj_ptr->ptr;
+
+	efree(stat_ptr->path);
 
 	/* Free base class members */
 	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
