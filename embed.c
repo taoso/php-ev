@@ -79,14 +79,23 @@ PHP_METHOD(EvEmbed, set)
 	zval          *loop_other;
 	ev_embed      *embed_watcher;
 	php_ev_object *o_loop_other;
+	php_ev_embed  *loop_other_ptr;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O",
 				&loop_other) == FAILURE) {
 		return;
 	}
 
-	o_loop_other  = (php_ev_object *) zend_object_store_get_object(loop_other TSRMLS_CC);
-	embed_watcher = (ev_embed *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	o_loop_other   = (php_ev_object *) zend_object_store_get_object(loop_other TSRMLS_CC);
+	loop_other_ptr = PHP_EV_LOOP_FETCH_FROM_OBJECT(o_loop_other);
+
+	if (!(ev_backend(loop_other_ptr) & ev_embeddable_backends())) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR,
+        		"Passed loop is not embeddable. Check out your backends.");
+        return;
+	}
+
+	embed_watcher  = (ev_embed *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
 	PHP_EV_ASSERT(PHP_EV_LOOP_FETCH_FROM_OBJECT(o_loop_other));
 	PHP_EV_WATCHER_RESET(ev_embed, embed_watcher, (embed_watcher, PHP_EV_LOOP_FETCH_FROM_OBJECT(o_loop_other)));
