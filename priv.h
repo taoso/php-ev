@@ -31,6 +31,7 @@ extern const zend_function_entry ev_periodic_class_entry_functions[];
 extern const zend_function_entry ev_signal_class_entry_functions[];
 extern const zend_function_entry ev_child_class_entry_functions[];
 extern const zend_function_entry ev_stat_class_entry_functions[];
+extern const zend_function_entry ev_idle_class_entry_functions[];
 
 extern const php_ev_property_entry ev_test_property_entries[];
 extern const php_ev_property_entry ev_loop_property_entries[];
@@ -41,6 +42,7 @@ extern const php_ev_property_entry ev_periodic_property_entries[];
 extern const php_ev_property_entry ev_signal_property_entries[];
 extern const php_ev_property_entry ev_child_property_entries[];
 extern const php_ev_property_entry ev_stat_property_entries[];
+extern const php_ev_property_entry ev_idle_property_entries[];
 
 extern const zend_property_info ev_test_property_entry_info[];
 extern const zend_property_info ev_loop_property_entry_info[];
@@ -51,6 +53,7 @@ extern const zend_property_info ev_periodic_property_entry_info[];
 extern const zend_property_info ev_signal_property_entry_info[];
 extern const zend_property_info ev_child_property_entry_info[];
 extern const zend_property_info ev_stat_property_entry_info[];
+extern const zend_property_info ev_idle_property_entry_info[];
 
 #endif /* PHP_EV_PRIV_H */
 

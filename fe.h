@@ -96,6 +96,12 @@ PHP_METHOD(EvStat, prev);
 /* }}} */
 #endif
 
+#if EV_IDLE_ENABLE
+/* {{{ EvIdle */
+PHP_METHOD(EvIdle, __construct);
+/* }}} */
+#endif
+
 #endif /* PHP_EV_FE_H */
 
 /* 
