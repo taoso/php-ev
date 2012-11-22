@@ -71,15 +71,20 @@
  */
 
 typedef struct php_ev_periodic {
-	struct ev_periodic     periodic;     /* Contains common watcher vars embedded         */
-	zend_fcall_info       *fci;   /* fci/fcc store specific "rescheduler" callback */
+	struct ev_periodic     periodic;   /* Contains common watcher vars embedded         */
+	zend_fcall_info       *fci;        /* fci/fcc store specific "rescheduler" callback */
 	zend_fcall_info_cache *fcc;
 } php_ev_periodic;
 
 typedef struct php_ev_stat {
-	struct ev_stat  stat;   /* Contains common watcher vars embedded */
+	struct ev_stat  stat;   /* Extending ev_stat */
 	char           *path;
 } php_ev_stat;
+
+typedef struct php_ev_embed {
+	struct ev_embed  embed;   /* Extending ev_embed */
+	zval            *other;   /* Loop to embed      */
+} php_ev_embed;
 
 #endif /* PHP_EV_EMBED_H */
 /*

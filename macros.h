@@ -169,7 +169,6 @@
                                              \
         MAKE_STD_ZVAL(*retval);              \
         REPLACE_ZVAL_VALUE(retval, data, 1); \
-                                             \
     } while (0)
 
 #define PHP_EV_PROP_ZVAL_WRITE(ppz)                                     \

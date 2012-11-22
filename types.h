@@ -41,19 +41,6 @@ typedef struct php_ev_loop {
 	struct ev_watcher     *w;                          /* Head of linked list                                      */
 } php_ev_loop;
 
-#if 0
-/* php_ev_periodic is special type for periodic watcher.
- * I.e. we don't want to embed extra members into EV_COMMON
- * Extends ev_watcher
- */
-
-typedef struct php_ev_periodic {
-	struct ev_watcher      w;     /* Contains common watcher vars embedded         */
-	zend_fcall_info       *fci;   /* fci/fcc store specific "rescheduler" callback */
-	zend_fcall_info_cache *fcc;
-} php_ev_periodic;
-#endif
-
 /* Property handlers */
 
 typedef int (*php_ev_read_t)(php_ev_object  *obj, zval **retval TSRMLS_DC);

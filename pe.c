@@ -423,9 +423,7 @@ static int ev_stat_prop_path_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
 	PHP_EV_ASSERT(obj->ptr);
 
-	/*ev_stat *stat_watcher = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);*/
 	php_ev_stat *stat_ptr = (php_ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
-
 
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_STRING(*retval, stat_ptr->path, 1);
@@ -443,6 +441,25 @@ static int ev_stat_prop_interval_read(php_ev_object *obj, zval **retval TSRMLS_D
 
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_DOUBLE(*retval, (double) stat_watcher->interval);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* }}} */
+#endif
+
+#if EV_EMBED_ENABLE
+/* {{{ EvEmbed property handlers */
+
+/* {{{ ev_embed_prop_other_read */
+static int ev_embed_prop_other_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	php_ev_embed *embed_ptr = (php_ev_embed *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	PHP_EV_PROP_ZVAL_READ(embed_ptr->other);
 
 	return SUCCESS;
 }
@@ -592,6 +609,22 @@ const php_ev_property_entry ev_stat_property_entries[] = {
 const zend_property_info ev_stat_property_entry_info[] = {
 	{ZEND_ACC_PUBLIC, "path",     sizeof("path")     - 1, -1, 0, NULL, 0, NULL},
 	{ZEND_ACC_PUBLIC, "interval", sizeof("interval") - 1, -1, 0, NULL, 0, NULL},
+	{0, NULL, 0, -1, 0, NULL, 0, NULL},
+};
+/* }}} */
+#endif
+
+#if EV_EMBED_ENABLE
+/* {{{ ev_embed_property_entries[] */
+const php_ev_property_entry ev_embed_property_entries[] = {
+	{"other", sizeof("other") - 1, ev_embed_prop_other_read, NULL},
+    {NULL, 0, NULL, NULL}
+};
+/* }}} */
+
+/* {{{ ev_embed_property_entry_info[] */
+const zend_property_info ev_embed_property_entry_info[] = {
+	{ZEND_ACC_PUBLIC, "embed", sizeof("embed") - 1, -1, 0, NULL, 0, NULL},
 	{0, NULL, 0, -1, 0, NULL, 0, NULL},
 };
 /* }}} */

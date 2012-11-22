@@ -48,6 +48,9 @@ zend_class_entry *ev_check_class_entry_ptr;
 #if EV_PREPARE_ENABLE
 zend_class_entry *ev_prepare_class_entry_ptr;
 #endif
+#if EV_EMBED_ENABLE
+zend_class_entry *ev_embed_class_entry_ptr;
+#endif
 
 static HashTable classes;
 static HashTable php_ev_properties;
@@ -65,6 +68,9 @@ static HashTable php_ev_child_properties;
 #endif
 #if EV_STAT_ENABLE
 static HashTable php_ev_stat_properties;
+#endif
+#if EV_EMBED_ENABLE
+static HashTable php_ev_embed_properties;
 #endif
 
 static zend_object_handlers ev_object_handlers;
@@ -532,6 +538,30 @@ static void php_ev_prepare_free_storage(void *object TSRMLS_DC)
 /* }}} */
 #endif
 
+#if EV_EMBED_ENABLE
+/* {{{ php_ev_embed_free_storage() */
+static void php_ev_embed_free_storage(void *object TSRMLS_DC)
+{
+	php_ev_object *obj_ptr = (php_ev_object *) object;
+
+	PHP_EV_ASSERT(obj_ptr->ptr);
+
+	ev_embed *ptr           = (ev_embed *) obj_ptr->ptr;
+	php_ev_embed *embed_ptr = (php_ev_embed *) obj_ptr->ptr;
+
+	if (embed_ptr->other) {
+		zval_ptr_dtor(&embed_ptr->other);
+	}
+
+	/* Free base class members */
+	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
+
+	/* Free common Ev object members and the object itself */
+	php_ev_object_free_storage(object TSRMLS_CC);
+}
+/* }}} */
+#endif
+
 /* {{{ php_ev_register_object 
  * Is called AFTER php_ev_object_new() */
 zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *intern TSRMLS_DC)
@@ -580,8 +610,13 @@ zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *in
 #endif
 #if EV_PREPARE_ENABLE
 	} else if (instanceof_function(ce, ev_prepare_class_entry_ptr TSRMLS_CC)) {
-		/* EvCheck */
+		/* EvPrepare */
 	 	func_free_storage = php_ev_prepare_free_storage;
+#endif
+#if EV_EMBED_ENABLE
+	} else if (instanceof_function(ce, ev_embed_class_entry_ptr TSRMLS_CC)) {
+		/* EvEmbed */
+	 	func_free_storage = php_ev_embed_free_storage;
 #endif
 	} else {
 	 	func_free_storage = php_ev_object_free_storage;
@@ -756,6 +791,18 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_watcher_properties, sizeof(php_ev_watcher_properties), NULL);
 	/* }}} */
 #endif
+
+#if EV_EMBED_ENABLE
+	/* {{{ EvEmbed */
+	PHP_EV_REGISTER_CLASS_ENTRY_EX("EvEmbed", ev_embed_class_entry_ptr, ev_embed_class_entry_functions, ev_watcher_class_entry_ptr);
+	ce = ev_embed_class_entry_ptr;
+	zend_hash_init(&php_ev_embed_properties, 0, NULL, NULL, 1);
+	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_embed_properties, ev_embed_property_entries);
+	zend_hash_merge(&php_ev_embed_properties, &php_ev_watcher_properties, NULL, NULL, sizeof(php_ev_prop_handler), 0);
+	PHP_EV_DECL_CLASS_PROPERTIES(ce, ev_embed_property_entry_info);
+	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_embed_properties, sizeof(php_ev_embed_properties), NULL);
+	/* }}} */
+#endif
 }
 /* }}} */
 
@@ -836,6 +883,10 @@ PHP_MSHUTDOWN_FUNCTION(ev)
 #if EV_STAT_ENABLE
 	zend_hash_destroy(&php_ev_stat_properties);
 #endif
+#if EV_EMBED_ENABLE
+	zend_hash_destroy(&php_ev_embed_properties);
+#endif
+
 	zend_hash_destroy(&classes);
 
 	return SUCCESS;
@@ -903,6 +954,9 @@ PHP_MINFO_FUNCTION(ev)
 #endif
 #if EV_PREPARE_ENABLE
 # include "prepare.c";
+#endif
+#if EV_EMBED_ENABLE
+# include "embed.c";
 #endif
 
 #endif /* HAVE_EV */

@@ -114,6 +114,14 @@ PHP_METHOD(EvPrepare, __construct);
 /* }}} */
 #endif
 
+#if EV_EMBED_ENABLE
+/* {{{ EvEmbed */
+PHP_METHOD(EvEmbed, __construct);
+PHP_METHOD(EvEmbed, set);
+PHP_METHOD(EvEmbed, sweep);
+/* }}} */
+#endif
+
 #endif /* PHP_EV_FE_H */
 
 /* 
