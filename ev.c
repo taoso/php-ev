@@ -42,6 +42,12 @@ zend_class_entry *ev_stat_class_entry_ptr;
 #if EV_IDLE_ENABLE
 zend_class_entry *ev_idle_class_entry_ptr;
 #endif
+#if EV_CHECK_ENABLE
+zend_class_entry *ev_check_class_entry_ptr;
+#endif
+#if EV_PREPARE_ENABLE
+zend_class_entry *ev_prepare_class_entry_ptr;
+#endif
 
 static HashTable classes;
 static HashTable php_ev_properties;
@@ -490,6 +496,42 @@ static void php_ev_idle_free_storage(void *object TSRMLS_DC)
 /* }}} */
 #endif
 
+#if EV_CHECK_ENABLE
+/* {{{ php_ev_check_free_storage() */
+static void php_ev_check_free_storage(void *object TSRMLS_DC)
+{
+	php_ev_object *obj_ptr = (php_ev_object *) object;
+
+	PHP_EV_ASSERT(obj_ptr->ptr);
+	ev_check *ptr = (ev_check *) obj_ptr->ptr;
+
+	/* Free base class members */
+	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
+
+	/* Free common Ev object members and the object itself */
+	php_ev_object_free_storage(object TSRMLS_CC);
+}
+/* }}} */
+#endif
+
+#if EV_PREPARE_ENABLE
+/* {{{ php_ev_prepare_free_storage() */
+static void php_ev_prepare_free_storage(void *object TSRMLS_DC)
+{
+	php_ev_object *obj_ptr = (php_ev_object *) object;
+
+	PHP_EV_ASSERT(obj_ptr->ptr);
+	ev_prepare *ptr = (ev_prepare *) obj_ptr->ptr;
+
+	/* Free base class members */
+	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
+
+	/* Free common Ev object members and the object itself */
+	php_ev_object_free_storage(object TSRMLS_CC);
+}
+/* }}} */
+#endif
+
 /* {{{ php_ev_register_object 
  * Is called AFTER php_ev_object_new() */
 zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *intern TSRMLS_DC)
@@ -530,6 +572,16 @@ zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *in
 	} else if (instanceof_function(ce, ev_idle_class_entry_ptr TSRMLS_CC)) {
 		/* EvIdle */
 	 	func_free_storage = php_ev_idle_free_storage;
+#endif
+#if EV_CHECK_ENABLE
+	} else if (instanceof_function(ce, ev_check_class_entry_ptr TSRMLS_CC)) {
+		/* EvCheck */
+	 	func_free_storage = php_ev_check_free_storage;
+#endif
+#if EV_PREPARE_ENABLE
+	} else if (instanceof_function(ce, ev_prepare_class_entry_ptr TSRMLS_CC)) {
+		/* EvCheck */
+	 	func_free_storage = php_ev_prepare_free_storage;
 #endif
 	} else {
 	 	func_free_storage = php_ev_object_free_storage;
@@ -689,6 +741,21 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	/* }}} */
 #endif
 
+#if EV_CHECK_ENABLE
+	/* {{{ EvCheck */
+	PHP_EV_REGISTER_CLASS_ENTRY_EX("EvCheck", ev_check_class_entry_ptr, ev_check_class_entry_functions, ev_watcher_class_entry_ptr);
+	ce = ev_check_class_entry_ptr;
+	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_watcher_properties, sizeof(php_ev_watcher_properties), NULL);
+	/* }}} */
+#endif
+
+#if EV_PREPARE_ENABLE
+	/* {{{ EvPrepare */
+	PHP_EV_REGISTER_CLASS_ENTRY_EX("EvPrepare", ev_prepare_class_entry_ptr, ev_prepare_class_entry_functions, ev_watcher_class_entry_ptr);
+	ce = ev_prepare_class_entry_ptr;
+	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_watcher_properties, sizeof(php_ev_watcher_properties), NULL);
+	/* }}} */
+#endif
 }
 /* }}} */
 
@@ -830,6 +897,12 @@ PHP_MINFO_FUNCTION(ev)
 #endif
 #if EV_IDLE_ENABLE
 # include "idle.c";
+#endif
+#if EV_CHECK_ENABLE
+# include "check.c";
+#endif
+#if EV_PREPARE_ENABLE
+# include "prepare.c";
 #endif
 
 #endif /* HAVE_EV */

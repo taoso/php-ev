@@ -102,6 +102,18 @@ PHP_METHOD(EvIdle, __construct);
 /* }}} */
 #endif
 
+#if EV_CHECK_ENABLE
+/* {{{ EvCheck */
+PHP_METHOD(EvCheck, __construct);
+/* }}} */
+#endif
+
+#if EV_PREPARE_ENABLE
+/* {{{ EvPrepare */
+PHP_METHOD(EvPrepare, __construct);
+/* }}} */
+#endif
+
 #endif /* PHP_EV_FE_H */
 
 /* 
