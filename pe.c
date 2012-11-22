@@ -96,6 +96,78 @@ static int ev_loop_prop_pending_loop_read(php_ev_object *obj, zval **retval TSRM
 }
 /* }}} */
 
+/* {{{ ev_loop_prop_io_interval_read */
+static int ev_loop_prop_io_interval_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	php_ev_loop *loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_DOUBLE(*retval, loop_obj->io_collect_interval);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_loop_prop_io_interval_write */
+static int ev_loop_prop_io_interval_write(php_ev_object *obj, zval *value TSRMLS_DC)
+{
+	php_ev_loop *loop_obj;
+
+	PHP_EV_ASSERT(obj->ptr);
+
+	loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
+
+	loop_obj->io_collect_interval = Z_DVAL_P(value);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_loop_prop_timeout_interval_read */
+static int ev_loop_prop_timeout_interval_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	php_ev_loop *loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_DOUBLE(*retval, loop_obj->timeout_collect_interval);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_loop_prop_timeout_interval_write */
+static int ev_loop_prop_timeout_interval_write(php_ev_object *obj, zval *value TSRMLS_DC)
+{
+	php_ev_loop *loop_obj;
+
+	PHP_EV_ASSERT(obj->ptr);
+
+	loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
+
+	loop_obj->timeout_collect_interval = Z_DVAL_P(value);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_loop_prop_depth_read */
+static int ev_loop_prop_depth_read(php_ev_object *obj, zval **retval TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	php_ev_loop *loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
+
+	MAKE_STD_ZVAL(*retval);
+	ZVAL_LONG(*retval, ev_depth(PHP_EV_LOOP_FETCH_FROM_OBJECT(obj)));
+
+	return SUCCESS;
+}
+/* }}} */
+
 /* }}} */
 
 /* {{{ EvWatcher property handlers */
@@ -470,22 +542,28 @@ static int ev_embed_prop_other_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 
 /* {{{ ev_loop_property_entries[] */
 const php_ev_property_entry ev_loop_property_entries[] = {
-	{"data",            sizeof("data")            - 1, ev_loop_prop_data_read,            ev_loop_prop_data_write},
-	{"backend",         sizeof("backend")         - 1, ev_loop_prop_backend_read,         NULL},
-	{"is_default_loop", sizeof("is_default_loop") - 1, ev_loop_prop_is_default_loop_read, NULL},
-	{"iteration",       sizeof("iteration")       - 1, ev_loop_prop_iteration_loop_read,  NULL},
-	{"pending",         sizeof("pending")         - 1, ev_loop_prop_pending_loop_read,    NULL},
+	{"data",             sizeof("data")             - 1, ev_loop_prop_data_read,             ev_loop_prop_data_write},
+	{"backend",          sizeof("backend")          - 1, ev_loop_prop_backend_read,          NULL},
+	{"is_default_loop",  sizeof("is_default_loop")  - 1, ev_loop_prop_is_default_loop_read,  NULL},
+	{"iteration",        sizeof("iteration")        - 1, ev_loop_prop_iteration_loop_read,   NULL},
+	{"pending",          sizeof("pending")          - 1, ev_loop_prop_pending_loop_read,     NULL},
+	{"io_interval",      sizeof("io_interval")      - 1, ev_loop_prop_io_interval_read,      ev_loop_prop_io_interval_write},
+	{"timeout_interval", sizeof("timeout_interval") - 1, ev_loop_prop_timeout_interval_read, ev_loop_prop_timeout_interval_write},
+	{"depth",            sizeof("depth")            - 1, ev_loop_prop_depth_read,            NULL},
     {NULL, 0, NULL, NULL}
 };
 /* }}} */
 
 /* {{{ ev_loop_property_entry_info[] */
 const zend_property_info ev_loop_property_entry_info[] = {
-	{ZEND_ACC_PUBLIC, "data",            sizeof("data")            - 1, -1, 0, NULL, 0, NULL},
-	{ZEND_ACC_PUBLIC, "backend",         sizeof("backend")         - 1, -1, 0, NULL, 0, NULL},
-	{ZEND_ACC_PUBLIC, "is_default_loop", sizeof("is_default_loop") - 1, -1, 0, NULL, 0, NULL},
-	{ZEND_ACC_PUBLIC, "iteration",       sizeof("iteration")       - 1, -1, 0, NULL, 0, NULL},
-	{ZEND_ACC_PUBLIC, "pending",         sizeof("pending")         - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "data",             sizeof("data")             - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "backend",          sizeof("backend")          - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "is_default_loop",  sizeof("is_default_loop")  - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "iteration",        sizeof("iteration")        - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "pending",          sizeof("pending")          - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "io_interval",      sizeof("io_interval")      - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "timeout_interval", sizeof("timeout_interval") - 1, -1, 0, NULL, 0, NULL},
+	{ZEND_ACC_PUBLIC, "depth",            sizeof("depth")            - 1, -1, 0, NULL, 0, NULL},
 	{0, NULL, 0, -1, 0, NULL, 0, NULL}
 };
 /* }}} */
