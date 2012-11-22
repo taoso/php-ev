@@ -224,6 +224,17 @@ ZEND_END_ARG_INFO();
 /* }}} */
 #endif
 
+#if EV_FORK_ENABLE
+/* {{{ EvFork */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_fork, 0, 0, 2)
+	ZEND_ARG_INFO(0, loop)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+/* }}} */
+#endif
+
 /* ARGINFO }}} */
 
 
@@ -377,6 +388,15 @@ const zend_function_entry ev_embed_class_entry_functions[] = {
 	PHP_ME(EvEmbed, __construct, arginfo_ev_embed,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvEmbed, set,         arginfo_ev_embed_set, ZEND_ACC_PUBLIC)
 	PHP_ME(EvEmbed, sweep,       arginfo_ev__void,     ZEND_ACC_PUBLIC)
+	{ NULL, NULL, NULL }
+};
+/* }}} */
+#endif
+
+#if EV_FORK_ENABLE
+/* {{{ ev_fork_class_entry_functions */
+const zend_function_entry ev_fork_class_entry_functions[] = {
+	PHP_ME(EvFork, __construct, arginfo_ev_fork, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	{ NULL, NULL, NULL }
 };
 /* }}} */

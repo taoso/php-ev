@@ -122,6 +122,12 @@ PHP_METHOD(EvEmbed, sweep);
 /* }}} */
 #endif
 
+#if EV_FORK_ENABLE
+/* {{{ EvFork*/
+PHP_METHOD(EvFork, __construct);
+/* }}} */
+#endif
+
 #endif /* PHP_EV_FE_H */
 
 /* 

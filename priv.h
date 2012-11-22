@@ -35,6 +35,7 @@ extern const zend_function_entry ev_idle_class_entry_functions[];
 extern const zend_function_entry ev_check_class_entry_functions[];
 extern const zend_function_entry ev_prepare_class_entry_functions[];
 extern const zend_function_entry ev_embed_class_entry_functions[];
+extern const zend_function_entry ev_fork_class_entry_functions[];
 
 extern const php_ev_property_entry ev_test_property_entries[];
 extern const php_ev_property_entry ev_loop_property_entries[];

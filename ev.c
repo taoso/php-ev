@@ -51,6 +51,9 @@ zend_class_entry *ev_prepare_class_entry_ptr;
 #if EV_EMBED_ENABLE
 zend_class_entry *ev_embed_class_entry_ptr;
 #endif
+#if EV_FORK_ENABLE
+zend_class_entry *ev_fork_class_entry_ptr;
+#endif
 
 static HashTable classes;
 static HashTable php_ev_properties;
@@ -562,6 +565,24 @@ static void php_ev_embed_free_storage(void *object TSRMLS_DC)
 /* }}} */
 #endif
 
+#if EV_FORK_ENABLE
+/* {{{ php_ev_fork_free_storage() */
+static void php_ev_fork_free_storage(void *object TSRMLS_DC)
+{
+	php_ev_object *obj_ptr = (php_ev_object *) object;
+
+	PHP_EV_ASSERT(obj_ptr->ptr);
+	ev_fork *ptr = (ev_fork *) obj_ptr->ptr;
+
+	/* Free base class members */
+	php_ev_watcher_free_storage((ev_watcher *) ptr TSRMLS_CC);
+
+	/* Free common Ev object members and the object itself */
+	php_ev_object_free_storage(object TSRMLS_CC);
+}
+/* }}} */
+#endif
+
 /* {{{ php_ev_register_object 
  * Is called AFTER php_ev_object_new() */
 zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *intern TSRMLS_DC)
@@ -617,6 +638,11 @@ zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *in
 	} else if (instanceof_function(ce, ev_embed_class_entry_ptr TSRMLS_CC)) {
 		/* EvEmbed */
 	 	func_free_storage = php_ev_embed_free_storage;
+#endif
+#if EV_FORK_ENABLE
+	} else if (instanceof_function(ce, ev_fork_class_entry_ptr TSRMLS_CC)) {
+		/* EvCheck */
+	 	func_free_storage = php_ev_fork_free_storage;
 #endif
 	} else {
 	 	func_free_storage = php_ev_object_free_storage;
@@ -803,6 +829,14 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_embed_properties, sizeof(php_ev_embed_properties), NULL);
 	/* }}} */
 #endif
+
+#if EV_CHECK_ENABLE
+	/* {{{ EvFork */
+	PHP_EV_REGISTER_CLASS_ENTRY_EX("EvFork", ev_fork_class_entry_ptr, ev_fork_class_entry_functions, ev_watcher_class_entry_ptr);
+	ce = ev_fork_class_entry_ptr;
+	zend_hash_add(&classes, ce->name, ce->name_length + 1, &php_ev_watcher_properties, sizeof(php_ev_watcher_properties), NULL);
+	/* }}} */
+#endif
 }
 /* }}} */
 
@@ -957,6 +991,9 @@ PHP_MINFO_FUNCTION(ev)
 #endif
 #if EV_EMBED_ENABLE
 # include "embed.c";
+#endif
+#if EV_FORK_ENABLE
+# include "fork.c";
 #endif
 
 #endif /* HAVE_EV */
