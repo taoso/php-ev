@@ -141,7 +141,7 @@ PHP_METHOD(EvPeriodic, __construct)
 		ev_periodic_set(periodic_watcher, offset, interval, 0);
 	}
 
-	o_self->ptr     = (void *) periodic_ptr;
+	o_self->ptr = (void *) periodic_ptr;
 }
 /* }}} */
 
@@ -165,8 +165,8 @@ PHP_METHOD(EvPeriodic, set)
 	PHP_EV_CHECK_REPEAT(interval);
 
 	ev_obj           = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
-	periodic_watcher = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
 	periodic_ptr     = (php_ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
+	periodic_watcher = (ev_periodic *) periodic_ptr;
 	
 	/* Free fci and fcc within periodic_ptr, since they will be overwritten anyways */
 

@@ -78,7 +78,7 @@ typedef struct php_ev_periodic {
 
 typedef struct php_ev_stat {
 	struct ev_stat  stat;   /* Contains common watcher vars embedded */
-	char *path;
+	char           *path;
 } php_ev_stat;
 
 #endif /* PHP_EV_EMBED_H */
