@@ -79,7 +79,7 @@ PHP_METHOD(EvEmbed, set)
 	zval          *loop_other;
 	ev_embed      *embed_watcher;
 	php_ev_object *o_loop_other;
-	php_ev_embed  *loop_other_ptr;
+	ev_loop       *loop_other_ptr;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O",
 				&loop_other) == FAILURE) {

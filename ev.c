@@ -889,9 +889,19 @@ PHP_MINIT_FUNCTION(ev)
 
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_MINPRI);
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_MAXPRI);
-
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_READ);
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_WRITE);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_TIMER);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_PERIODIC);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_SIGNAL);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_CHILD);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_STAT);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_IDLE);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_PREPARE);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_CHECK);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_EMBED);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_CUSTOM);
+	PHP_EV_REGISTER_LONG_CONSTANT(EV_ERROR);
 
 	return SUCCESS;
 }
@@ -972,28 +982,28 @@ PHP_MINFO_FUNCTION(ev)
 # include "periodic.c"
 #endif
 #if EV_SIGNAL_ENABLE
-# include "signal.c";
+# include "signal.c"
 #endif
 #if EV_CHILD_ENABLE
-# include "child.c";
+# include "child.c"
 #endif
 #if EV_STAT_ENABLE
-# include "stat.c";
+# include "stat.c"
 #endif
 #if EV_IDLE_ENABLE
-# include "idle.c";
+# include "idle.c"
 #endif
 #if EV_CHECK_ENABLE
-# include "check.c";
+# include "check.c"
 #endif
 #if EV_PREPARE_ENABLE
-# include "prepare.c";
+# include "prepare.c"
 #endif
 #if EV_EMBED_ENABLE
-# include "embed.c";
+# include "embed.c"
 #endif
 #if EV_FORK_ENABLE
-# include "fork.c";
+# include "fork.c"
 #endif
 
 #endif /* HAVE_EV */
