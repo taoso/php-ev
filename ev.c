@@ -78,11 +78,17 @@ static HashTable php_ev_embed_properties;
 
 static zend_object_handlers ev_object_handlers;
 
+static const zend_module_dep ev_deps[] = {
+	ZEND_MOD_OPTIONAL("sockets")
+	{NULL, NULL, NULL}
+};
+
 /* {{{ ev_module_entry */
 zend_module_entry ev_module_entry = {
 #if ZEND_MODULE_API_NO >= 20050922
-	STANDARD_MODULE_HEADER_EX, NULL,
+	STANDARD_MODULE_HEADER_EX,
 	NULL,
+	ev_deps,
 #elif ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
 #endif

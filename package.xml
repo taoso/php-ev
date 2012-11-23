@@ -93,6 +93,7 @@
   <extsrcrelease>
     <configureoption default="no" name="enable-ev-debug" prompt="Enable internal debugging in Ev"/>
     <configureoption default="yes" name="enable-ev-libevent-api" prompt="Enable libevent compatibility API support in Ev"/>
+    <configureoption default="yes" name="enable-ev-sockets" prompt="Enable sockets support in Ev"/>
   </extsrcrelease>
   <changelog>
     <version>

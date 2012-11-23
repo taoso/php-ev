@@ -15,33 +15,40 @@
    | Author: Ruslan Osmanov <osmanov@php.net>                             |
    +----------------------------------------------------------------------+
 */
+#include "util.h"
 #include "watcher.h"
 
-/* {{{ proto EvIo::__construct(resource fd, int events, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+/* {{{ proto EvIo::__construct(mixed fd, int events, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvIo, __construct)
 {
 	zval                  *self;
-	zval                  *z_stream;
+	zval                  *z_fd;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
 	ev_io                 *io_watcher;
+	php_socket_t          fd;
 
 	zval                  *loop;
 	zval                  *data       = NULL;
-	php_stream            *fd_stream;
 	zend_fcall_info        fci        = empty_fcall_info;
 	zend_fcall_info_cache  fcc        = empty_fcall_info_cache;
 	long                   priority   = 0;
 	long                   events;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlOf|z!l",
-				&z_stream, &events, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlOf|z!l",
+				&z_fd, &events, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
 				&data, &priority) == FAILURE) {
 		return;
 	}
 
 	if (events & ~(EV_READ | EV_WRITE)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid events mask");
+		return;
+	}
+
+	fd = php_ev_zval_to_fd(&z_fd TSRMLS_CC);
+	if (fd < 0) {
+		/* php_ev_zval_to_fd reports errors if necessary */
 		return;
 	}
 
@@ -54,27 +61,31 @@ PHP_METHOD(EvIo, __construct)
 
 	io_watcher->type = EV_IO;
 	
-	php_stream_from_zval_no_verify(fd_stream, &z_stream);
+#if 0
+	php_stream *fd_stream;
+	php_stream_from_zval_no_verify(fd_stream, &z_fd);
 	if (fd_stream == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed obtaining fd");
 		return;
 	}
-	ev_io_set(io_watcher, Z_LVAL_P(z_stream), events);
+	ev_io_set(io_watcher, Z_LVAL_P(z_fd), events);
+#endif
+	ev_io_set(io_watcher, fd, events);
 
-	o_self->ptr = (void *)io_watcher;
+	o_self->ptr = (void *) io_watcher;
 }
 /* }}} */
 
 /* {{{ proto void EvIo::set(resource fd, int events) */
 PHP_METHOD(EvIo, set)
 {
-	zval       *z_stream;
-	long        events;
-	php_stream *fd_stream;
-	ev_io      *io_watcher;
+	zval         *z_fd;
+	ev_io        *io_watcher;
+	long          events;
+	php_socket_t  fd;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl",
-				&z_stream, &events) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zl",
+				&z_fd, &events) == FAILURE) {
 		return;
 	}
 
@@ -83,15 +94,22 @@ PHP_METHOD(EvIo, set)
 		return;
 	}
 
-	php_stream_from_zval_no_verify(fd_stream, &z_stream);
+#if 0
+	php_stream *fd_stream;
+	php_stream_from_zval_no_verify(fd_stream, &z_fd);
 	if (fd_stream == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed obtaining fd");
 		return;
 	}
+#endif
+	fd = php_ev_zval_to_fd(&z_fd TSRMLS_CC);
 
 	io_watcher = (ev_io *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
-	PHP_EV_WATCHER_RESET(ev_io, io_watcher, (io_watcher, Z_LVAL_P(z_stream), events));
+#if 0
+	PHP_EV_WATCHER_RESET(ev_io, io_watcher, (io_watcher, Z_LVAL_P(z_fd), events));
+#endif
+	PHP_EV_WATCHER_RESET(ev_io, io_watcher, (io_watcher, fd, events));
 }
 /* }}} */
 

@@ -62,6 +62,20 @@ typedef struct {
 	php_ev_write_t  write_func;
 } php_ev_prop_handler;
 
+
+/* Type for EvLoop::once(i.e. ev_once) arg.
+ * We've no other way to call userspace callback */
+typedef struct php_ev_once_arg {
+	zval                    *data;         /* user custom data for EvLoop::once() */
+	zend_fcall_info         *fci;          /* fci and fcc serve callbacks         */
+	zend_fcall_info_cache   *fcc;
+	/* Thread context. With it we are getting rid of need
+	 * to call the heavy TSRMLS_FETCH() */
+#ifdef ZTS
+	void                  ***thread_ctx;
+#endif
+} php_ev_once_arg;
+
 #endif /* PHP_EV_TYPES_H */
 
 /*

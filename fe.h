@@ -39,6 +39,7 @@ PHP_METHOD(EvLoop, run);
 PHP_METHOD(EvLoop, break);
 PHP_METHOD(EvLoop, feed_signal);
 PHP_METHOD(EvLoop, feed_signal_event);
+PHP_METHOD(EvLoop, once);
 /* }}} */
 
 /* {{{ EvWatcher */

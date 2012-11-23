@@ -23,6 +23,9 @@ PHP_ARG_ENABLE(ev-debug, for ev debug support,
 PHP_ARG_ENABLE(ev-libevent-api, for libevent compatibility API support,
 [  --enable-ev-libevent-api       Enable libevent compatibility API support], yes, no)
 
+PHP_ARG_ENABLE(ev-sockets, for sockets support,
+[  --enable-ev-sockets     Enable sockets support in Ev], yes, no)
+
 if test "$PHP_EV" != "no"; then
   export OLD_CPPFLAGS="$CPPFLAGS"
   export CPPFLAGS="$CPPFLAGS $INCLUDES -DHAVE_EV"
@@ -45,11 +48,16 @@ if test "$PHP_EV" != "no"; then
     AC_DEFINE(PHP_EV_DEBUG, 1, [Enable ev debug support])
   fi
 
+  if test "$PHP_EV_SOCKETS" != "no"; then
+    PHP_ADD_EXTENSION_DEP(ev, sockets, true)
+    AC_DEFINE([PHP_EV_USE_SOCKETS], 1, [Whether to enable sockets support])
+  fi
+
   AC_DEFINE(EV_H, "embed.h", [Wrapper for libev/ev.h])
   AC_DEFINE(HAVE_EV, 1, [ ])
   m4_include([libev/libev.m4])
 
-  ev_src="libev/ev.c ev.c watcher.c fe.c pe.c"
+  ev_src="libev/ev.c util.c ev.c watcher.c fe.c pe.c"
   PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared,,$CFLAGS)
 fi
 
