@@ -1,0 +1,64 @@
+libevent buffer functionality
+=============================
+
+	<?php
+	ini_set('display_errors', 'On');
+	error_reporting(-1);
+	$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+	socket_set_nonblock($socket);
+	socket_connect($socket, 'phpdaemon.net', 843);
+	$eventBase = event_base_new();
+	$buffer = event_buffer_new(
+        	$socket,
+        	function ($stream, $arg) use (&$buffer) {
+                	echo "Read\n";
+                	var_dump(event_buffer_read($buffer, 1024));
+        	},
+        	function ($stream, $arg) use (&$buffer)  {
+                	echo "Write\n";
+                	static $first = true;
+                	if ($first) {
+                        	event_buffer_write($buffer, "<policy-file-request/>\x00");
+                        	$first = false;
+                	}
+        	},
+        	function ($stream, $arg)  use (&$buffer)  {
+                	echo "failure\n";
+        	}
+	);
+ 	 
+	event_buffer_base_set($buffer, $eventBase);
+	event_buffer_enable($buffer, EV_READ | EV_WRITE | EV_TIMEOUT | EV_PERSIST);
+	event_base_loop($eventBase);
+
+SAMPLE OUTPUT
+------
+
+	[root@gf-home-server phpdaemon]# php -q test.php
+
+	Warning: socket_connect(): unable to connect [115]: Operation now in progress in /home/web/phpdaemon/test.php on line 6
+	Write
+	Write
+	Read
+	string(268) "<?xml version="1.0"?>
+	<!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
+	<cross-domain-policy>
+ 	 <allow-access-from domain="*" to-ports="*"/>
+ 	 <site-control permitted-cross-domain-policies="all"/>
+	</cross-domain-policy>
+	"
+	failure
+	[root@gf-home-server phpdaemon]# php -q test.php
+
+	Warning: socket_connect(): unable to connect [115]: Operation now in progress in /home/web/phpdaemon/test.php on line 6
+	Write
+	Write
+	Read
+	string(268) "<?xml version="1.0"?>
+	<!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
+	<cross-domain-policy>
+ 	 <allow-access-from domain="*" to-ports="*"/>
+ 	 <site-control permitted-cross-domain-policies="all"/>
+	</cross-domain-policy>
+	"
+	failure
