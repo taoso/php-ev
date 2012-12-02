@@ -53,13 +53,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_feed_signal_event, 0, 0, 1)
 	ZEND_ARG_INFO(0, signum)
 ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_once, 0, 0, 4)
-	ZEND_ARG_INFO(0, fd)
-	ZEND_ARG_INFO(0, events)
-	ZEND_ARG_INFO(0, timeout)
-	ZEND_ARG_INFO(0, callback)
-	ZEND_ARG_INFO(0, data)
-ZEND_END_ARG_INFO();
 /* EvLoop }}} */
 
 /* {{{ EvWatcher */
@@ -275,7 +268,6 @@ const zend_function_entry ev_loop_class_entry_functions[] = {
 	PHP_ME(EvLoop, break,                arginfo_ev_break,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, feed_signal,          arginfo_ev_feed_signal,       ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
 	PHP_ME(EvLoop, feed_signal_event,    arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, once,                 arginfo_ev_loop_once,         ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };

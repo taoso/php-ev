@@ -108,71 +108,6 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 }
 /* }}} */
 
-/* {{{ php_ev_once_callback */
-static void php_ev_once_callback(int revents, void *data)
-{
-	zval            **args[2];
-	zval             *key1;
-	zval             *key2;
-	zval             *retval_ptr;
-	zend_fcall_info  *pfci;
-
-	PHP_EV_ASSERT(data);
-	php_ev_once_arg *arg = (php_ev_once_arg *) data;
-
-	TSRMLS_FETCH_FROM_CTX(arg->thread_ctx);
-
-	pfci = arg->fci;
-
-	if (revents & EV_ERROR) {
-		int errorno = errno;
-		if (errorno == EINPROGRESS) {
-			/* Probably non-blocking socket or so */
-#ifdef PHP_EV_DEBUG
-		php_error_docref(NULL TSRMLS_CC, E_NOTICE, "Operation in progress");
-#endif
-			return;
-		}
-		php_error_docref(NULL TSRMLS_CC, E_WARNING,
-				"Got unspecified libev error in revents, errno: %d, err: %s",
-				errorno, strerror(errorno));
-	} else if (ZEND_FCI_INITIALIZED(*pfci)) {
-		/* Setup callback args */
-		key1 = arg->data;
-		args[0] = &key1;
-		zval_add_ref(&key1);
-
-		MAKE_STD_ZVAL(key2);
-		args[1] = &key2;
-		ZVAL_LONG(key2, revents);
-
-		/* Prepare callback */
-		pfci->params         = args;
-		pfci->retval_ptr_ptr = &retval_ptr;
-		pfci->param_count    = 2;
-		pfci->no_separation  = 0;
-
-		if (zend_call_function(pfci, arg->fcc TSRMLS_CC) == SUCCESS && retval_ptr) {
-		    zval_ptr_dtor(&retval_ptr);
-		} else {
-		    php_error_docref(NULL TSRMLS_CC, E_WARNING,
-		            "An error occurred while invoking the callback");
-		}
-
-		zval_ptr_dtor(&key1);
-		zval_ptr_dtor(&key2);
-	}
-
-	PHP_EV_FREE_FCALL_INFO(arg->fci, arg->fcc);
-
-	if (arg->data) {
-		zval_ptr_dtor(&arg->data);
-	}
-
-	efree(arg);
-}
-/* }}} */
-
 
 /* {{{ proto EvLoop EvLoop::default_loop([int flags = EVLAG_AUTO[, callable callback = NULL[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]]])
 */
@@ -328,57 +263,6 @@ PHP_METHOD(EvLoop, feed_signal_event)
 	}
 
 	ev_feed_signal_event(EV_A_ signum);
-}
-/* }}} */
-
-/* {{{ proto void EvLoop::once(mixed fd, int events, double timeout, callable callback[, mixed data = NULL]) */
-PHP_METHOD(EvLoop, once)
-{
-	zval                  *z_fd;
-	php_socket_t           fd;
-	long                   events;
-	double                 timeout;
-	zend_fcall_info        fci     = empty_fcall_info;
-	zend_fcall_info_cache  fcc     = empty_fcall_info_cache;
-	zval                  *data    = NULL;
-	php_ev_once_arg       *arg;
-
-	PHP_EV_LOOP_FETCH_FROM_THIS;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zldf|z!",
-				&z_fd, &events, &timeout, &fci, &fcc, &data) == FAILURE) {
-		return;
-	}
-
-	if (events & ~(EV_READ | EV_WRITE)) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid events mask passed");
-		return;
-	}
-
-	fd = php_ev_zval_to_fd(&z_fd TSRMLS_CC);
-	if (fd < 0) {
-		/* php_ev_zval_to_fd reports errors if necessary */
-		return;
-	}
-
-	if (!ZEND_FCI_INITIALIZED(fci)) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid callback passed");
-		return;
-	}
-
-	arg = (php_ev_once_arg *) emalloc(sizeof(php_ev_once_arg));
-	memset(arg, 0, sizeof(php_ev_once_arg));
-
-	PHP_EV_COPY_FCALL_INFO(arg->fci, arg->fcc, &fci, &fcc);
-
-	if (data) {
-		Z_ADDREF_P(data);
-	}
-	arg->data = data;
-
-	TSRMLS_SET_CTX(arg->thread_ctx);
-
-	ev_once(EV_A_ fd, events, timeout, php_ev_once_callback, (void *) arg);
 }
 /* }}} */
 
