@@ -170,7 +170,7 @@ PHP_METHOD(EvPeriodic, set)
 	
 	/* Free fci and fcc within periodic_ptr, since they will be overwritten anyways */
 
-	if (ZEND_FCI_INITIALIZED(*periodic_ptr->fci)) {
+	if (periodic_ptr->fci && ZEND_FCI_INITIALIZED(*periodic_ptr->fci)) {
 		PHP_EV_FREE_FCALL_INFO(periodic_ptr->fci, periodic_ptr->fcc);
 	}
 
