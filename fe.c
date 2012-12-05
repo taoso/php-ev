@@ -350,6 +350,7 @@ const zend_function_entry ev_stat_class_entry_functions[] = {
 	PHP_ME(EvStat, set,         arginfo_ev_stat_set, ZEND_ACC_PUBLIC)
 	PHP_ME(EvStat, attr,        arginfo_ev__void,    ZEND_ACC_PUBLIC)
 	PHP_ME(EvStat, prev,        arginfo_ev__void,    ZEND_ACC_PUBLIC)
+	PHP_ME(EvStat, stat,        arginfo_ev__void,    ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };

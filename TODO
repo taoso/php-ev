@@ -1,4 +1,10 @@
-libevent buffer functionality
+Start watchers automatically by default
+=======================================
+In most cases watchers are started automatically.
+Getting rid of need to call ::start() method we skip the function call overhead!.
+
+
+libevent buffer functionality?
 =============================
 
 	<?php

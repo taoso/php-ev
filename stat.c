@@ -173,6 +173,31 @@ PHP_METHOD(EvStat, prev)
 }
 /* }}} */
 
+/* {{{ proto bool EvStat::stat(void) */
+PHP_METHOD(EvStat, stat)
+{
+	php_ev_object *ev_obj;
+	ev_stat       *stat_watcher;
+	ev_statdata   *st;
+
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
+	ev_obj       = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+	stat_watcher = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
+
+	st = &stat_watcher->attr;
+
+	ev_stat_stat(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj), stat_watcher);
+
+	if (st->st_nlink) {
+		RETURN_TRUE;
+	}
+	RETURN_FALSE;
+}
+/* }}} */
+
 /*
  * Local variables:
  * tab-width: 4

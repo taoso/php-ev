@@ -93,6 +93,7 @@ PHP_METHOD(EvStat, __construct);
 PHP_METHOD(EvStat, set);
 PHP_METHOD(EvStat, attr);
 PHP_METHOD(EvStat, prev);
+PHP_METHOD(EvStat, stat);
 /* }}} */
 #endif
 

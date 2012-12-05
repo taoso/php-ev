@@ -218,7 +218,7 @@ PHP_METHOD(EvLoop, break)
 {
 	PHP_EV_LOOP_FETCH_FROM_THIS;
 
-	long how = 0;
+	long how = EVBREAK_ONE;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &how) == FAILURE) {
 		return;
