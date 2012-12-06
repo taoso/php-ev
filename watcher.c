@@ -135,7 +135,7 @@ void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *loop, const zend_
 /* }}} */
 
 /* {{{ php_ev_start_watcher() */
-static void php_ev_start_watcher(ev_watcher *watcher TSRMLS_DC)
+void php_ev_start_watcher(ev_watcher *watcher TSRMLS_DC)
 {
 	switch (watcher->type) {
 		case EV_IO:

@@ -108,7 +108,6 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 }
 /* }}} */
 
-
 /* {{{ proto EvLoop EvLoop::default_loop([int flags = EVLAG_AUTO[, callable callback = NULL[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]]])
 */
 PHP_METHOD(EvLoop, default_loop)
@@ -166,25 +165,6 @@ PHP_EV_LOOP_METHOD_VOID(now_update)
 PHP_EV_LOOP_METHOD_VOID(suspend)
 PHP_EV_LOOP_METHOD_VOID(resume)
 
-PHP_EV_LOOP_METHOD_INT_VOID(supported_backends)
-PHP_EV_LOOP_METHOD_INT_VOID(recommended_backends)
-PHP_EV_LOOP_METHOD_INT_VOID(embeddable_backends)
-
-/* {{{ proto void sleep(double seconds) */
-PHP_METHOD(EvLoop, sleep) 
-{
-	double seconds;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "d", &seconds) == FAILURE) {
-		return;
-	}
-
-	ev_sleep(seconds);
-}
-/* }}} */
-
-PHP_EV_LOOP_METHOD_DOUBLE_VOID(time)
-
 /* {{{ proto double EvLoop::now(void) */
 PHP_METHOD(EvLoop, now)
 {
@@ -225,19 +205,6 @@ PHP_METHOD(EvLoop, break)
 	}
 
 	ev_break(EV_A_ how);
-}
-/* }}} */
-
-/* {{{ proto void EvLoop::feed_signal(int signum) */
-PHP_METHOD(EvLoop, feed_signal)
-{
-	long signum;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &signum) == FAILURE) {
-		return;
-	}
-
-	ev_feed_signal(signum);
 }
 /* }}} */
 

@@ -1012,6 +1012,63 @@ PHP_MINFO_FUNCTION(ev)
 # include "fork.c"
 #endif
 
+
+/* {{{ Global functions */
+
+#define PHP_EV_FUNC_INT_VOID(name)                      \
+    PHP_FUNCTION(ev_ ## name)                           \
+    {                                                   \
+        if (zend_parse_parameters_none() == FAILURE) {  \
+            return;                                     \
+        }                                               \
+                                                        \
+        RETURN_LONG((long)ev_ ## name());               \
+    }
+
+PHP_EV_FUNC_INT_VOID(supported_backends)
+PHP_EV_FUNC_INT_VOID(recommended_backends)
+PHP_EV_FUNC_INT_VOID(embeddable_backends)
+
+/* {{{ proto void ev_feed_signal(int signum) */
+PHP_FUNCTION(ev_feed_signal)
+{
+	long signum;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &signum) == FAILURE) {
+		return;
+	}
+
+	ev_feed_signal(signum);
+}
+/* }}} */
+
+/* {{{ proto void ev_sleep(double seconds) */
+PHP_FUNCTION(ev_sleep)
+{
+	double seconds;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "d", &seconds) == FAILURE) {
+		return;
+	}
+
+	ev_sleep(seconds);
+}
+/* }}} */
+
+/* {{{ proto double ev_time(void) */
+PHP_FUNCTION(ev_time)
+{
+    if (zend_parse_parameters_none() == FAILURE) {
+        return;
+    }
+
+    RETURN_DOUBLE((double) ev_time());
+}
+/* }}} */
+
+
+/* }}} */
+
 #endif /* HAVE_EV */
 
 /*

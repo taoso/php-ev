@@ -20,6 +20,13 @@
 
 #include "embed.h"
 
+PHP_FUNCTION(ev_supported_backends);
+PHP_FUNCTION(ev_recommended_backends);
+PHP_FUNCTION(ev_embeddable_backends);
+PHP_FUNCTION(ev_feed_signal);
+PHP_FUNCTION(ev_sleep);
+PHP_FUNCTION(ev_time);
+
 /* {{{ EvLoop */
 PHP_METHOD(EvLoop, __construct);
 PHP_METHOD(EvLoop, default_loop);
@@ -29,15 +36,9 @@ PHP_METHOD(EvLoop, invoke_pending);
 PHP_METHOD(EvLoop, now_update);
 PHP_METHOD(EvLoop, suspend);
 PHP_METHOD(EvLoop, resume);
-PHP_METHOD(EvLoop, supported_backends);
-PHP_METHOD(EvLoop, recommended_backends);
-PHP_METHOD(EvLoop, embeddable_backends);
-PHP_METHOD(EvLoop, sleep);
-PHP_METHOD(EvLoop, time);
 PHP_METHOD(EvLoop, now);
 PHP_METHOD(EvLoop, run);
 PHP_METHOD(EvLoop, break);
-PHP_METHOD(EvLoop, feed_signal);
 PHP_METHOD(EvLoop, feed_signal_event);
 /* }}} */
 

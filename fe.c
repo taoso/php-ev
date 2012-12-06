@@ -238,9 +238,20 @@ ZEND_END_ARG_INFO();
 
 /* ARGINFO }}} */
 
+PHP_METHOD(EvLoop, supported_backends);
+PHP_METHOD(EvLoop, recommended_backends);
+PHP_METHOD(EvLoop, embeddable_backends);
+PHP_METHOD(EvLoop, feed_signal);
 
 /* {{{ ev_functions[] */
 const zend_function_entry ev_functions[] = {
+	PHP_FE(ev_supported_backends, arginfo_ev__void)
+	PHP_FE(ev_recommended_backends, arginfo_ev__void)
+	PHP_FE(ev_embeddable_backends, arginfo_ev__void)
+	PHP_FE(ev_sleep, arginfo_ev_sleep)
+	PHP_FE(ev_time, arginfo_ev__void)
+	PHP_FE(ev_feed_signal, arginfo_ev_feed_signal)
+
 	{NULL, NULL, NULL}
 };
 /* }}} */
@@ -255,19 +266,10 @@ const zend_function_entry ev_loop_class_entry_functions[] = {
 	PHP_ME(EvLoop, now_update,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, suspend,              arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, resume,               arginfo_ev__void,             ZEND_ACC_PUBLIC)
-
-	PHP_ME(EvLoop, supported_backends,   arginfo_ev__void,             ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, recommended_backends, arginfo_ev__void,             ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, embeddable_backends,  arginfo_ev__void,             ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-
-	PHP_ME(EvLoop, sleep,                arginfo_ev_sleep,             ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, time,                 arginfo_ev__void,             ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
 	PHP_ME(EvLoop, now,                  arginfo_ev__void,             ZEND_ACC_PUBLIC)
-
 	PHP_ME(EvLoop, run,                  arginfo_ev_run,               ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, break,                arginfo_ev_break,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, feed_signal,          arginfo_ev_feed_signal,       ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, feed_signal_event,    arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvLoop, feed_signal_event,    arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };
