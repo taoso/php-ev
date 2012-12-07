@@ -53,6 +53,94 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_feed_signal_event, 0, 0, 1)
 	ZEND_ARG_INFO(0, signum)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_io, 0, 0, 3)
+	ZEND_ARG_INFO(0, fd)
+	ZEND_ARG_INFO(0, events)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_timer, 0, 0, 3)
+	ZEND_ARG_INFO(0, after)
+	ZEND_ARG_INFO(0, repeat)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+
+#if EV_PERIODIC_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_periodic, 0, 0, 3)
+	ZEND_ARG_INFO(0, offset)
+	ZEND_ARG_INFO(0, interval)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_SIGNAL_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_signal, 0, 0, 2)
+	ZEND_ARG_INFO(0, signum)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_CHILD_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_child, 0, 0, 3)
+	ZEND_ARG_INFO(0, pid)
+	ZEND_ARG_INFO(0, trace)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_STAT_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_stat, 0, 0, 3)
+	ZEND_ARG_INFO(0, path)
+	ZEND_ARG_INFO(0, interval)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_IDLE_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_idle, 0, 0, 1)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_CHECK_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_check, 0, 0, 1)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_PREPARE_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_prepare, 0, 0, 1)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_EMBED_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_embed, 0, 0, 1)
+	ZEND_ARG_INFO(0, other)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+#if EV_FORK_ENABLE
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_loop_fork, 0, 0, 1)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, data)
+	ZEND_ARG_INFO(0, priority)
+ZEND_END_ARG_INFO();
+#endif
+
 /* EvLoop }}} */
 
 /* {{{ EvWatcher */
@@ -258,18 +346,47 @@ const zend_function_entry ev_functions[] = {
 
 /* {{{ ev_loop_class_entry_functions */
 const zend_function_entry ev_loop_class_entry_functions[] = {
-	PHP_ME(EvLoop, __construct,          arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
-	PHP_ME(EvLoop, default_loop,         arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, loop_fork,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, verify,               arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, invoke_pending,       arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, now_update,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, suspend,              arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, resume,               arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, now,                  arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, run,                  arginfo_ev_run,               ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, break,                arginfo_ev_break,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, feed_signal_event,    arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, __construct,       arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvLoop, default_loop,      arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvLoop, loop_fork,         arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, verify,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, invoke_pending,    arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, now_update,        arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, suspend,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, resume,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, now,               arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, run,               arginfo_ev_run,               ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, break,             arginfo_ev_break,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, feed_signal_event, arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, io,                arginfo_ev_loop_io,           ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, timer,             arginfo_ev_loop_timer,        ZEND_ACC_PUBLIC)
+#if EV_PERIODIC_ENABLE
+	PHP_ME(EvLoop, periodic,          arginfo_ev_loop_periodic,     ZEND_ACC_PUBLIC)
+#endif
+#if EV_SIGNAL_ENABLE
+	PHP_ME(EvLoop, signal,            arginfo_ev_loop_signal,       ZEND_ACC_PUBLIC)
+#endif
+#if EV_CHILD_ENABLE
+	PHP_ME(EvLoop, child,             arginfo_ev_loop_child,        ZEND_ACC_PUBLIC)
+#endif
+#if EV_STAT_ENABLE
+	PHP_ME(EvLoop, stat,              arginfo_ev_loop_stat,         ZEND_ACC_PUBLIC)
+#endif
+#if EV_IDLE_ENABLE
+	PHP_ME(EvLoop, idle,              arginfo_ev_loop_idle,         ZEND_ACC_PUBLIC)
+#endif
+#if EV_CHECK_ENABLE
+	PHP_ME(EvLoop, check,             arginfo_ev_loop_check,        ZEND_ACC_PUBLIC)
+#endif
+#if EV_PREPARE_ENABLE
+	PHP_ME(EvLoop, prepare,           arginfo_ev_loop_prepare,      ZEND_ACC_PUBLIC)
+#endif
+#if EV_EMBED_ENABLE
+	PHP_ME(EvLoop, embed,             arginfo_ev_loop_embed,        ZEND_ACC_PUBLIC)
+#endif
+#if EV_FORK_ENABLE
+	PHP_ME(EvLoop, fork,              arginfo_ev_loop_fork,         ZEND_ACC_PUBLIC)
+#endif
 
 	{ NULL, NULL, NULL }
 };

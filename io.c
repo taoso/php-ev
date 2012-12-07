@@ -18,27 +18,36 @@
 #include "util.h"
 #include "watcher.h"
 
-/* {{{ proto EvIo::__construct(mixed fd, int events, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
-PHP_METHOD(EvIo, __construct)
+/* {{{ php_ev_io_object_ctor */
+void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 {
-	zval                  *self;
+	zval                  *self       = NULL;
 	zval                  *z_fd;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
 	ev_io                 *io_watcher;
-	php_socket_t          fd;
+	php_socket_t           fd;
 
-	zval                  *loop;
 	zval                  *data       = NULL;
 	zend_fcall_info        fci        = empty_fcall_info;
 	zend_fcall_info_cache  fcc        = empty_fcall_info_cache;
 	long                   priority   = 0;
 	long                   events;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlOf|z!l",
-				&z_fd, &events, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
-				&data, &priority) == FAILURE) {
-		return;
+	if (loop) { /* Factory */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlf|z!l",
+					&z_fd, &events, &fci, &fcc,
+					&data, &priority) == FAILURE) {
+			return;
+		}
+	} else { /* Ctor */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlOf|z!l",
+					&z_fd, &events, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
+					&data, &priority) == FAILURE) {
+			return;
+		}
+
+		self = getThis();
 	}
 
 	if (events & ~(EV_READ | EV_WRITE)) {
@@ -52,7 +61,11 @@ PHP_METHOD(EvIo, __construct)
 		return;
 	}
 
-	self    = getThis();
+	if (!self) { /* Factory */
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_io_class_entry_ptr);
+		self = return_value; 
+	}
+
 	o_self  = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
 	o_loop  = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 	io_watcher = (ev_io *) php_ev_new_watcher(sizeof(ev_io), self,
@@ -61,18 +74,17 @@ PHP_METHOD(EvIo, __construct)
 
 	io_watcher->type = EV_IO;
 	
-#if 0
-	php_stream *fd_stream;
-	php_stream_from_zval_no_verify(fd_stream, &z_fd);
-	if (fd_stream == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed obtaining fd");
-		return;
-	}
-	ev_io_set(io_watcher, Z_LVAL_P(z_fd), events);
-#endif
 	ev_io_set(io_watcher, fd, events);
 
 	o_self->ptr = (void *) io_watcher;
+}
+/* }}} */
+
+
+/* {{{ proto EvIo::__construct(mixed fd, int events, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvIo, __construct)
+{
+	php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
 }
 /* }}} */
 

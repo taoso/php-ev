@@ -17,6 +17,7 @@
 */
 
 #include "php_ev.h"
+#include "util.h"
 
 #if HAVE_EV
 
@@ -846,6 +847,7 @@ static inline void php_ev_register_classes(TSRMLS_D)
 }
 /* }}} */
 
+
 /* Private functions }}} */
 
 
@@ -981,7 +983,6 @@ PHP_MINFO_FUNCTION(ev)
 /* }}} */
 
 
-#include "loop.c" 
 #include "io.c"
 #include "timer.c"
 #if EV_PERIODIC_ENABLE
@@ -1011,6 +1012,7 @@ PHP_MINFO_FUNCTION(ev)
 #if EV_FORK_ENABLE
 # include "fork.c"
 #endif
+#include "loop.c" 
 
 
 /* {{{ Global functions */

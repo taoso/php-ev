@@ -52,29 +52,42 @@ static void php_ev_stat_to_zval(const ev_statdata *st, zval *z)
 }
 /* }}} */
 
-
-/* {{{ proto EvStat::__construct(string path, double interval, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
-PHP_METHOD(EvStat, __construct)
+/* {{{ php_ev_stat_object_ctor */
+void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 {
 	char                  *path;
 	int                    path_len;
 	double                 interval;
-	zval                  *self;
+	zval                  *self         = NULL;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
 	ev_stat               *stat_watcher;
 	php_ev_stat           *stat_ptr;
 
-	zval                  *loop;
 	zval                  *data         = NULL;
 	zend_fcall_info        fci          = empty_fcall_info;
 	zend_fcall_info_cache  fcc          = empty_fcall_info_cache;
 	long                   priority     = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pdOf|z!l",
-				&path, &path_len, &interval, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
-				&data, &priority) == FAILURE) {
-		return;
+
+	if (loop) { /* Factory */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pdf|z!l",
+					&path, &path_len, &interval, &fci, &fcc,
+					&data, &priority) == FAILURE) {
+			return;
+		}
+
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_stat_class_entry_ptr);
+
+		self = return_value; 
+	} else { /* Ctor */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pdOf|z!l",
+					&path, &path_len, &interval, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
+					&data, &priority) == FAILURE) {
+			return;
+		}
+
+		self = getThis();
 	}
 
 	stat_ptr = (php_ev_stat *) emalloc(sizeof(php_ev_stat));
@@ -84,7 +97,6 @@ PHP_METHOD(EvStat, __construct)
 
 	stat_watcher = &stat_ptr->stat;
 
-	self         = getThis();
 	o_self       = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
 	o_loop       = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 
@@ -97,6 +109,13 @@ PHP_METHOD(EvStat, __construct)
 	ev_stat_set(stat_watcher, stat_ptr->path, interval);
 
 	o_self->ptr = (void *) stat_ptr;
+}
+/* }}} */
+
+/* {{{ proto EvStat::__construct(string path, double interval, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvStat, __construct)
+{
+	php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
 }
 /* }}} */
 

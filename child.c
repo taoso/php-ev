@@ -18,29 +18,40 @@
 */
 #include "watcher.h"
 
-/* {{{ proto EvChild::__construct(int pid, bool trace, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
-PHP_METHOD(EvChild, __construct)
+/* {{{ php_ev_child_object_ctor */
+void php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 {
-	long           pid;
-	zend_bool      trace;
-	zval          *self;
-	php_ev_object *o_self;
-	php_ev_object *o_loop;
-	ev_child      *child_watcher;
+	long                   pid;
+	zend_bool              trace;
+	zval                  *self;
+	php_ev_object         *o_self;
+	php_ev_object         *o_loop;
+	ev_child              *child_watcher;
 
-	zval                  *loop;
-	zval                  *data       = NULL;
-	zend_fcall_info        fci        = empty_fcall_info;
-	zend_fcall_info_cache  fcc        = empty_fcall_info_cache;
-	long                   priority   = 0;
+	zval                  *data          = NULL;
+	zend_fcall_info        fci           = empty_fcall_info;
+	zend_fcall_info_cache  fcc           = empty_fcall_info_cache;
+	long                   priority      = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lbOf|z!l",
-				&pid, &trace, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
-				&data, &priority) == FAILURE) {
-		return;
+	if (loop) { /* Factory */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lbf|z!l",
+					&pid, &trace, &fci, &fcc, &data, &priority) == FAILURE) {
+			return;
+		}
+
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_child_class_entry_ptr);
+
+		self = return_value; 
+	} else { /* Ctor */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lbOf|z!l",
+					&pid, &trace, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
+					&data, &priority) == FAILURE) {
+			return;
+		}
+
+		self = getThis();
 	}
 
-	self          = getThis();
 	o_self        = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
 	o_loop        = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 	child_watcher = (ev_child *) php_ev_new_watcher(sizeof(ev_child), self,
@@ -52,6 +63,14 @@ PHP_METHOD(EvChild, __construct)
 	ev_child_set(child_watcher, pid, trace);
 
 	o_self->ptr = (void *) child_watcher;
+
+}
+/* }}} */
+
+/* {{{ proto EvChild::__construct(int pid, bool trace, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvChild, __construct)
+{
+	php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
 }
 /* }}} */
 

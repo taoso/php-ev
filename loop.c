@@ -233,6 +233,101 @@ PHP_METHOD(EvLoop, feed_signal_event)
 }
 /* }}} */
 
+/* {{{ proto EvIo EvLoop::io(mixed fd, int events, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvLoop, io)
+{
+	php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+
+/* {{{ proto EvTimer EvLoop::timer(double after, double repeat, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvLoop, timer)
+{
+	php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+
+#if EV_PERIODIC_ENABLE
+/* {{{ proto EvPeriodic EvLoop::periodic(double offset, double interval, callable reschedule_cb, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvLoop, periodic)
+{
+	php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_SIGNAL_ENABLE
+/* {{{ proto EvSignal EvLoop::signal(int signum, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvLoop, signal)
+{
+	php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_CHILD_ENABLE
+/* {{{ proto EvChild EvLoop::child(int pid, bool trace, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvLoop, child)
+{
+	php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_STAT_ENABLE
+/* {{{ proto EvStat EvLoop::stat(string path, double interval, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvLoop, stat)
+{
+	php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_IDLE_ENABLE
+/* {{{ proto EvIdle EvLoop::idle(callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvLoop, idle)
+{
+	php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_CHECK_ENABLE
+/* {{{ proto EvCheck EvLoop::check() */
+PHP_METHOD(EvLoop, check)
+{
+	php_ev_check_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_PREPARE_ENABLE
+/* {{{ proto EvPrepare EvLoop::prepare() */
+PHP_METHOD(EvLoop, prepare)
+{
+	php_ev_prepare_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_EMBED_ENABLE
+/* {{{ proto EvEmbed EvLoop::embed() */
+PHP_METHOD(EvLoop, embed)
+{
+	php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
+#if EV_FORK_ENABLE
+/* {{{ proto EvFork EvLoop::fork() */
+PHP_METHOD(EvLoop, fork)
+{
+	php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+}
+/* }}} */
+#endif
+
 /*
  * Local variables:
  * tab-width: 4

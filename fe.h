@@ -40,6 +40,35 @@ PHP_METHOD(EvLoop, now);
 PHP_METHOD(EvLoop, run);
 PHP_METHOD(EvLoop, break);
 PHP_METHOD(EvLoop, feed_signal_event);
+PHP_METHOD(EvLoop, io);
+PHP_METHOD(EvLoop, timer);
+#if EV_PERIODIC_ENABLE
+PHP_METHOD(EvLoop, periodic);
+#endif
+#if EV_SIGNAL_ENABLE
+PHP_METHOD(EvLoop, signal);
+#endif
+#if EV_CHILD_ENABLE
+PHP_METHOD(EvLoop, child);
+#endif
+#if EV_STAT_ENABLE
+PHP_METHOD(EvLoop, stat);
+#endif
+#if EV_IDLE_ENABLE
+PHP_METHOD(EvLoop, idle);
+#endif
+#if EV_CHECK_ENABLE
+PHP_METHOD(EvLoop, check);
+#endif
+#if EV_PREPARE_ENABLE
+PHP_METHOD(EvLoop, prepare);
+#endif
+#if EV_EMBED_ENABLE
+PHP_METHOD(EvLoop, embed);
+#endif
+#if EV_FORK_ENABLE
+PHP_METHOD(EvLoop, fork);
+#endif
 /* }}} */
 
 /* {{{ EvWatcher */

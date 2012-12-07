@@ -17,10 +17,10 @@
 */
 #include "watcher.h"
 
-/* {{{ proto EvEmbed::__construct(EvLoop other, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
-PHP_METHOD(EvEmbed, __construct)
+/* {{{ php_ev_embed_object_ctor */
+void php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 {
-	zval                  *self;
+	zval                  *self = NULL;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
 	php_ev_object         *o_loop_other;
@@ -28,17 +28,27 @@ PHP_METHOD(EvEmbed, __construct)
 	ev_loop               *loop_other_ptr;
 	php_ev_embed          *embed_ptr;
 
-	zval                  *loop;
 	zval                  *loop_other;
 	zval                  *data           = NULL;
 	zend_fcall_info        fci            = empty_fcall_info;
 	zend_fcall_info_cache  fcc            = empty_fcall_info_cache;
 	long                   priority       = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "OO|fz!l",
-				&loop_other, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
-				&data, &priority) == FAILURE) {
-		return;
+	if (loop) { /* Factory */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O|fz!l",
+					&loop_other, ev_loop_class_entry_ptr, &fci, &fcc,
+					&data, &priority) == FAILURE) {
+			return;
+		}
+	} else { /* Ctor */
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "OO|fz!l",
+					&loop_other, ev_loop_class_entry_ptr,
+					&loop, ev_loop_class_entry_ptr, &fci, &fcc,
+					&data, &priority) == FAILURE) {
+			return;
+		}
+
+		self = getThis();
 	}
 
 	o_loop_other   = (php_ev_object *) zend_object_store_get_object(loop_other TSRMLS_CC);
@@ -52,12 +62,16 @@ PHP_METHOD(EvEmbed, __construct)
 
 	PHP_EV_ASSERT(loop_other_ptr);
 
+	if (!self) { /* Factory */
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_embed_class_entry_ptr);
+		self = return_value; 
+	}
+
 	embed_ptr = (php_ev_embed *) emalloc(sizeof(php_ev_embed));
 	memset(embed_ptr, 0, sizeof(php_ev_embed));
 
 	embed_watcher = &embed_ptr->embed;
 
-	self          = getThis();
 	o_self        = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
 	o_loop        = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 
@@ -70,6 +84,14 @@ PHP_METHOD(EvEmbed, __construct)
 	ev_embed_set(embed_watcher, PHP_EV_LOOP_FETCH_FROM_OBJECT(o_loop_other));
 
 	o_self->ptr = (void *) embed_ptr;
+}
+/* }}} */
+
+
+/* {{{ proto EvEmbed::__construct(EvLoop other, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvEmbed, __construct)
+{
+	php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
 }
 /* }}} */
 

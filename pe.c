@@ -159,8 +159,6 @@ static int ev_loop_prop_depth_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
 	PHP_EV_ASSERT(obj->ptr);
 
-	php_ev_loop *loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
-
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_LONG(*retval, ev_depth(PHP_EV_LOOP_FETCH_FROM_OBJECT(obj)));
 

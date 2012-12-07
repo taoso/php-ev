@@ -70,6 +70,12 @@
     ce->create_object = parent_ce->create_object; /*php_ev_object_create; */    \
 }
 
+#define PHP_EV_INIT_CLASS_OBJECT(pz, pce) \
+        Z_TYPE_P(pz) = IS_OBJECT;         \
+        object_init_ex(pz, pce);          \
+        Z_SET_REFCOUNT_P(pz, 1);          \
+        Z_UNSET_ISREF_P(pz);
+
 #define PHP_EV_ADD_CLASS_PROPERTIES(a, b)                                                      \
 {                                                                                              \
     int i = 0;                                                                                 \
