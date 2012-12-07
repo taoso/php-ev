@@ -5,7 +5,6 @@ Getting rid of need to call ::start() method we skip the function call overhead!
 
 
 Remove $loop arg from watcher class constructors, assume the default loop used.
-Make EvLoop methods for creating watchers based on special loop.
 ===============================================================================
 
 
