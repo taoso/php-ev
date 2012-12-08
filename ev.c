@@ -115,6 +115,13 @@ ZEND_GET_MODULE(ev)
 
 /* {{{ Private functions */
 
+/* {{{ php_ev_default_fork */
+static void php_ev_default_fork(void)
+{
+	ev_loop_fork(EV_DEFAULT_UC);
+}
+/* }}} */
+
 /* {{{ php_ev_prop_read_default */
 static int php_ev_prop_read_default(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
@@ -911,6 +918,10 @@ PHP_MINIT_FUNCTION(ev)
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_CUSTOM);
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_ERROR);
 
+#if !defined(_WIN32) && !defined(_MINIX)
+	pthread_atfork(0, 0, php_ev_default_fork);
+#endif
+
 	return SUCCESS;
 }
 /* }}} */
@@ -1067,7 +1078,6 @@ PHP_FUNCTION(ev_time)
     RETURN_DOUBLE((double) ev_time());
 }
 /* }}} */
-
 
 /* }}} */
 

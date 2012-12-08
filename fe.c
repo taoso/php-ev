@@ -333,12 +333,12 @@ PHP_METHOD(EvLoop, feed_signal);
 
 /* {{{ ev_functions[] */
 const zend_function_entry ev_functions[] = {
-	PHP_FE(ev_supported_backends, arginfo_ev__void)
+	PHP_FE(ev_supported_backends,   arginfo_ev__void)
 	PHP_FE(ev_recommended_backends, arginfo_ev__void)
-	PHP_FE(ev_embeddable_backends, arginfo_ev__void)
-	PHP_FE(ev_sleep, arginfo_ev_sleep)
-	PHP_FE(ev_time, arginfo_ev__void)
-	PHP_FE(ev_feed_signal, arginfo_ev_feed_signal)
+	PHP_FE(ev_embeddable_backends,  arginfo_ev__void)
+	PHP_FE(ev_sleep,                arginfo_ev_sleep)
+	PHP_FE(ev_time,                 arginfo_ev__void)
+	PHP_FE(ev_feed_signal,          arginfo_ev_feed_signal)
 
 	{NULL, NULL, NULL}
 };
