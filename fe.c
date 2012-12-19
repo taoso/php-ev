@@ -20,6 +20,9 @@
 
 /* {{{ ARGINFO */
 
+/* TODO: Refactor: some arginfoes can be identical,
+ * e.g. EvLoop::io() and EvIo::__construct() */
+
 ZEND_BEGIN_ARG_INFO(arginfo_ev__void, 0)
 ZEND_END_ARG_INFO();
 
@@ -164,10 +167,9 @@ ZEND_END_ARG_INFO();
 /* EvWatcher }}} */
 
 /* {{{ EvIo */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io, 0, 0, 4)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_io, 0, 0, 3)
 	ZEND_ARG_INFO(0, fd)
 	ZEND_ARG_INFO(0, events)
-	ZEND_ARG_INFO(0, loop)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -180,10 +182,9 @@ ZEND_END_ARG_INFO();
 /* EvIo }}} */
 
 /* {{{ EvTimer */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_timer, 0, 0, 4)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_timer, 0, 0, 3)
 	ZEND_ARG_INFO(0, after)
 	ZEND_ARG_INFO(0, repeat)
-	ZEND_ARG_INFO(0, loop)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -197,10 +198,9 @@ ZEND_END_ARG_INFO();
 
 #if EV_PERIODIC_ENABLE
 /* {{{ EvPeriodic */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic, 0, 0, 4)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic, 0, 0, 3)
 	ZEND_ARG_INFO(0, offset)
 	ZEND_ARG_INFO(0, interval)
-	ZEND_ARG_INFO(0, loop)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -215,9 +215,8 @@ ZEND_END_ARG_INFO();
 
 #if EV_SIGNAL_ENABLE
 /* {{{ EvSignal*/
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_signal, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_signal, 0, 0, 2)
 	ZEND_ARG_INFO(0, signum)
-	ZEND_ARG_INFO(0, loop)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -231,10 +230,9 @@ ZEND_END_ARG_INFO();
 
 #if EV_CHILD_ENABLE
 /* {{{ EvChild*/
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_child, 0, 0, 4)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_child, 0, 0, 3)
 	ZEND_ARG_INFO(0, pid)
 	ZEND_ARG_INFO(0, trace)
-	ZEND_ARG_INFO(0, loop)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -249,10 +247,9 @@ ZEND_END_ARG_INFO();
 
 #if EV_STAT_ENABLE
 /* {{{ EvStat */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_stat, 0, 0, 4)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_stat, 0, 0, 3)
 	ZEND_ARG_INFO(0, path)
 	ZEND_ARG_INFO(0, interval)
-	ZEND_ARG_INFO(0, loop)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -267,8 +264,7 @@ ZEND_END_ARG_INFO();
 
 #if EV_IDLE_ENABLE
 /* {{{ EvIdle */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_idle, 0, 0, 2)
-	ZEND_ARG_INFO(0, loop)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_idle, 0, 0, 1)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -278,8 +274,7 @@ ZEND_END_ARG_INFO();
 
 #if EV_CHECK_ENABLE
 /* {{{ EvCheck */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_check, 0, 0, 2)
-	ZEND_ARG_INFO(0, loop)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_check, 0, 0, 1)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -289,8 +284,7 @@ ZEND_END_ARG_INFO();
 
 #if EV_PREPARE_ENABLE
 /* {{{ EvPrepare */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_prepare, 0, 0, 2)
-	ZEND_ARG_INFO(0, loop)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_prepare, 0, 0, 1)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -300,13 +294,13 @@ ZEND_END_ARG_INFO();
 
 #if EV_EMBED_ENABLE
 /* {{{ EvEmbed */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_embed, 0, 0, 2)
-	ZEND_ARG_INFO(0, loop)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_embed, 0, 0, 1)
 	ZEND_ARG_INFO(0, other)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
 ZEND_END_ARG_INFO();
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_embed_set, 0, 0, 1)
 	ZEND_ARG_INFO(0, other)
 ZEND_END_ARG_INFO();
@@ -315,8 +309,7 @@ ZEND_END_ARG_INFO();
 
 #if EV_FORK_ENABLE
 /* {{{ EvFork */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_fork, 0, 0, 2)
-	ZEND_ARG_INFO(0, loop)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_fork, 0, 0, 1)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
@@ -339,6 +332,9 @@ const zend_function_entry ev_functions[] = {
 	PHP_FE(ev_sleep,                arginfo_ev_sleep)
 	PHP_FE(ev_time,                 arginfo_ev__void)
 	PHP_FE(ev_feed_signal,          arginfo_ev_feed_signal)
+	PHP_FE(ev_run,                  arginfo_ev_run)
+	PHP_FE(ev_now,                  arginfo_ev__void)
+	PHP_FE(ev_break,                arginfo_ev_break)
 
 	{NULL, NULL, NULL}
 };

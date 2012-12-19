@@ -34,21 +34,10 @@ void php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	zend_fcall_info_cache  fcc            = empty_fcall_info_cache;
 	long                   priority       = 0;
 
-	if (loop) { /* Factory */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O|fz!l",
-					&loop_other, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-	} else { /* Ctor */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "OO|fz!l",
-					&loop_other, ev_loop_class_entry_ptr,
-					&loop, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-
-		self = getThis();
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O|fz!l",
+				&loop_other, ev_loop_class_entry_ptr, &fci, &fcc,
+				&data, &priority) == FAILURE) {
+		return;
 	}
 
 	o_loop_other   = (php_ev_object *) zend_object_store_get_object(loop_other TSRMLS_CC);
@@ -62,9 +51,15 @@ void php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 
 	PHP_EV_ASSERT(loop_other_ptr);
 
-	if (!self) { /* Factory */
+	/* If loop is NULL, then we're in __construct() */
+	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_embed_class_entry_ptr);
+
+		PHP_EV_ASSERT((self == NULL));
 		self = return_value; 
+	} else {
+		loop = php_ev_default_loop(TSRMLS_C);
+		self = getThis();
 	}
 
 	embed_ptr = (php_ev_embed *) emalloc(sizeof(php_ev_embed));
@@ -88,7 +83,7 @@ void php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 /* }}} */
 
 
-/* {{{ proto EvEmbed::__construct(EvLoop other, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+/* {{{ proto EvEmbed::__construct(EvLoop other, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvEmbed, __construct)
 {
 	php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);

@@ -46,6 +46,8 @@ if test "$PHP_EV" != "no"; then
   if test "$PHP_EV_DEBUG" != "no"; then
     CFLAGS="$CFLAGS -Wall -g -ggdb -O0"
     AC_DEFINE(PHP_EV_DEBUG, 1, [Enable ev debug support])
+  else
+    AC_DEFINE(NDEBUG, 1, [With NDEBUG defined assert generates no code])
   fi
 
   if test "$PHP_EV_SOCKETS" != "no"; then

@@ -16,9 +16,13 @@
    +----------------------------------------------------------------------+
 */
 
+#if 0
 #include "embed.h"
 #include "priv.h"
+#endif
+#include "php_ev.h"
 #include "watcher.h"
+
 
 /* {{{ EvLoop property handlers */
 

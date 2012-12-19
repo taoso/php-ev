@@ -59,6 +59,8 @@ extern const zend_property_info ev_child_property_entry_info[];
 extern const zend_property_info ev_stat_property_entry_info[];
 extern const zend_property_info ev_embed_property_entry_info[];
 
+zval *php_ev_default_loop(TSRMLS_D);
+
 void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
 void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
 void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);

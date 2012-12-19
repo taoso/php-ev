@@ -32,6 +32,7 @@ PHP_MINFO_FUNCTION(ev);
 ZEND_BEGIN_MODULE_GLOBALS(ev)
 	zval *default_loop;
 ZEND_END_MODULE_GLOBALS(ev)
+ZEND_EXTERN_MODULE_GLOBALS(ev)
 
 extern zend_module_entry ev_module_entry;
 #define phpext_ev_ptr &ev_module_entry

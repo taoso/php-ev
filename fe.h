@@ -26,6 +26,9 @@ PHP_FUNCTION(ev_embeddable_backends);
 PHP_FUNCTION(ev_feed_signal);
 PHP_FUNCTION(ev_sleep);
 PHP_FUNCTION(ev_time);
+PHP_FUNCTION(ev_run);
+PHP_FUNCTION(ev_now);
+PHP_FUNCTION(ev_break);
 
 /* {{{ EvLoop */
 PHP_METHOD(EvLoop, __construct);

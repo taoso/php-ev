@@ -4,9 +4,7 @@ Check for EvWatcher::keepalive() functionality
 <?php 
 error_reporting(0);
 
-$loop = EvLoop::default_loop();
-
-$timer = new EvTimer(1, 0.3, $loop, function ($w, $r) {
+$timer = new EvTimer(1, 0.3, function ($w, $r) {
 	echo "ok 7\n";
 	$w->stop();
 });
@@ -14,7 +12,7 @@ $timer = new EvTimer(1, 0.3, $loop, function ($w, $r) {
 $timer->keepalive(1);
 
 echo "ok 1\n";
-$loop->run();
+ev_run();
 echo "ok 2\n";
 
 $timer->start();
@@ -25,19 +23,19 @@ $timer->again();
 $timer->stop();
 $timer->start();
 
-$timer2 = new EvTimer(-1, 0, $loop, function ($w, $r) {
+$timer2 = new EvTimer(-1, 0, function ($w, $r) {
 	echo "ok 4\n";
 });
 $timer2->keepalive(0);
 
 echo "ok 3\n";
-$loop->run();
+ev_run();
 echo "ok 5\n";
 
 $timer->keepalive(1);
 
 echo "ok 6\n";
-$loop->run();
+ev_run();
 echo "ok 8\n";
 ?>
 --EXPECT--

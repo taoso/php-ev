@@ -104,28 +104,23 @@ void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	zend_fcall_info_cache  fcc              = empty_fcall_info_cache;
 	long                   priority         = 0;
 
-	if (loop) { /* Factory */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ddf!f|z!l",
-					&offset, &interval, &fci_reschedule, &fcc_reschedule,
-					&fci, &fcc, &data, &priority) == FAILURE) {
-			return;
-		}
-	} else { /* Ctor */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ddf!Of|z!l",
-					&offset, &interval, &fci_reschedule, &fcc_reschedule,
-					&loop, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-
-		self = getThis();
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ddf!f|z!l",
+				&offset, &interval, &fci_reschedule, &fcc_reschedule,
+				&fci, &fcc, &data, &priority) == FAILURE) {
+		return;
 	}
 
 	PHP_EV_CHECK_REPEAT(interval);
 
-	if (!self) { /* Factory */
+	/* If loop is NULL, then we're in __construct() */
+	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_periodic_class_entry_ptr);
+
+		PHP_EV_ASSERT((self == NULL));
 		self = return_value; 
+	} else {
+		loop = php_ev_default_loop(TSRMLS_C);
+		self = getThis();
 	}
 
 	periodic_ptr = (php_ev_periodic *) emalloc(sizeof(php_ev_periodic));
@@ -133,8 +128,8 @@ void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 
 	periodic_watcher = &periodic_ptr->periodic;
 
-	o_self           = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop           = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 
 	php_ev_set_watcher((ev_watcher *)periodic_watcher, sizeof(ev_periodic), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
@@ -158,7 +153,7 @@ void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 /* }}} */
 
 
-/* {{{ proto EvPeriodic::__construct(double offset, double interval, callable reschedule_cb, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) 
+/* {{{ proto EvPeriodic::__construct(double offset, double interval, callable reschedule_cb, callable callback[, mixed data = NULL[, int priority = 0]]) 
  * NOTE: reschedule_cb could be NULL */
 PHP_METHOD(EvPeriodic, __construct)
 {

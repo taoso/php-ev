@@ -70,23 +70,20 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	long                   priority     = 0;
 
 
-	if (loop) { /* Factory */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pdf|z!l",
-					&path, &path_len, &interval, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pdf|z!l",
+				&path, &path_len, &interval, &fci, &fcc,
+				&data, &priority) == FAILURE) {
+		return;
+	}
 
+	/* If loop is NULL, then we're in __construct() */
+	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_stat_class_entry_ptr);
 
+		PHP_EV_ASSERT((self == NULL));
 		self = return_value; 
-	} else { /* Ctor */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pdOf|z!l",
-					&path, &path_len, &interval, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-
+	} else {
+		loop = php_ev_default_loop(TSRMLS_C);
 		self = getThis();
 	}
 
@@ -112,7 +109,7 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 }
 /* }}} */
 
-/* {{{ proto EvStat::__construct(string path, double interval, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+/* {{{ proto EvStat::__construct(string path, double interval, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvStat, __construct)
 {
 	php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);

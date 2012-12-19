@@ -4,8 +4,9 @@ In most cases watchers are started automatically.
 Getting rid of need to call ::start() method we skip the function call overhead!.
 
 
-Remove $loop arg from watcher class constructors, assume the default loop used.
-===============================================================================
+Whether static class Ev, or \Ev namespace for functions/properties associated with
+default loop
+===================================================================================
 
 
 libevent buffer functionality?

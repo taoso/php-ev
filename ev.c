@@ -122,6 +122,42 @@ static void php_ev_default_fork(void)
 }
 /* }}} */
 
+/* {{{ php_ev_default_loop */
+zval *php_ev_default_loop(TSRMLS_D)
+{
+	zval **default_loop_ptr_ptr = &MyG(default_loop);
+
+	if (*default_loop_ptr_ptr) {
+		return *default_loop_ptr_ptr;
+	}
+
+	php_ev_object  *ev_obj;
+	struct ev_loop *loop   = ev_default_loop(EVFLAG_AUTO);
+
+	if (!loop) {
+		php_error_docref(NULL TSRMLS_CC, E_ERROR,
+				"Failed to instanciate default loop, "
+				"bad $LIBEV_FLAGS in environment?");
+		return 0;
+	}
+
+	MAKE_STD_ZVAL(*default_loop_ptr_ptr);
+	PHP_EV_INIT_CLASS_OBJECT(*default_loop_ptr_ptr, ev_loop_class_entry_ptr);
+
+	ev_obj = (php_ev_object *) zend_object_store_get_object(*default_loop_ptr_ptr TSRMLS_CC);
+
+	php_ev_loop *ptr = (php_ev_loop *) emalloc(sizeof(php_ev_loop));
+	memset(ptr, 0, sizeof(php_ev_loop));
+	ptr->loop = loop;
+
+	ev_obj->ptr = (void *) ptr;
+
+	ev_set_userdata(loop, (void *) *default_loop_ptr_ptr);
+
+	return *default_loop_ptr_ptr;
+}
+/* }}} */
+
 /* {{{ php_ev_prop_read_default */
 static int php_ev_prop_read_default(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
@@ -337,12 +373,14 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
 	php_ev_loop *ptr = (php_ev_loop *) obj->ptr;
 
 	if (ptr->loop) {
-		/* Stop all watchers associated with this loop.  But don't free their memory. 
-		 * They have special automatically called handlers for this purpose */
+		/* Don't free memory of watchers here.
+		 * They have special GC handlers for this purpose */
 		ev_watcher *w = ptr->w;
 		while (w) {
-			php_ev_stop_watcher(w TSRMLS_CC);
-			w = php_ev_watcher_prev(w);
+			/* Watcher is stopped in it's cleanup handler
+			 * php_ev_stop_watcher(w TSRMLS_CC);*/
+			php_ev_watcher_loop(w) = NULL;
+			w = php_ev_watcher_next(w);
 		}
 
 		if (ev_is_default_loop(ptr->loop)) {
@@ -373,21 +411,55 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
  * This is a helper for derived watcher class objects. */
 static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 {
-	zval *data, *self;
+	zval       *data;
+	ev_watcher *w_next  , *w_prev;
 
-	/* This is done in php_ev_loop_free_storage()
+	/* What if we do it in php_ev_loop_free_storage()?*/
 	php_ev_stop_watcher(ptr TSRMLS_CC);
-	*/
+
+	/* Re-link the list of watchers */
+
+	w_next = php_ev_watcher_next(ptr);
+	w_prev = php_ev_watcher_prev(ptr);
+
+	if (w_prev) {
+		php_ev_watcher_next(w_prev) = w_next;
+	}
+
+	if (w_next) {
+		php_ev_watcher_prev(w_next) = w_prev;
+	}
+
+#if 0
+	php_ev_loop *o_loop = php_ev_watcher_loop(ptr);
+	if (o_loop) {
+		ev_watcher *pw = o_loop->w;
+
+		if (pw == ptr) { /* head of the list */
+			o_loop->w = w_next;
+		} else {
+			while (pw) {
+				if (php_ev_watcher_next(pw) == ptr) {
+					/* pw is the next watcher after ptr */
+					php_ev_watcher_next(pw) = w_next;
+					break;
+				}
+				pw = php_ev_watcher_next(pw);
+			}
+		}
+	}
+#endif
+
+	php_ev_watcher_next(ptr) = php_ev_watcher_prev(ptr) = NULL;
 
 	PHP_EV_FREE_FCALL_INFO(php_ev_watcher_fci(ptr), php_ev_watcher_fcc(ptr));
 	
 	data = php_ev_watcher_data(ptr);
-	self = php_ev_watcher_self(ptr);
-
 	if (data) {
 		zval_ptr_dtor(&data);
 	}
-	zval_ptr_dtor(&self);
+
+	zval_ptr_dtor(&php_ev_watcher_self(ptr));
 }
 /* }}} */
 
@@ -663,8 +735,8 @@ zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *in
 	}
 
 	retval.handle = zend_objects_store_put(intern,
-			(zend_objects_store_dtor_t)zend_objects_destroy_object,
-			(zend_objects_free_object_storage_t)func_free_storage,
+			(zend_objects_store_dtor_t) zend_objects_destroy_object,
+			(zend_objects_free_object_storage_t) func_free_storage,
 			NULL TSRMLS_CC);
 	retval.handlers = &ev_object_handlers;
 
@@ -1076,6 +1148,61 @@ PHP_FUNCTION(ev_time)
     }
 
     RETURN_DOUBLE((double) ev_time());
+}
+/* }}} */
+
+/* {{{ proto void ev_run([int flags = 0]) */
+PHP_FUNCTION(ev_run)
+{
+	long flags = 0;
+	zval *zloop;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &flags) == FAILURE) {
+		return;
+	}
+
+	zloop = php_ev_default_loop(TSRMLS_C);
+
+	php_ev_object *ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC);
+	PHP_EV_CONSTRUCT_CHECK(ev_obj);
+
+	ev_run(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj), flags);
+}
+/* }}} */
+
+/* {{{ proto double ev_now(void) */
+PHP_FUNCTION(ev_now)
+{
+	zval           *zloop  = php_ev_default_loop(TSRMLS_C);
+	php_ev_object  *ev_obj;
+
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
+	ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC);
+	PHP_EV_CONSTRUCT_CHECK(ev_obj);
+
+	RETURN_DOUBLE((double) ev_now(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj)));
+}
+/* }}} */
+
+/* {{{ proto void ev_break([int how = 0]) */
+PHP_FUNCTION(ev_break)
+{
+	long  how   = EVBREAK_ONE;
+	zval *zloop;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &how) == FAILURE) {
+		return;
+	}
+
+	zloop = php_ev_default_loop(TSRMLS_C);
+
+	php_ev_object *ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC);
+	PHP_EV_CONSTRUCT_CHECK(ev_obj);
+
+	ev_break(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj), how);
 }
 /* }}} */
 

@@ -32,27 +32,23 @@ void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	zend_fcall_info_cache  fcc        = empty_fcall_info_cache;
 	long                   priority   = 0;
 
-	if (loop) { /* Factory */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ddf|z!l",
-					&after, &repeat, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-	} else { /* Ctor */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ddOf|z!l",
-					&after, &repeat, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-
-		self = getThis();
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ddf|z!l",
+				&after, &repeat, &fci, &fcc,
+				&data, &priority) == FAILURE) {
+		return;
 	}
 
 	PHP_EV_CHECK_REPEAT(repeat);
 
-	if (!self) { /* Factory */
+	/* If loop is NULL, then we're in __construct() */
+	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_timer_class_entry_ptr);
+
+		PHP_EV_ASSERT((self == NULL));
 		self = return_value; 
+	} else {
+		loop = php_ev_default_loop(TSRMLS_C);
+		self = getThis();
 	}
 
 	o_self        = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
@@ -70,7 +66,7 @@ void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 /* }}} */
 
 
-/* {{{ proto EvTimer::__construct(double after, double repeat, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+/* {{{ proto EvTimer::__construct(double after, double repeat, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvTimer, __construct)
 {
 	php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);

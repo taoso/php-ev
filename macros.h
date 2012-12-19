@@ -74,7 +74,7 @@
         Z_TYPE_P(pz) = IS_OBJECT;         \
         object_init_ex(pz, pce);          \
         Z_SET_REFCOUNT_P(pz, 1);          \
-        Z_UNSET_ISREF_P(pz);
+        Z_SET_ISREF_P(pz)
 
 #define PHP_EV_ADD_CLASS_PROPERTIES(a, b)                                                      \
 {                                                                                              \

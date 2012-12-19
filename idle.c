@@ -30,23 +30,17 @@ void php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	zend_fcall_info_cache  fcc          = empty_fcall_info_cache;
 	long                   priority     = 0;
 
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f|z!l",
+				&fci, &fcc, &data, &priority) == FAILURE) {
+		return;
+	}
 
-	if (loop) { /* Factory */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f|z!l",
-					&fci, &fcc, &data, &priority) == FAILURE) {
-			return;
-		}
-
+	/* If loop is NULL, then we're in __construct() */
+	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_idle_class_entry_ptr);
-
 		self = return_value; 
-	} else { /* Ctor */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Of|z!l",
-					&loop, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-
+	} else {
+		loop = php_ev_default_loop(TSRMLS_C);
 		self = getThis();
 	}
 
@@ -62,7 +56,7 @@ void php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 }
 /* }}} */
 
-/* {{{ proto EvIdle::__construct(EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+/* {{{ proto EvIdle::__construct(callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvIdle, __construct)
 {
 	php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);

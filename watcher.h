@@ -26,6 +26,7 @@
 #define php_ev_watcher_thread_ctx(w) (((ev_watcher *) w)->thread_ctx)
 #define php_ev_watcher_type(w)       (((ev_watcher *) w)->type)
 #define php_ev_watcher_flags(w)      (((ev_watcher *) w)->e_flags)
+#define php_ev_watcher_next(w)       (((ev_watcher *) w)->e_next)
 #define php_ev_watcher_prev(w)       (((ev_watcher *) w)->e_prev)
 
 #define php_ev_watcher_loop_ptr(w)   (php_ev_watcher_loop(w)->loop)
@@ -47,17 +48,21 @@
         ev_ref(php_ev_watcher_loop(w)->loop);                                   \
     }
 
-#define PHP_EV_WATCHER_STOP(t, w)                         \
-    do {                                                  \
-        PHP_EV_WATCHER_REF(w);                            \
-        t ## _stop(php_ev_watcher_loop_ptr(w), (t *) w);  \
-    } while(0)
+#define PHP_EV_WATCHER_STOP(t, w)                             \
+    do {                                                      \
+        if (php_ev_watcher_loop(w)) {                         \
+            PHP_EV_WATCHER_REF(w);                            \
+            t ## _stop(php_ev_watcher_loop_ptr(w), (t *) w);  \
+        }                                                     \
+    } while (0)
 
-#define PHP_EV_WATCHER_START(t, w)                        \
-    do {                                                  \
-        t ## _start(php_ev_watcher_loop_ptr(w), (t *) w); \
-        PHP_EV_WATCHER_UNREF(w);                          \
-    } while(0)
+#define PHP_EV_WATCHER_START(t, w)                            \
+    do {                                                      \
+        if (php_ev_watcher_loop(w)) {                         \
+            t ## _start(php_ev_watcher_loop_ptr(w), (t *) w); \
+            PHP_EV_WATCHER_UNREF(w);                          \
+        }                                                     \
+    } while (0)
 
 /* Stop, ev_*_set() and start a watcher. Call it when need
  * to modify probably active watcher.
@@ -75,7 +80,7 @@
         if (is_active) {                                  \
             PHP_EV_WATCHER_START(t, w);                   \
         }                                                 \
-    } while(0)
+    } while (0)
 
 
 #define PHP_EV_CHECK_SIGNAL_CAN_START(w)                                           \
@@ -87,13 +92,13 @@
                     "Can't start signal watcher, signal %d already "               \
                     "registered in another loop", w->signum);                      \
         }                                                                          \
-    } while(0)
+    } while (0)
 
 #define PHP_EV_SIGNAL_START(w)              \
     do {                                    \
         PHP_EV_CHECK_SIGNAL_CAN_START(w);   \
         PHP_EV_WATCHER_START(ev_signal, w); \
-    } while(0)
+    } while (0)
 
 #define PHP_EV_SIGNAL_RESET(w, seta)             \
     do {                                         \
@@ -103,7 +108,7 @@
         ev_ ## signal ## _set seta;              \
         if (active)                              \
             PHP_EV_WATCHER_START(ev_signal, w);  \
-    } while(0)
+    } while (0)
 
 
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents);

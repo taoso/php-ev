@@ -25,7 +25,6 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 	php_ev_object          *ev_obj;
 	ev_loop                *loop;
 	zval                  **default_loop_ptr_ptr     = NULL;
-	zval                   *self                     = getThis();
 
 	long                    flags                    = EVFLAG_AUTO;
 	double                  io_collect_interval      = 0.;
@@ -45,13 +44,13 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 	if (!in_ctor) {
 		/* Factory method mode */
 		if (is_default_loop) {
+
 			if (!*default_loop_ptr_ptr) {
 				loop = ev_default_loop(flags);
 			} else {
 				php_error_docref(NULL TSRMLS_CC, E_WARNING,
 						"Returning previously created default loop");
 				RETURN_ZVAL(*default_loop_ptr_ptr, /* copy */ 1, /* dtor*/ 0);
-				return;
 			}
 		} else {
 			loop = ev_loop_new(flags);
@@ -64,11 +63,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 			return;
 		}
 
-		/* Assign return value */
-		Z_TYPE_P(return_value) = IS_OBJECT;
-		object_init_ex(return_value, ev_loop_class_entry_ptr);
-		Z_SET_REFCOUNT_P(return_value, 1);
-		Z_UNSET_ISREF_P(return_value);
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_loop_class_entry_ptr);
 
 		ev_obj = (php_ev_object *) zend_object_store_get_object(return_value TSRMLS_CC);
 
@@ -87,7 +82,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 			return;
 		}
 
-		ev_obj = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+		ev_obj = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
 	}
 
 	php_ev_loop *ptr = (php_ev_loop *) emalloc(sizeof(php_ev_loop));

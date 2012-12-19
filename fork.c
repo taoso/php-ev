@@ -30,22 +30,17 @@ void php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	zend_fcall_info_cache  fcc          = empty_fcall_info_cache;
 	long                   priority     = 0;
 
-	if (loop) { /* Factory */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f|z!l",
-					&fci, &fcc, &data, &priority) == FAILURE) {
-			return;
-		}
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f|z!l",
+				&fci, &fcc, &data, &priority) == FAILURE) {
+		return;
+	}
 
+	/* If loop is NULL, then we're in __construct() */
+	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_fork_class_entry_ptr);
-
 		self = return_value; 
-	} else { /* Ctor */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Of|z!l",
-					&loop, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-
+	} else {
+		loop = php_ev_default_loop(TSRMLS_C);
 		self = getThis();
 	}
 

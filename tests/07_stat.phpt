@@ -4,11 +4,9 @@ Check for EvStat functionality
 <?php 
 error_reporting(0);
 
-$loop = EvLoop::default_loop();
-
 $fh = tempnam(__DIR__, 'ev_tmp_');
 
-$w = new EvStat("$fh", 0.1, $loop, function ($w, $r) use ($loop) {
+$w = new EvStat("$fh", 0.1, function ($w, $r) {
 	$prev = $w->prev();
 
 	echo "ok 5\n";
@@ -18,31 +16,31 @@ $w = new EvStat("$fh", 0.1, $loop, function ($w, $r) use ($loop) {
 	echo FALSE == $w->attr() ? "" : "not ", "ok 9\n";
 	echo FALSE == $w->stat() ? "" : "not ", "ok 10\n";
 
-   	$loop->break();
+   	ev_break();
 });
 $w->start();
 
 
-$t = new EvTimer(0.2, 0, $loop, function ($w, $r) use ($loop) {
+$t = new EvTimer(0.2, 0, function ($w, $r) {
 	echo "ok 2\n";
-	$loop->break();
+	ev_break();
 });
 $t->start();
 
 echo $w->stat() ? "" : "not ", "ok 1\n";
-$loop->run();
+ev_run();
 echo "ok 3\n";
 
 unlink($fh);
 
-$t = new EvTimer(0.2, 0, $loop, function ($w, $r) use ($loop) {
+$t = new EvTimer(0.2, 0, function ($w, $r) {
 	echo "ok 2\n";
-	$loop->break();
+	ev_break();
 });
 $t->start();
 
 echo "ok 4\n";
-$loop->run();
+ev_run();
 echo "ok 11\n";
 
 ?>

@@ -46,16 +46,17 @@
 
 /* Override `data` member of the watcher structs.
  * See types.h and libev/ev.h */
-#define EV_COMMON                                                                    \
-    zval                        *self;      /* this struct */                        \
-    zval                        *data;      /* custom var attached by user */        \
-    php_ev_loop                 *loop;                                               \
-    zend_fcall_info             *fci;       /* fci &fcc serve $callback arg */       \
-    zend_fcall_info_cache       *fcc;                                                \
-    int                          type;      /* EV_ *constant from libev/ev.h */      \
-    int                          e_flags;                                            \
-    void                        *e_prev;    /* Linked list of ev_watcher pointers */ \
-    PHP_EV_COMMON_THREAD_CTX;                                                        \
+#define EV_COMMON                                                                             \
+    zval                  *self;      /* this struct */                                       \
+    zval                  *data;      /* custom var attached by user */                       \
+    php_ev_loop           *loop;                                                              \
+    zend_fcall_info       *fci;       /* fci &fcc serve $callback arg */                      \
+    zend_fcall_info_cache *fcc;                                                               \
+    int                    type;      /* EV_ *constant from libev/ev.h */                     \
+    int                    e_flags;   /* PHP_EV_WATCHER_FLAG_ **/                             \
+    void                  *e_next;    /* Next item of doubly linked list(ev_watcher *) */     \
+    void                  *e_prev;    /* Previous item of doubly linked list(ev_watcher *) */ \
+    PHP_EV_COMMON_THREAD_CTX;
 
 #include "libev/ev.h"
 

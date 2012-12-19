@@ -34,20 +34,10 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	long                   priority   = 0;
 	long                   events;
 
-	if (loop) { /* Factory */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlf|z!l",
-					&z_fd, &events, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-	} else { /* Ctor */
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlOf|z!l",
-					&z_fd, &events, &loop, ev_loop_class_entry_ptr, &fci, &fcc,
-					&data, &priority) == FAILURE) {
-			return;
-		}
-
-		self = getThis();
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlf|z!l",
+				&z_fd, &events, &fci, &fcc,
+				&data, &priority) == FAILURE) {
+		return;
 	}
 
 	if (events & ~(EV_READ | EV_WRITE)) {
@@ -61,13 +51,19 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 		return;
 	}
 
-	if (!self) { /* Factory */
+	/* If loop is NULL, then we're in __construct() */
+	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_io_class_entry_ptr);
+
+		PHP_EV_ASSERT((self == NULL));
 		self = return_value; 
+	} else {
+		loop = php_ev_default_loop(TSRMLS_C);
+		self = getThis();
 	}
 
-	o_self  = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop  = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	o_self     = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop     = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 	io_watcher = (ev_io *) php_ev_new_watcher(sizeof(ev_io), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
@@ -81,7 +77,7 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 /* }}} */
 
 
-/* {{{ proto EvIo::__construct(mixed fd, int events, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+/* {{{ proto EvIo::__construct(mixed fd, int events, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvIo, __construct)
 {
 	php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
