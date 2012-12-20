@@ -18,12 +18,12 @@
 #include "watcher.h"
 
 /* {{{ php_ev_idle_object_ctor */
-void php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
+void php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start)
 {
 	zval                  *self;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
-	ev_idle               *idle_watcher;
+	ev_idle               *w;
 
 	zval                  *data         = NULL;
 	zend_fcall_info        fci          = empty_fcall_info;
@@ -35,31 +35,44 @@ void php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 		return;
 	}
 
-	/* If loop is NULL, then we're in __construct() */
-	if (loop) {
+	if (ctor) {
+		self = getThis();
+	} else {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_idle_class_entry_ptr);
 		self = return_value; 
-	} else {
-		loop = php_ev_default_loop(TSRMLS_C);
-		self = getThis();
 	}
 
-	o_self       = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop       = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
-	idle_watcher = (ev_idle *) php_ev_new_watcher(sizeof(ev_idle), self,
+	if (!loop) {
+		loop = php_ev_default_loop(TSRMLS_C);
+	}
+
+	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	w      = (ev_idle *) php_ev_new_watcher(sizeof(ev_idle), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	idle_watcher->type = EV_IDLE;
+	w->type = EV_IDLE;
 
-	o_self->ptr = (void *) idle_watcher;
+	o_self->ptr = (void *) w;
+
+	if (start) {
+		PHP_EV_WATCHER_START(ev_idle, w);
+	}
 }
 /* }}} */
 
 /* {{{ proto EvIdle::__construct(callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvIdle, __construct)
 {
-	php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
+	PHP_EV_WATCHER_CTOR(idle, NULL);
+}
+/* }}} */
+
+/* {{{ proto EvIdle::createStopped(callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvIdle, createStopped)
+{
+	PHP_EV_WATCHER_FACTORY_NS(idle, NULL);
 }
 /* }}} */
 

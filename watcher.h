@@ -110,6 +110,13 @@
             PHP_EV_WATCHER_START(ev_signal, w);  \
     } while (0)
 
+#define PHP_EV_WATCHER_CTOR(type, zloop) \
+	php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, TRUE, TRUE)
+#define PHP_EV_WATCHER_FACTORY(type, zloop) \
+	php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, TRUE)
+#define PHP_EV_WATCHER_FACTORY_NS(type, zloop) \
+	php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, FALSE)
+
 
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents);
 void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *loop,

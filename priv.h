@@ -61,16 +61,16 @@ extern const zend_property_info ev_embed_property_entry_info[];
 
 zval *php_ev_default_loop(TSRMLS_D);
 
-void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_check_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_prepare_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
-void php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop);
+void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_check_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_prepare_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
+void php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start);
 
 #endif /* PHP_EV_PRIV_H */
 

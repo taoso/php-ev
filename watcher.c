@@ -395,12 +395,13 @@ PHP_METHOD(EvWatcher, keepalive)
 	w = PHP_EV_WATCHER_FETCH_FROM_THIS();
 
 	/* Returning previous state */
-	RETVAL_LONG((w->e_flags & PHP_EV_WATCHER_FLAG_KEEP_ALIVE));
+	RETVAL_LONG((php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_KEEP_ALIVE));
 	n_value = n_value ? PHP_EV_WATCHER_FLAG_KEEP_ALIVE : 0;
 
 	/* Update watcher flags, if keepalive flag changed */
-	if ((n_value ^ w->e_flags) & PHP_EV_WATCHER_FLAG_KEEP_ALIVE) {
-		w->e_flags = (w->e_flags & ~PHP_EV_WATCHER_FLAG_KEEP_ALIVE) | n_value;
+	if (ZEND_NUM_ARGS() > 0
+			&& ((n_value ^ php_ev_watcher_flags(w)) & PHP_EV_WATCHER_FLAG_KEEP_ALIVE)) {
+		php_ev_watcher_flags(w) = (php_ev_watcher_flags(w) & ~PHP_EV_WATCHER_FLAG_KEEP_ALIVE) | n_value;
 		PHP_EV_WATCHER_REF(w);
 		PHP_EV_WATCHER_UNREF(w);
 	}

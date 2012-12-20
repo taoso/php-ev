@@ -18,13 +18,13 @@
 #include "watcher.h"
 
 /* {{{ php_ev_signal_object_ctor */
-void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
+void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start)
 {
 	long           signum;
 	zval          *self;
 	php_ev_object *o_self;
 	php_ev_object *o_loop;
-	ev_signal     *signal_watcher;
+	ev_signal     *w;
 
 	zval                  *data       = NULL;
 	zend_fcall_info        fci        = empty_fcall_info;
@@ -36,33 +36,46 @@ void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 		return;
 	}
 
-	/* If loop is NULL, then we're in __construct() */
-	if (loop) {
+	if (ctor) {
+		self = getThis();
+	} else {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_signal_class_entry_ptr);
 		self = return_value; 
-	} else {
-		loop = php_ev_default_loop(TSRMLS_C);
-		self = getThis();
 	}
 
-	o_self        = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop        = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
-	signal_watcher = (ev_signal *) php_ev_new_watcher(sizeof(ev_signal), self,
+	if (!loop) {
+		loop = php_ev_default_loop(TSRMLS_C);
+	}
+
+	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	w      = (ev_signal *) php_ev_new_watcher(sizeof(ev_signal), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	signal_watcher->type = EV_SIGNAL;
+	w->type = EV_SIGNAL;
 	
-	ev_signal_set(signal_watcher, signum);
+	ev_signal_set(w, signum);
 
-	o_self->ptr = (void *) signal_watcher;
+	o_self->ptr = (void *) w;
+
+	if (start) {
+		PHP_EV_WATCHER_START(ev_signal, w);
+	}
 }
 /* }}} */
 
 /* {{{ proto EvSignal::__construct(int signum, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvSignal, __construct)
 {
-	php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
+	PHP_EV_WATCHER_CTOR(signal, NULL);
+}
+/* }}} */
+
+/* {{{ proto EvSignal::createStopped(int signum, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvSignal, createStopped)
+{
+	PHP_EV_WATCHER_FACTORY_NS(signal, NULL);
 }
 /* }}} */
 
@@ -70,7 +83,7 @@ PHP_METHOD(EvSignal, __construct)
 PHP_METHOD(EvSignal, set)
 {
 	long       signum;
-	ev_signal *signal_watcher;
+	ev_signal *w;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l",
 				&signum) == FAILURE) {
@@ -79,9 +92,9 @@ PHP_METHOD(EvSignal, set)
 
 	PHP_EV_CHECK_SIGNUM(signum);
 
-	signal_watcher = (ev_signal *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	w = (ev_signal *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
-	PHP_EV_SIGNAL_RESET(signal_watcher, (signal_watcher, signum));
+	PHP_EV_SIGNAL_RESET(w, (w, signum));
 }
 /* }}} */
 

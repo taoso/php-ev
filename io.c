@@ -19,19 +19,19 @@
 #include "watcher.h"
 
 /* {{{ php_ev_io_object_ctor */
-void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
+void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start)
 {
-	zval                  *self       = NULL;
+	zval                  *self;
 	zval                  *z_fd;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
-	ev_io                 *io_watcher;
+	ev_io                 *w;
 	php_socket_t           fd;
 
-	zval                  *data       = NULL;
-	zend_fcall_info        fci        = empty_fcall_info;
-	zend_fcall_info_cache  fcc        = empty_fcall_info_cache;
-	long                   priority   = 0;
+	zval                  *data     = NULL;
+	zend_fcall_info        fci      = empty_fcall_info;
+	zend_fcall_info_cache  fcc      = empty_fcall_info_cache;
+	long                   priority = 0;
 	long                   events;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zlf|z!l",
@@ -51,28 +51,32 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 		return;
 	}
 
-	/* If loop is NULL, then we're in __construct() */
-	if (loop) {
-		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_io_class_entry_ptr);
-
-		PHP_EV_ASSERT((self == NULL));
-		self = return_value; 
-	} else {
-		loop = php_ev_default_loop(TSRMLS_C);
+	if (ctor) {
 		self = getThis();
+	} else {
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_io_class_entry_ptr);
+		self = return_value; 
 	}
 
-	o_self     = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop     = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
-	io_watcher = (ev_io *) php_ev_new_watcher(sizeof(ev_io), self,
+	if (!loop) {
+		loop = php_ev_default_loop(TSRMLS_C);
+	}
+
+	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	w      = (ev_io *) php_ev_new_watcher(sizeof(ev_io), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	io_watcher->type = EV_IO;
+	w->type = EV_IO;
 	
-	ev_io_set(io_watcher, fd, events);
+	ev_io_set(w, fd, events);
 
-	o_self->ptr = (void *) io_watcher;
+	o_self->ptr = (void *) w;
+
+	if (start) {
+		PHP_EV_WATCHER_START(ev_io, w);
+	}
 }
 /* }}} */
 
@@ -80,7 +84,14 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 /* {{{ proto EvIo::__construct(mixed fd, int events, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvIo, __construct)
 {
-	php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
+	PHP_EV_WATCHER_CTOR(io, NULL);
+}
+/* }}} */
+
+/* {{{ proto EvIo::createStopped(mixed fd, int events, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvIo, createStopped)
+{
+	PHP_EV_WATCHER_FACTORY_NS(io, NULL);
 }
 /* }}} */
 

@@ -29,10 +29,13 @@ PHP_FUNCTION(ev_time);
 PHP_FUNCTION(ev_run);
 PHP_FUNCTION(ev_now);
 PHP_FUNCTION(ev_break);
+PHP_FUNCTION(ev_iteration);
+PHP_FUNCTION(ev_depth);
+PHP_FUNCTION(ev_verify);
 
 /* {{{ EvLoop */
 PHP_METHOD(EvLoop, __construct);
-PHP_METHOD(EvLoop, default_loop);
+PHP_METHOD(EvLoop, defaultLoop);
 PHP_METHOD(EvLoop, loop_fork);
 PHP_METHOD(EvLoop, verify);
 PHP_METHOD(EvLoop, invoke_pending);
@@ -89,12 +92,14 @@ PHP_METHOD(EvWatcher, set_callback);
 /* {{{ EvIo */
 PHP_METHOD(EvIo, __construct);
 PHP_METHOD(EvIo, set);
+PHP_METHOD(EvIo, createStopped);
 /* }}} */
 
 /* {{{ EvTimer */
 PHP_METHOD(EvTimer, __construct);
 PHP_METHOD(EvTimer, set);
 PHP_METHOD(EvTimer, again);
+PHP_METHOD(EvTimer, createStopped);
 /* }}} */
 
 #if EV_PERIODIC_ENABLE
@@ -103,6 +108,7 @@ PHP_METHOD(EvPeriodic, __construct);
 PHP_METHOD(EvPeriodic, set);
 PHP_METHOD(EvPeriodic, again);
 PHP_METHOD(EvPeriodic, at);
+PHP_METHOD(EvPeriodic, createStopped);
 /* }}} */
 #endif
 
@@ -110,6 +116,7 @@ PHP_METHOD(EvPeriodic, at);
 /* {{{ EvSignal */
 PHP_METHOD(EvSignal, __construct);
 PHP_METHOD(EvSignal, set);
+PHP_METHOD(EvSignal, createStopped);
 /* }}} */
 #endif
 
@@ -117,6 +124,7 @@ PHP_METHOD(EvSignal, set);
 /* {{{ EvChild */
 PHP_METHOD(EvChild, __construct);
 PHP_METHOD(EvChild, set);
+PHP_METHOD(EvChild, createStopped);
 /* }}} */
 #endif
 
@@ -127,24 +135,28 @@ PHP_METHOD(EvStat, set);
 PHP_METHOD(EvStat, attr);
 PHP_METHOD(EvStat, prev);
 PHP_METHOD(EvStat, stat);
+PHP_METHOD(EvStat, createStopped);
 /* }}} */
 #endif
 
 #if EV_IDLE_ENABLE
 /* {{{ EvIdle */
 PHP_METHOD(EvIdle, __construct);
+PHP_METHOD(EvIdle, createStopped);
 /* }}} */
 #endif
 
 #if EV_CHECK_ENABLE
 /* {{{ EvCheck */
 PHP_METHOD(EvCheck, __construct);
+PHP_METHOD(EvCheck, createStopped);
 /* }}} */
 #endif
 
 #if EV_PREPARE_ENABLE
 /* {{{ EvPrepare */
 PHP_METHOD(EvPrepare, __construct);
+PHP_METHOD(EvPrepare, createStopped);
 /* }}} */
 #endif
 
@@ -153,12 +165,14 @@ PHP_METHOD(EvPrepare, __construct);
 PHP_METHOD(EvEmbed, __construct);
 PHP_METHOD(EvEmbed, set);
 PHP_METHOD(EvEmbed, sweep);
+PHP_METHOD(EvEmbed, createStopped);
 /* }}} */
 #endif
 
 #if EV_FORK_ENABLE
 /* {{{ EvFork*/
 PHP_METHOD(EvFork, __construct);
+PHP_METHOD(EvFork, createStopped);
 /* }}} */
 #endif
 

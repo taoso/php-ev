@@ -411,8 +411,9 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
  * This is a helper for derived watcher class objects. */
 static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 {
-	zval       *data;
-	ev_watcher *w_next  , *w_prev;
+	zval        *data;
+	ev_watcher  *w_next  , *w_prev;
+	php_ev_loop *o_loop;
 
 	/* What if we do it in php_ev_loop_free_storage()?*/
 	php_ev_stop_watcher(ptr TSRMLS_CC);
@@ -430,8 +431,13 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 		php_ev_watcher_prev(w_next) = w_prev;
 	}
 
+	o_loop = php_ev_watcher_loop(ptr);
+
+	if (o_loop && o_loop->w == ptr) {
+		o_loop->w = NULL;
+	}
+
 #if 0
-	php_ev_loop *o_loop = php_ev_watcher_loop(ptr);
 	if (o_loop) {
 		ev_watcher *pw = o_loop->w;
 
@@ -1100,15 +1106,34 @@ PHP_MINFO_FUNCTION(ev)
 
 /* {{{ Global functions */
 
-#define PHP_EV_FUNC_INT_VOID(name)                      \
-    PHP_FUNCTION(ev_ ## name)                           \
-    {                                                   \
-        if (zend_parse_parameters_none() == FAILURE) {  \
-            return;                                     \
-        }                                               \
-                                                        \
-        RETURN_LONG((long)ev_ ## name());               \
+#define PHP_EV_FUNC_INT_VOID(name)                                                \
+    PHP_FUNCTION(ev_ ## name)                                                     \
+    {                                                                             \
+        if (zend_parse_parameters_none() == FAILURE) {                            \
+            return;                                                               \
+        }                                                                         \
+                                                                                  \
+        RETURN_LONG((long) ev_ ## name());                                        \
     }
+
+#define PHP_EV_LOOP_FUNC_INT_VOID(name)                                           \
+    PHP_FUNCTION(ev_ ## name)                                                     \
+    {                                                                             \
+        zval          *zloop;                                                     \
+        php_ev_object *ev_obj;                                                    \
+                                                                                  \
+        if (zend_parse_parameters_none() == FAILURE) {                            \
+            return;                                                               \
+        }                                                                         \
+                                                                                  \
+        zloop  = php_ev_default_loop(TSRMLS_C);                                   \
+        ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC); \
+                                                                                  \
+        PHP_EV_CONSTRUCT_CHECK(ev_obj);                                           \
+                                                                                  \
+        RETURN_LONG(ev_ ## name(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj)));          \
+    }
+/* }}} */
 
 PHP_EV_FUNC_INT_VOID(supported_backends)
 PHP_EV_FUNC_INT_VOID(recommended_backends)
@@ -1156,14 +1181,15 @@ PHP_FUNCTION(ev_run)
 {
 	long flags = 0;
 	zval *zloop;
+	php_ev_object *ev_obj;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &flags) == FAILURE) {
 		return;
 	}
 
-	zloop = php_ev_default_loop(TSRMLS_C);
+	zloop  = php_ev_default_loop(TSRMLS_C);
+	ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC);
 
-	php_ev_object *ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC);
 	PHP_EV_CONSTRUCT_CHECK(ev_obj);
 
 	ev_run(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj), flags);
@@ -1173,14 +1199,16 @@ PHP_FUNCTION(ev_run)
 /* {{{ proto double ev_now(void) */
 PHP_FUNCTION(ev_now)
 {
-	zval           *zloop  = php_ev_default_loop(TSRMLS_C);
-	php_ev_object  *ev_obj;
+	zval          *zloop;
+	php_ev_object *ev_obj;
 
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
 
+	zloop  = php_ev_default_loop(TSRMLS_C);
 	ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC);
+
 	PHP_EV_CONSTRUCT_CHECK(ev_obj);
 
 	RETURN_DOUBLE((double) ev_now(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj)));
@@ -1203,6 +1231,33 @@ PHP_FUNCTION(ev_break)
 	PHP_EV_CONSTRUCT_CHECK(ev_obj);
 
 	ev_break(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj), how);
+}
+/* }}} */
+
+/* {{{ proto int ev_iteration(void) */
+PHP_EV_LOOP_FUNC_INT_VOID(iteration)
+/* }}} */
+
+/* {{{ proto int ev_depth(void) */
+PHP_EV_LOOP_FUNC_INT_VOID(depth)
+/* }}} */
+
+/* {{{ proto void ev_verify(void) */
+PHP_FUNCTION(ev_verify)
+{
+	zval *zloop;
+	php_ev_object *ev_obj;
+
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
+	zloop  = php_ev_default_loop(TSRMLS_C);
+	ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC);
+
+	PHP_EV_CONSTRUCT_CHECK(ev_obj);
+
+	ev_verify(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj));
 }
 /* }}} */
 
