@@ -53,7 +53,7 @@ void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_boo
 
 	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
 	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
-	w      = (ev_timer *) php_ev_new_watcher(sizeof(ev_timer), self, 
+	w      = (ev_timer *) php_ev_new_watcher(sizeof(ev_timer), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 

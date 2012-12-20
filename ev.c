@@ -1179,8 +1179,8 @@ PHP_FUNCTION(ev_time)
 /* {{{ proto void ev_run([int flags = 0]) */
 PHP_FUNCTION(ev_run)
 {
-	long flags = 0;
-	zval *zloop;
+	long           flags  = 0;
+	zval          *zloop;
 	php_ev_object *ev_obj;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &flags) == FAILURE) {

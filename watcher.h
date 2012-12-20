@@ -34,88 +34,88 @@
 #define PHP_EV_WATCHER_FLAG_KEEP_ALIVE 1
 #define PHP_EV_WATCHER_FLAG_UNREFED    2
 
-#define PHP_EV_WATCHER_UNREF(w)                                                 \
-    if (!(php_ev_watcher_flags(w) &                                             \
-                (PHP_EV_WATCHER_FLAG_KEEP_ALIVE | PHP_EV_WATCHER_FLAG_UNREFED)) \
-            && ev_is_active(w)) {                                               \
-        ev_unref(php_ev_watcher_loop(w)->loop);                                 \
-        php_ev_watcher_flags(w) |= PHP_EV_WATCHER_FLAG_UNREFED;                 \
+#define PHP_EV_WATCHER_UNREF(w)                                                            \
+    if (!(php_ev_watcher_flags(w) &                                                        \
+                (PHP_EV_WATCHER_FLAG_KEEP_ALIVE | PHP_EV_WATCHER_FLAG_UNREFED))            \
+            && ev_is_active(w)) {                                                          \
+        ev_unref(php_ev_watcher_loop(w)->loop);                                            \
+        php_ev_watcher_flags(w) |= PHP_EV_WATCHER_FLAG_UNREFED;                            \
     }
 
-#define PHP_EV_WATCHER_REF(w)                                                   \
-    if (php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_UNREFED) {                \
-        php_ev_watcher_flags(w) &= ~PHP_EV_WATCHER_FLAG_UNREFED;                \
-        ev_ref(php_ev_watcher_loop(w)->loop);                                   \
+#define PHP_EV_WATCHER_REF(w)                                                              \
+    if (php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_UNREFED) {                           \
+        php_ev_watcher_flags(w) &= ~PHP_EV_WATCHER_FLAG_UNREFED;                           \
+        ev_ref(php_ev_watcher_loop(w)->loop);                                              \
     }
 
-#define PHP_EV_WATCHER_STOP(t, w)                             \
-    do {                                                      \
-        if (php_ev_watcher_loop(w)) {                         \
-            PHP_EV_WATCHER_REF(w);                            \
-            t ## _stop(php_ev_watcher_loop_ptr(w), (t *) w);  \
-        }                                                     \
+#define PHP_EV_WATCHER_STOP(t, w)                                                          \
+    do {                                                                                   \
+        if (php_ev_watcher_loop(w)) {                                                      \
+            PHP_EV_WATCHER_REF(w);                                                         \
+            t ## _stop(php_ev_watcher_loop_ptr(w), (t *) w);                               \
+        }                                                                                  \
     } while (0)
 
-#define PHP_EV_WATCHER_START(t, w)                            \
-    do {                                                      \
-        if (php_ev_watcher_loop(w)) {                         \
-            t ## _start(php_ev_watcher_loop_ptr(w), (t *) w); \
-            PHP_EV_WATCHER_UNREF(w);                          \
-        }                                                     \
+#define PHP_EV_WATCHER_START(t, w)                                                         \
+    do {                                                                                   \
+        if (php_ev_watcher_loop(w)) {                                                      \
+            t ## _start(php_ev_watcher_loop_ptr(w), (t *) w);                              \
+            PHP_EV_WATCHER_UNREF(w);                                                       \
+        }                                                                                  \
     } while (0)
 
 /* Stop, ev_*_set() and start a watcher. Call it when need
  * to modify probably active watcher.
  * args - list of args for ev_*_set() with brackets */
-#define PHP_EV_WATCHER_RESET(t, w, args)                  \
-    do {                                                  \
-        int is_active = ev_is_active(w);                  \
-                                                          \
-        if (is_active) {                                  \
-            PHP_EV_WATCHER_STOP(t, w);                    \
-        }                                                 \
-                                                          \
-        t ## _set args;                                   \
-                                                          \
-        if (is_active) {                                  \
-            PHP_EV_WATCHER_START(t, w);                   \
-        }                                                 \
+#define PHP_EV_WATCHER_RESET(t, w, args)                                                   \
+    do {                                                                                   \
+        int is_active = ev_is_active(w);                                                   \
+                                                                                           \
+        if (is_active) {                                                                   \
+            PHP_EV_WATCHER_STOP(t, w);                                                     \
+        }                                                                                  \
+                                                                                           \
+        t ## _set args;                                                                    \
+                                                                                           \
+        if (is_active) {                                                                   \
+            PHP_EV_WATCHER_START(t, w);                                                    \
+        }                                                                                  \
     } while (0)
 
 
-#define PHP_EV_CHECK_SIGNAL_CAN_START(w)                                           \
-    do {                                                                           \
-        /* Pulled this part from EV module of Perl */                              \
-        if (signals [(w)->signum - 1].loop                                         \
-                && signals [(w)->signum - 1].loop != php_ev_watcher_loop_ptr(w)) { \
-            php_error_docref(NULL TSRMLS_CC, E_WARNING,                            \
-                    "Can't start signal watcher, signal %d already "               \
-                    "registered in another loop", w->signum);                      \
-        }                                                                          \
+#define PHP_EV_CHECK_SIGNAL_CAN_START(w)                                                   \
+    do {                                                                                   \
+        /* Pulled this part from EV module of Perl */                                      \
+        if (signals [(w)->signum - 1].loop                                                 \
+                && signals [(w)->signum - 1].loop != php_ev_watcher_loop_ptr(w)) {         \
+            php_error_docref(NULL TSRMLS_CC, E_WARNING,                                    \
+                    "Can't start signal watcher, signal %d already "                       \
+                    "registered in another loop", w->signum);                              \
+        }                                                                                  \
     } while (0)
 
-#define PHP_EV_SIGNAL_START(w)              \
-    do {                                    \
-        PHP_EV_CHECK_SIGNAL_CAN_START(w);   \
-        PHP_EV_WATCHER_START(ev_signal, w); \
+#define PHP_EV_SIGNAL_START(w)                                                             \
+    do {                                                                                   \
+        PHP_EV_CHECK_SIGNAL_CAN_START(w);                                                  \
+        PHP_EV_WATCHER_START(ev_signal, w);                                                \
     } while (0)
 
-#define PHP_EV_SIGNAL_RESET(w, seta)             \
-    do {                                         \
-        int active = ev_is_active(w);            \
-        if (active)                              \
-            PHP_EV_WATCHER_STOP(ev_signal, w);   \
-        ev_ ## signal ## _set seta;              \
-        if (active)                              \
-            PHP_EV_WATCHER_START(ev_signal, w);  \
+#define PHP_EV_SIGNAL_RESET(w, seta)                                                       \
+    do {                                                                                   \
+        int active = ev_is_active(w);                                                      \
+        if (active)                                                                        \
+            PHP_EV_WATCHER_STOP(ev_signal, w);                                             \
+        ev_ ## signal ## _set seta;                                                        \
+        if (active)                                                                        \
+            PHP_EV_WATCHER_START(ev_signal, w);                                            \
     } while (0)
 
-#define PHP_EV_WATCHER_CTOR(type, zloop) \
-	php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, TRUE, TRUE)
-#define PHP_EV_WATCHER_FACTORY(type, zloop) \
-	php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, TRUE)
-#define PHP_EV_WATCHER_FACTORY_NS(type, zloop) \
-	php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, FALSE)
+#define PHP_EV_WATCHER_CTOR(type, zloop)                                                   \
+    php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, TRUE, TRUE)
+#define PHP_EV_WATCHER_FACTORY(type, zloop)                                                \
+    php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, TRUE)
+#define PHP_EV_WATCHER_FACTORY_NS(type, zloop)                                             \
+    php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, FALSE)
 
 
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents);

@@ -28,7 +28,7 @@ $timer2 = new EvTimer(-1, 0, function ($w, $r) {
 $timer2->keepalive(0);
 
 echo "ok 3\n";
-ev_run();
+ev_run(0);
 echo "ok 5\n";
 
 
