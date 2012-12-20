@@ -121,7 +121,7 @@ PHP_METHOD(EvLoop, __construct)
 /* }}} */
 
 
-#define PHP_EV_LOOP_METHOD_VOID(name)                  \
+#define PHP_EV_LOOP_METHOD_VOID(name, evname)          \
     PHP_METHOD(EvLoop, name)                           \
     {                                                  \
         PHP_EV_LOOP_FETCH_FROM_THIS;                   \
@@ -130,35 +130,15 @@ PHP_METHOD(EvLoop, __construct)
             return;                                    \
         }                                              \
                                                        \
-        ev_##name(EV_A);                               \
+        ev_ ## evname(EV_A);                           \
     }
 
-#define PHP_EV_LOOP_METHOD_INT_VOID(name)              \
-    PHP_METHOD(EvLoop, name)                           \
-    {                                                  \
-        if (zend_parse_parameters_none() == FAILURE) { \
-            return;                                    \
-        }                                              \
-                                                       \
-        RETURN_LONG((long)ev_##name());                \
-    }
-
-#define PHP_EV_LOOP_METHOD_DOUBLE_VOID(name)           \
-    PHP_METHOD(EvLoop, name)                           \
-    {                                                  \
-        if (zend_parse_parameters_none() == FAILURE) { \
-            return;                                    \
-        }                                              \
-                                                       \
-        RETURN_DOUBLE((double)ev_##name());            \
-    }
-
-PHP_EV_LOOP_METHOD_VOID(loopFork)
-PHP_EV_LOOP_METHOD_VOID(verify)
-PHP_EV_LOOP_METHOD_VOID(invokePending)
-PHP_EV_LOOP_METHOD_VOID(nowUpdate)
-PHP_EV_LOOP_METHOD_VOID(suspend)
-PHP_EV_LOOP_METHOD_VOID(resume)
+PHP_EV_LOOP_METHOD_VOID(loopFork, loop_fork)
+PHP_EV_LOOP_METHOD_VOID(verify, verify)
+PHP_EV_LOOP_METHOD_VOID(invokePending, invoke_pending)
+PHP_EV_LOOP_METHOD_VOID(nowUpdate, now_update)
+PHP_EV_LOOP_METHOD_VOID(suspend, suspend)
+PHP_EV_LOOP_METHOD_VOID(resume, resume)
 
 /* {{{ proto double EvLoop::now(void) */
 PHP_METHOD(EvLoop, now)

@@ -45,7 +45,7 @@ PHP_METHOD(EvLoop, resume);
 PHP_METHOD(EvLoop, now);
 PHP_METHOD(EvLoop, run);
 PHP_METHOD(EvLoop, break);
-PHP_METHOD(EvLoop, feed_signal_event);
+PHP_METHOD(EvLoop, feedSignalEvent);
 PHP_METHOD(EvLoop, io);
 PHP_METHOD(EvLoop, timer);
 #if EV_PERIODIC_ENABLE
