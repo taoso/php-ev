@@ -36,10 +36,10 @@ PHP_FUNCTION(ev_verify);
 /* {{{ EvLoop */
 PHP_METHOD(EvLoop, __construct);
 PHP_METHOD(EvLoop, defaultLoop);
-PHP_METHOD(EvLoop, loop_fork);
+PHP_METHOD(EvLoop, loopFork);
 PHP_METHOD(EvLoop, verify);
-PHP_METHOD(EvLoop, invoke_pending);
-PHP_METHOD(EvLoop, now_update);
+PHP_METHOD(EvLoop, invokePending);
+PHP_METHOD(EvLoop, nowUpdate);
 PHP_METHOD(EvLoop, suspend);
 PHP_METHOD(EvLoop, resume);
 PHP_METHOD(EvLoop, now);
@@ -84,9 +84,9 @@ PHP_METHOD(EvWatcher, stop);
 PHP_METHOD(EvWatcher, clear);
 PHP_METHOD(EvWatcher, invoke);
 PHP_METHOD(EvWatcher, feed);
-PHP_METHOD(EvWatcher, get_loop);
+PHP_METHOD(EvWatcher, getLoop);
 PHP_METHOD(EvWatcher, keepalive);
-PHP_METHOD(EvWatcher, set_callback);
+PHP_METHOD(EvWatcher, setCallback);
 /* }}} */
 
 /* {{{ EvIo */

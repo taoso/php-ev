@@ -354,8 +354,8 @@ PHP_METHOD(EvWatcher, feed)
 }
 /* }}} */
 
-/* {{{ proto EvLoop EvWatcher::get_loop(void) */
-PHP_METHOD(EvWatcher, get_loop)
+/* {{{ proto EvLoop EvWatcher::getLoop(void) */
+PHP_METHOD(EvWatcher, getLoop)
 {
 	php_ev_object *o_self;
 	php_ev_loop   *o_loop;
@@ -367,7 +367,7 @@ PHP_METHOD(EvWatcher, get_loop)
 
 	o_self = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
 	w      = PHP_EV_WATCHER_FETCH_FROM_OBJECT(o_self);
-	o_loop   = php_ev_watcher_loop(w);
+	o_loop = php_ev_watcher_loop(w);
 
 	zval *zloop = (zval *) ev_userdata(o_loop->loop);
 
@@ -404,8 +404,8 @@ PHP_METHOD(EvWatcher, keepalive)
 }
 /* }}} */
 
-/* {{{ proto void EvWatcher::set_callback(callable callback) */
-PHP_METHOD(EvWatcher, set_callback)
+/* {{{ proto void EvWatcher::setCallback(callable callback) */
+PHP_METHOD(EvWatcher, setCallback)
 {
 	ev_watcher            *w;
 	zend_fcall_info        fci;

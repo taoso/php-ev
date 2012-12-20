@@ -347,16 +347,16 @@ const zend_function_entry ev_functions[] = {
 const zend_function_entry ev_loop_class_entry_functions[] = {
 	PHP_ME(EvLoop, __construct,       arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvLoop, defaultLoop,       arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, loop_fork,         arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, loopFork,          arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, verify,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, invoke_pending,    arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, now_update,        arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, invokePending,     arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, nowUpdate,         arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, suspend,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, resume,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, now,               arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, run,               arginfo_ev_run,               ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, break,             arginfo_ev_break,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, feed_signal_event, arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, feedSignalEvent,  arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, io,                arginfo_ev_loop_io,           ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, timer,             arginfo_ev_loop_timer,        ZEND_ACC_PUBLIC)
 #if EV_PERIODIC_ENABLE
@@ -400,9 +400,9 @@ const zend_function_entry ev_watcher_class_entry_functions[] = {
 	PHP_ME(EvWatcher, clear,        arginfo_ev__void,                ZEND_ACC_PUBLIC)
 	PHP_ME(EvWatcher, invoke,       arginfo_ev_watcher_invoke,       ZEND_ACC_PUBLIC)
 	PHP_ME(EvWatcher, feed,         arginfo_ev_watcher_feed,         ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, get_loop,     arginfo_ev__void,                ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, getLoop,      arginfo_ev__void,                ZEND_ACC_PUBLIC)
 	PHP_ME(EvWatcher, keepalive,    arginfo_ev_watcher_keepalive,    ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, set_callback, arginfo_ev_watcher_set_callback, ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, setCallback,  arginfo_ev_watcher_set_callback, ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };

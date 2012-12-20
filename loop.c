@@ -68,7 +68,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 		ev_obj = (php_ev_object *) zend_object_store_get_object(return_value TSRMLS_CC);
 
 		/* Save return_value in MyG(default_loop) */
-		if (!*default_loop_ptr_ptr) {
+		if (is_default_loop && !*default_loop_ptr_ptr) {
 			MAKE_STD_ZVAL(*default_loop_ptr_ptr);
 			REPLACE_ZVAL_VALUE(default_loop_ptr_ptr, return_value, 1);
 		}
@@ -99,7 +99,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 	ptr->timeout_collect_interval = timeout_collect_interval;
 	ev_obj->ptr                   = (void *) ptr;
 
-	ev_set_userdata(loop, (void *) return_value); 
+	ev_set_userdata(loop, (void *) (in_ctor ? getThis() : return_value)); 
 }
 /* }}} */
 
@@ -153,10 +153,10 @@ PHP_METHOD(EvLoop, __construct)
         RETURN_DOUBLE((double)ev_##name());            \
     }
 
-PHP_EV_LOOP_METHOD_VOID(loop_fork)
+PHP_EV_LOOP_METHOD_VOID(loopFork)
 PHP_EV_LOOP_METHOD_VOID(verify)
-PHP_EV_LOOP_METHOD_VOID(invoke_pending)
-PHP_EV_LOOP_METHOD_VOID(now_update)
+PHP_EV_LOOP_METHOD_VOID(invokePending)
+PHP_EV_LOOP_METHOD_VOID(nowUpdate)
 PHP_EV_LOOP_METHOD_VOID(suspend)
 PHP_EV_LOOP_METHOD_VOID(resume)
 
@@ -203,8 +203,8 @@ PHP_METHOD(EvLoop, break)
 }
 /* }}} */
 
-/* {{{ proto void EvLoop::feed_signal_event(int signum) */
-PHP_METHOD(EvLoop, feed_signal_event)
+/* {{{ proto void EvLoop::feedSignalEvent(int signum) */
+PHP_METHOD(EvLoop, feedSignalEvent)
 {
 	long			signum;
 	php_ev_object	*ev_obj;
