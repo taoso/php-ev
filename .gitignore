@@ -13,6 +13,7 @@ reconf.sh
 run-tests.php
 tags
 
+*.tgz
 *.in
 *.l[a,o]
 *.sw[p,o]
