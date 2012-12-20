@@ -247,7 +247,8 @@ static int ev_watcher_prop_priority_write(php_ev_object *obj, zval *value TSRMLS
 	int active = ev_is_active(watcher);
 
     if (active) {
-        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Modifying active watcher");
+        php_error_docref(NULL TSRMLS_CC, E_WARNING,
+        		"Modifying active watcher. Restarting the watcher internally.");
     }
 
 	priority = Z_LVAL_P(value);
@@ -262,9 +263,15 @@ static int ev_watcher_prop_priority_write(php_ev_object *obj, zval *value TSRMLS
 	    return FAILURE;
 	}
 
-	/* TODO: stop if active */
+	if (active) {
+		php_ev_stop_watcher(watcher TSRMLS_CC);
+	}
+
 	php_ev_set_watcher_priority(watcher, priority TSRMLS_CC);
-	/* TODO: start if active */
+
+	if (active) {
+		php_ev_start_watcher(watcher TSRMLS_CC);
+	}
 
 	return SUCCESS;
 }

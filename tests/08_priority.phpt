@@ -2,7 +2,7 @@
 Check for priorities
 --FILE--
 <?php 
-#error_reporting(0);
+error_reporting(0);
 
 $t0 = new EvTimer(-1, 0, function ($w, $r) { echo "ok 4\n"; });
 $t_ = new EvTimer(-1, 0, function ($w, $r) { echo "ok 5\n"; });
