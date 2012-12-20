@@ -76,6 +76,7 @@
         <file role="src" name="06_keepalive.phpt"/>
         <file role="src" name="07_stat.phpt"/>
         <file role="src" name="08_priority.phpt"/>
+        <file role="src" name="09_loop_timer.phpt"/>
       </dir>
       <dir name="libev">
         <file role="src" name="ev.c"/>
