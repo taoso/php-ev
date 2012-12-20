@@ -43,22 +43,19 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 
 	TSRMLS_FETCH_FROM_CTX(php_ev_watcher_thread_ctx(watcher));
 
+	/* libev might have stopped watcher */
+	if (php_ev_watcher_flags(watcher) & PHP_EV_WATCHER_FLAG_UNREFED
+			&& !ev_is_active(watcher)) {
+		PHP_EV_WATCHER_REF(watcher);
+	}
+
 	if (revents & EV_ERROR) {
 		int errorno = errno;
 		php_error_docref(NULL TSRMLS_CC, E_WARNING,
 				"Got unspecified libev error in revents, errno = %d, err = %s", errorno, strerror(errorno));
 
 		PHP_EV_EXIT_LOOP(EV_A);
-	}
-#if 0
-#if EV_STAT_ENABLE
-	/* TODO: php_ev_stat_update()*/
-	else if (revents & EV_STAT /* && php_ev_stat_update(watcher) */) {
-		PHP_EV_EXIT_LOOP(EV_A);
-	}
-#endif
-#endif 
-	else if (ZEND_FCI_INITIALIZED(*pfci)) {
+	} else if (ZEND_FCI_INITIALIZED(*pfci)) {
 		/* Setup callback args */
 		key1 = self;
 		args[0] = &key1;
@@ -381,26 +378,26 @@ PHP_METHOD(EvWatcher, get_loop)
 }
 /* }}} */
 
-/* {{{ proto int EvWatcher::keepalive(int value = 1) */
+/* {{{ proto int EvWatcher::keepalive([bool value = TRUE]) */
 PHP_METHOD(EvWatcher, keepalive)
 {
-	ev_watcher    *w;
-	long           n_value = 1;
+	ev_watcher *w;
+	zend_bool   n_value = 1;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l",
-				&n_value) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|b", &n_value) == FAILURE) {
 		return;
 	}
 
 	w = PHP_EV_WATCHER_FETCH_FROM_THIS();
 
 	/* Returning previous state */
-	RETVAL_LONG((w->e_flags & PHP_EV_WATCHER_FLAG_KEEP_ALIVE));
+	RETVAL_BOOL((php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_KEEP_ALIVE));
 	n_value = n_value ? PHP_EV_WATCHER_FLAG_KEEP_ALIVE : 0;
 
 	/* Update watcher flags, if keepalive flag changed */
-	if ((n_value ^ w->e_flags) & PHP_EV_WATCHER_FLAG_KEEP_ALIVE) {
-		w->e_flags = (w->e_flags & ~PHP_EV_WATCHER_FLAG_KEEP_ALIVE) | n_value;
+	if (ZEND_NUM_ARGS() > 0
+			&& ((n_value ^ php_ev_watcher_flags(w)) & PHP_EV_WATCHER_FLAG_KEEP_ALIVE)) {
+		php_ev_watcher_flags(w) = (php_ev_watcher_flags(w) & ~PHP_EV_WATCHER_FLAG_KEEP_ALIVE) | n_value;
 		PHP_EV_WATCHER_REF(w);
 		PHP_EV_WATCHER_UNREF(w);
 	}

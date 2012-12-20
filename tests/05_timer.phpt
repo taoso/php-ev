@@ -18,7 +18,7 @@ for ($i = 1; $i <= 5; ++$i) {
 		use (&$id, &$prev, $base, $i, $t, $fudge) {
 			$now = ev_now();
 
-			EvLoop::default_loop()->verify();
+			ev_verify();
 
 			echo $now + $fudge >= $prev ? "" : "not ", "ok ", ++$id,
 				" # t0 $i $now + $fudge >= $prev\n";
@@ -43,7 +43,7 @@ for ($i = 1; $i <= 5; ++$i) {
 		use (&$id, &$prev, $base, $i, $t) {
 			$now = ev_now();
 
-			EvLoop::default_loop()->verify();
+			ev_verify();
 
 			echo $now >= $prev ? "" : "not ", "ok ", ++$id,
 				" # p0 $i $now >= $prev\n";

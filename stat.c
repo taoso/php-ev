@@ -53,7 +53,7 @@ static void php_ev_stat_to_zval(const ev_statdata *st, zval *z)
 /* }}} */
 
 /* {{{ php_ev_stat_object_ctor */
-void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
+void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start)
 {
 	char                  *path;
 	int                    path_len;
@@ -61,7 +61,7 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	zval                  *self         = NULL;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
-	ev_stat               *stat_watcher;
+	ev_stat               *w;
 	php_ev_stat           *stat_ptr;
 
 	zval                  *data         = NULL;
@@ -69,22 +69,21 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	zend_fcall_info_cache  fcc          = empty_fcall_info_cache;
 	long                   priority     = 0;
 
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pdf|z!l",
 				&path, &path_len, &interval, &fci, &fcc,
 				&data, &priority) == FAILURE) {
 		return;
 	}
 
-	/* If loop is NULL, then we're in __construct() */
-	if (loop) {
-		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_stat_class_entry_ptr);
-
-		PHP_EV_ASSERT((self == NULL));
-		self = return_value; 
-	} else {
-		loop = php_ev_default_loop(TSRMLS_C);
+	if (ctor) {
 		self = getThis();
+	} else {
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_stat_class_entry_ptr);
+		self = return_value; 
+	}
+
+	if (!loop) {
+		loop = php_ev_default_loop(TSRMLS_C);
 	}
 
 	stat_ptr = (php_ev_stat *) emalloc(sizeof(php_ev_stat));
@@ -92,27 +91,38 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 	
 	stat_ptr->path = estrndup(path, path_len); 
 
-	stat_watcher = &stat_ptr->stat;
+	w = &stat_ptr->stat;
 
-	o_self       = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop       = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 
-	php_ev_set_watcher((ev_watcher *)stat_watcher, sizeof(ev_stat), self,
+	php_ev_set_watcher((ev_watcher *)w, sizeof(ev_stat), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	stat_watcher->type = EV_STAT;
+	w->type = EV_STAT;
 	
-	ev_stat_set(stat_watcher, stat_ptr->path, interval);
+	ev_stat_set(w, stat_ptr->path, interval);
 
 	o_self->ptr = (void *) stat_ptr;
+
+	if (start) {
+		PHP_EV_WATCHER_START(ev_stat, w);
+	}
 }
 /* }}} */
 
 /* {{{ proto EvStat::__construct(string path, double interval, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvStat, __construct)
 {
-	php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
+	PHP_EV_WATCHER_CTOR(stat, NULL);
+}
+/* }}} */
+
+/* {{{ proto EvStat::createStopped(string path, double interval, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvStat, createStopped)
+{
+	PHP_EV_WATCHER_FACTORY_NS(stat, NULL);
 }
 /* }}} */
 
@@ -122,7 +132,7 @@ PHP_METHOD(EvStat, set)
 	char          *path;
 	int            path_len;
 	double         interval;
-	ev_stat       *stat_watcher;
+	ev_stat       *w;
 	php_ev_stat   *stat_ptr;
 	php_ev_object *ev_obj;
 
@@ -131,32 +141,32 @@ PHP_METHOD(EvStat, set)
 		return;
 	}
 
-	stat_watcher = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	w = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
 	ev_obj       = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
 	stat_ptr     = (php_ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
-	stat_watcher = (ev_stat *) stat_ptr;
+	w = (ev_stat *) stat_ptr;
 
 	PHP_EV_ASSERT(stat_ptr->path);
 	efree(stat_ptr->path);
 	stat_ptr->path = estrndup(path, path_len);
 
-	PHP_EV_WATCHER_RESET(ev_stat, stat_watcher, (stat_watcher, stat_ptr->path, interval));
+	PHP_EV_WATCHER_RESET(ev_stat, w, (w, stat_ptr->path, interval));
 }
 /* }}} */
 
 /* {{{ proto mixed EvStat::attr(void) */
 PHP_METHOD(EvStat, attr)
 {
-	ev_stat     *stat_watcher;
+	ev_stat     *w;
 	ev_statdata *st;
 
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
 
-	stat_watcher = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_THIS();
-	st           = &stat_watcher->attr;
+	w  = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	st = &w->attr;
 
 	if (!st->st_nlink) {
 		errno = ENOENT;
@@ -170,15 +180,15 @@ PHP_METHOD(EvStat, attr)
 /* {{{ proto mixed EvStat::prev(void) */
 PHP_METHOD(EvStat, prev)
 {
-	ev_stat     *stat_watcher;
+	ev_stat     *w;
 	ev_statdata *st;
 
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
 
-	stat_watcher = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_THIS();
-	st           = &stat_watcher->prev;
+	w  = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	st = &w->prev;
 
 	if (!st->st_nlink) {
 		errno = ENOENT;
@@ -193,19 +203,19 @@ PHP_METHOD(EvStat, prev)
 PHP_METHOD(EvStat, stat)
 {
 	php_ev_object *ev_obj;
-	ev_stat       *stat_watcher;
+	ev_stat       *w;
 	ev_statdata   *st;
 
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
 
-	ev_obj       = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
-	stat_watcher = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
+	ev_obj = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+	w      = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
 
-	st = &stat_watcher->attr;
+	st = &w->attr;
 
-	ev_stat_stat(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj), stat_watcher);
+	ev_stat_stat(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj), w);
 
 	if (st->st_nlink) {
 		RETURN_TRUE;

@@ -19,14 +19,14 @@
 #include "watcher.h"
 
 /* {{{ php_ev_child_object_ctor */
-void php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
+void php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start)
 {
 	long                   pid;
 	zend_bool              trace;
 	zval                  *self;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
-	ev_child              *child_watcher;
+	ev_child              *w;
 
 	zval                  *data          = NULL;
 	zend_fcall_info        fci           = empty_fcall_info;
@@ -38,34 +38,46 @@ void php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 		return;
 	}
 
-	/* If loop is NULL, then we're in __construct() */
-	if (loop) {
+	if (ctor) {
+		self = getThis();
+	} else {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_child_class_entry_ptr);
 		self = return_value; 
-	} else {
-		loop = php_ev_default_loop(TSRMLS_C);
-		self = getThis();
 	}
 
-	o_self        = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop        = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
-	child_watcher = (ev_child *) php_ev_new_watcher(sizeof(ev_child), self,
+	if (!loop) {
+		loop = php_ev_default_loop(TSRMLS_C);
+	}
+
+	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	w      = (ev_child *) php_ev_new_watcher(sizeof(ev_child), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	child_watcher->type = EV_CHILD;
+	w->type = EV_CHILD;
 	
-	ev_child_set(child_watcher, pid, trace);
+	ev_child_set(w, pid, trace);
 
-	o_self->ptr = (void *) child_watcher;
+	o_self->ptr = (void *) w;
 
+	if (start) {
+		PHP_EV_WATCHER_START(ev_child, w);
+	}
 }
 /* }}} */
 
 /* {{{ proto EvChild::__construct(int pid, bool trace, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvChild, __construct)
 {
-	php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
+	PHP_EV_WATCHER_CTOR(child, NULL);
+}
+/* }}} */
+
+/* {{{ proto EvChild::createStopped(int pid, bool trace, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvChild, createStopped)
+{
+	PHP_EV_WATCHER_FACTORY_NS(child, NULL);
 }
 /* }}} */
 
@@ -74,16 +86,16 @@ PHP_METHOD(EvChild, set)
 {
 	long       pid;
 	zend_bool  trace;
-	ev_child  *child_watcher;
+	ev_child  *w;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "bl",
 				&pid, &trace) == FAILURE) {
 		return;
 	}
 
-	child_watcher = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	w = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
-	PHP_EV_WATCHER_RESET(ev_child, child_watcher, (child_watcher, pid, trace));
+	PHP_EV_WATCHER_RESET(ev_child, w, (w, pid, trace));
 }
 /* }}} */
 

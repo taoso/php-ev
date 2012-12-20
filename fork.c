@@ -18,41 +18,47 @@
 #include "watcher.h"
 
 /* {{{ php_ev_fork_object_ctor */
-void php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
+void php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start)
 {
 	zval                  *self;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
-	ev_fork               *fork_watcher;
+	ev_fork               *w;
 
-	zval                  *data         = NULL;
-	zend_fcall_info        fci          = empty_fcall_info;
-	zend_fcall_info_cache  fcc          = empty_fcall_info_cache;
-	long                   priority     = 0;
+	zval                  *data     = NULL;
+	zend_fcall_info        fci      = empty_fcall_info;
+	zend_fcall_info_cache  fcc      = empty_fcall_info_cache;
+	long                   priority = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f|z!l",
 				&fci, &fcc, &data, &priority) == FAILURE) {
 		return;
 	}
 
-	/* If loop is NULL, then we're in __construct() */
-	if (loop) {
-		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_fork_class_entry_ptr);
-		self = return_value; 
-	} else {
-		loop = php_ev_default_loop(TSRMLS_C);
+	if (ctor) {
 		self = getThis();
+	} else {
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_io_class_entry_ptr);
+		self = return_value; 
 	}
 
-	o_self        = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
-	o_loop        = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
-	fork_watcher = (ev_fork *) php_ev_new_watcher(sizeof(ev_fork), self,
+	if (!loop) {
+		loop = php_ev_default_loop(TSRMLS_C);
+	}
+
+	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
+	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
+	w      = (ev_fork *) php_ev_new_watcher(sizeof(ev_fork), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	fork_watcher->type = EV_CHECK;
+	w->type = EV_FORK;
 
-	o_self->ptr = (void *) fork_watcher;
+	o_self->ptr = (void *) w;
+
+	if (start) {
+		PHP_EV_WATCHER_START(ev_fork, w);
+	}
 }
 /* }}} */
 
@@ -60,7 +66,14 @@ void php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 /* {{{ proto EvFork::__construct(EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvFork, __construct)
 {
-	php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
+	PHP_EV_WATCHER_CTOR(fork, NULL);
+}
+/* }}} */
+
+/* {{{ proto EvFork::createStopped(EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
+PHP_METHOD(EvFork, createStopped)
+{
+	PHP_EV_WATCHER_FACTORY_NS(fork, NULL);
 }
 /* }}} */
 

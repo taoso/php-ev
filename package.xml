@@ -13,7 +13,7 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2012-01-15</date>
+  <date>2012-12-20</date>
   <!--{{{ Current version -->
   <version>
     <release>0.1.0</release>
@@ -35,44 +35,63 @@
       <file role="doc" name="INSTALL"/>
       <file role="doc" name="LICENSE"/>
       <file role="doc" name="README.md"/>
+      <file role="doc" name="TODO"/>
       <file role="doc" name="libev/LICENSE"/>
       <file role="doc" name="libev/README"/>
+      <file role="src" name="check.c"/>
       <file role="src" name="child.c"/>
       <file role="src" name="common.h"/>
       <file role="src" name="config.m4"/>
-      <file role="src" name="config.m4"/>
+      <file role="src" name="embed.c"/>
       <file role="src" name="embed.h"/>
       <file role="src" name="ev.c"/>
       <file role="src" name="fe.c"/>
       <file role="src" name="fe.h"/>
+      <file role="src" name="fork.c"/>
+      <file role="src" name="idle.c"/>
       <file role="src" name="io.c"/>
-      <file role="src" name="libev/ev.c"/>
-      <file role="src" name="libev/ev.h"/>
-      <file role="src" name="libev/ev_epoll.c"/>
-      <file role="src" name="libev/ev_kqueue.c"/>
-      <file role="src" name="libev/ev_poll.c"/>
-      <file role="src" name="libev/ev_port.c"/>
-      <file role="src" name="libev/ev_select.c"/>
-      <file role="src" name="libev/ev_vars.h"/>
-      <file role="src" name="libev/ev_wrap.h"/>
-      <file role="src" name="libev/event.c"/>
-      <file role="src" name="libev/event.h"/>
-      <file role="src" name="libev/event_compat.h"/>
-      <file role="src" name="libev/libev.m4"/>
+      <file role="src" name="libev"/>
       <file role="src" name="loop.c"/>
       <file role="src" name="macros.h"/>
       <file role="src" name="package.xml"/>
       <file role="src" name="pe.c"/>
       <file role="src" name="periodic.c"/>
       <file role="src" name="php_ev.h"/>
+      <file role="src" name="prepare.c"/>
       <file role="src" name="priv.h"/>
       <file role="src" name="reconf.sh"/>
       <file role="src" name="signal.c"/>
       <file role="src" name="stat.c"/>
       <file role="src" name="timer.c"/>
       <file role="src" name="types.h"/>
+      <file role="src" name="util.c"/>
+      <file role="src" name="util.h"/>
       <file role="src" name="watcher.c"/>
       <file role="src" name="watcher.h"/>
+      <dir name="tests">
+        <file role="src" name="01_load.phpt"/>
+        <file role="src" name="02_ev_construct_variation.phpt"/>
+        <file role="src" name="03_ev_loop_props.phpt"/>
+        <file role="src" name="05_timer.phpt"/>
+        <file role="src" name="06_keepalive.phpt"/>
+        <file role="src" name="07_stat.phpt"/>
+        <file role="src" name="08_priority.phpt"/>
+      </dir>
+      <dir name="libev">
+        <file role="src" name="ev.c"/>
+        <file role="src" name="ev.h"/>
+        <file role="src" name="ev_epoll.c"/>
+        <file role="src" name="ev_kqueue.c"/>
+        <file role="src" name="ev_poll.c"/>
+        <file role="src" name="ev_port.c"/>
+        <file role="src" name="ev_select.c"/>
+        <file role="src" name="ev_vars.h"/>
+        <file role="src" name="ev_wrap.h"/>
+        <file role="src" name="event.c"/>
+        <file role="src" name="event.h"/>
+        <file role="src" name="event_compat.h"/>
+        <file role="src" name="libev.m4"/>
+      </dir>
     </dir>
   </contents>
   <!--}}}-->

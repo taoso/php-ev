@@ -1,14 +1,3 @@
-Start watchers automatically by default
-=======================================
-In most cases watchers are started automatically.
-Getting rid of need to call ::start() method we skip the function call overhead!.
-
-
-Whether static class Ev, or \Ev namespace for functions/properties associated with
-default loop
-===================================================================================
-
-
 libevent buffer functionality?
 =============================
 

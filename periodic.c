@@ -86,17 +86,17 @@ static ev_tstamp php_ev_periodic_rescheduler(ev_periodic *w, ev_tstamp now)
 /* }}} */
 
 /* {{{ php_ev_periodic_object_ctor */
-void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
+void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool ctor, zend_bool start)
 {
 	double                 offset;
 	double                 interval;
 	zend_fcall_info        fci_reschedule;
 	zend_fcall_info_cache  fcc_reschedule;
 
-	zval                  *self             = NULL;
+	zval                  *self;
 	php_ev_object         *o_self;
 	php_ev_object         *o_loop;
-	ev_periodic           *periodic_watcher;
+	ev_periodic           *w;
 	php_ev_periodic       *periodic_ptr;
 
 	zval                  *data             = NULL;
@@ -112,44 +112,46 @@ void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
 
 	PHP_EV_CHECK_REPEAT(interval);
 
-	/* If loop is NULL, then we're in __construct() */
-	if (loop) {
-		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_periodic_class_entry_ptr);
-
-		PHP_EV_ASSERT((self == NULL));
-		self = return_value; 
-	} else {
-		loop = php_ev_default_loop(TSRMLS_C);
+	if (ctor) {
 		self = getThis();
+	} else {
+		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_periodic_class_entry_ptr);
+		self = return_value; 
+	}
+
+	if (!loop) {
+		loop = php_ev_default_loop(TSRMLS_C);
 	}
 
 	periodic_ptr = (php_ev_periodic *) emalloc(sizeof(php_ev_periodic));
 	memset(periodic_ptr, 0, sizeof(php_ev_periodic));
 
-	periodic_watcher = &periodic_ptr->periodic;
+	w = &periodic_ptr->periodic;
 
 	o_self = (php_ev_object *) zend_object_store_get_object(self TSRMLS_CC);
 	o_loop = (php_ev_object *) zend_object_store_get_object(loop TSRMLS_CC);
 
-	php_ev_set_watcher((ev_watcher *)periodic_watcher, sizeof(ev_periodic), self,
+	php_ev_set_watcher((ev_watcher *)w, sizeof(ev_periodic), self,
 			PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(o_loop),
 			&fci, &fcc, data, priority TSRMLS_CC);
 
-	periodic_watcher->type = EV_PERIODIC;
-
+	w->type = EV_PERIODIC;
 
 	if (ZEND_FCI_INITIALIZED(fci_reschedule)) { /* argument is not NULL */
 		PHP_EV_COPY_FCALL_INFO(periodic_ptr->fci, periodic_ptr->fcc,
 				&fci_reschedule, &fcc_reschedule);
 
-		ev_periodic_set(periodic_watcher, offset, interval, php_ev_periodic_rescheduler);
+		ev_periodic_set(w, offset, interval, php_ev_periodic_rescheduler);
 	} else {
-		ev_periodic_set(periodic_watcher, offset, interval, 0);
+		ev_periodic_set(w, offset, interval, 0);
 	}
 
 	o_self->ptr = (void *) periodic_ptr;
-}
 
+	if (start) {
+		PHP_EV_WATCHER_START(ev_periodic, w);
+	}
+}
 /* }}} */
 
 
@@ -157,21 +159,29 @@ void php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop)
  * NOTE: reschedule_cb could be NULL */
 PHP_METHOD(EvPeriodic, __construct)
 {
-	php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, NULL);
+	PHP_EV_WATCHER_CTOR(periodic, NULL);
+}
+/* }}} */
+
+/* {{{ proto EvPeriodic::createStopped(double offset, double interval, callable reschedule_cb, callable callback[, mixed data = NULL[, int priority = 0]]) 
+ * NOTE: reschedule_cb could be NULL */
+PHP_METHOD(EvPeriodic, createStopped)
+{
+	PHP_EV_WATCHER_FACTORY_NS(periodic, NULL);
 }
 /* }}} */
 
 /* {{{ proto void EvPeriodic::set(double offset, double interval[, callable reschedule_cb]) */
 PHP_METHOD(EvPeriodic, set)
 {
-	double                offset;
-	double                interval;
-	zend_fcall_info       fci      = empty_fcall_info;
-	zend_fcall_info_cache fcc      = empty_fcall_info_cache;
+	double                 offset;
+	double                 interval;
+	zend_fcall_info        fci          = empty_fcall_info;
+	zend_fcall_info_cache  fcc          = empty_fcall_info_cache;
 
-	ev_periodic     *periodic_watcher;
-	php_ev_object   *ev_obj;
-	php_ev_periodic *periodic_ptr;
+	ev_periodic           *w;
+	php_ev_object         *ev_obj;
+	php_ev_periodic       *periodic_ptr;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "dd|f",
 				&offset, &interval, &fci, &fcc) == FAILURE) {
@@ -180,9 +190,9 @@ PHP_METHOD(EvPeriodic, set)
 
 	PHP_EV_CHECK_REPEAT(interval);
 
-	ev_obj           = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
-	periodic_ptr     = (php_ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
-	periodic_watcher = (ev_periodic *) periodic_ptr;
+	ev_obj       = (php_ev_object *) zend_object_store_get_object(getThis() TSRMLS_CC);
+	periodic_ptr = (php_ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(ev_obj);
+	w            = (ev_periodic *) periodic_ptr;
 	
 	/* Free fci and fcc within periodic_ptr, since they will be overwritten anyways */
 
@@ -195,11 +205,11 @@ PHP_METHOD(EvPeriodic, set)
 	if (ZEND_FCI_INITIALIZED(fci)) {
 		PHP_EV_COPY_FCALL_INFO(periodic_ptr->fci, periodic_ptr->fcc, &fci, &fcc);
 
-		PHP_EV_WATCHER_RESET(ev_periodic, periodic_watcher,
-				(periodic_watcher, offset, interval, php_ev_periodic_rescheduler));
+		PHP_EV_WATCHER_RESET(ev_periodic, w,
+				(w, offset, interval, php_ev_periodic_rescheduler));
 	} else {
-		PHP_EV_WATCHER_RESET(ev_periodic, periodic_watcher,
-				(periodic_watcher, offset, interval, 0));
+		PHP_EV_WATCHER_RESET(ev_periodic, w,
+				(w, offset, interval, 0));
 	}
 }
 /* }}} */
@@ -207,16 +217,16 @@ PHP_METHOD(EvPeriodic, set)
 /* {{{ proto void EvPeriodic::again(void) */
 PHP_METHOD(EvPeriodic, again)
 {
-	ev_periodic *periodic_watcher;
+	ev_periodic *w;
 
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
 
-	periodic_watcher = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_THIS();
+	w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_THIS();
 
-	ev_periodic_again(php_ev_watcher_loop_ptr(periodic_watcher), periodic_watcher);
-	PHP_EV_WATCHER_UNREF(periodic_watcher); 
+	ev_periodic_again(php_ev_watcher_loop_ptr(w), w);
+	PHP_EV_WATCHER_UNREF(w); 
 }
 /* }}} */
 

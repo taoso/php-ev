@@ -26,12 +26,12 @@ $loop->data = $third_data;
 var_dump($loop->data);
 
 // Multiple attempts to create the default loop
-$loop2 = EvLoop::default_loop();
-$loop2 = EvLoop::default_loop();
-$loop2 = EvLoop::default_loop();
+$loop2 = EvLoop::defaultLoop();
+$loop2 = EvLoop::defaultLoop();
+$loop2 = EvLoop::defaultLoop();
 
 // Overwriting previously created loop with the default loop
-$loop = EvLoop::default_loop();
+$loop = EvLoop::defaultLoop();
 
 // Overwriting previously created default loop with new loop
 $loop = new EvLoop(EVFLAG_AUTO);
@@ -45,9 +45,9 @@ string(8) "new data"
 string(12) "new new data"
 string(8) "new_data"
 
-Warning: EvLoop::default_loop(): Returning previously created default loop in %s on line %d
+Warning: EvLoop::defaultLoop(): Returning previously created default loop in %s on line %d
 
-Warning: EvLoop::default_loop(): Returning previously created default loop in %s on line %d
+Warning: EvLoop::defaultLoop(): Returning previously created default loop in %s on line %d
 
-Warning: EvLoop::default_loop(): Returning previously created default loop in %s on line %d
+Warning: EvLoop::defaultLoop(): Returning previously created default loop in %s on line %d
 NULL

@@ -103,9 +103,9 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 }
 /* }}} */
 
-/* {{{ proto EvLoop EvLoop::default_loop([int flags = EVLAG_AUTO[, callable callback = NULL[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]]])
+/* {{{ proto EvLoop EvLoop::defaultLoop([int flags = EVLAG_AUTO[, callable callback = NULL[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]]])
 */
-PHP_METHOD(EvLoop, default_loop)
+PHP_METHOD(EvLoop, defaultLoop)
 {
 	php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU,
 			/* in ctor */FALSE, /* is_default_loop */TRUE);
@@ -231,14 +231,14 @@ PHP_METHOD(EvLoop, feed_signal_event)
 /* {{{ proto EvIo EvLoop::io(mixed fd, int events, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvLoop, io)
 {
-	php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(io, getThis());
 }
 /* }}} */
 
 /* {{{ proto EvTimer EvLoop::timer(double after, double repeat, EvLoop loop, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvLoop, timer)
 {
-	php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(timer, getThis());
 }
 /* }}} */
 
@@ -246,7 +246,7 @@ PHP_METHOD(EvLoop, timer)
 /* {{{ proto EvPeriodic EvLoop::periodic(double offset, double interval, callable reschedule_cb, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvLoop, periodic)
 {
-	php_ev_periodic_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(periodic, getThis());
 }
 /* }}} */
 #endif
@@ -255,7 +255,7 @@ PHP_METHOD(EvLoop, periodic)
 /* {{{ proto EvSignal EvLoop::signal(int signum, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvLoop, signal)
 {
-	php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(signal, getThis());
 }
 /* }}} */
 #endif
@@ -264,7 +264,7 @@ PHP_METHOD(EvLoop, signal)
 /* {{{ proto EvChild EvLoop::child(int pid, bool trace, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvLoop, child)
 {
-	php_ev_child_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(child, getThis());
 }
 /* }}} */
 #endif
@@ -273,7 +273,7 @@ PHP_METHOD(EvLoop, child)
 /* {{{ proto EvStat EvLoop::stat(string path, double interval, callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvLoop, stat)
 {
-	php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(stat, getThis());
 }
 /* }}} */
 #endif
@@ -282,7 +282,7 @@ PHP_METHOD(EvLoop, stat)
 /* {{{ proto EvIdle EvLoop::idle(callable callback[, mixed data = NULL[, int priority = 0]]) */
 PHP_METHOD(EvLoop, idle)
 {
-	php_ev_idle_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(idle, getThis());
 }
 /* }}} */
 #endif
@@ -291,7 +291,7 @@ PHP_METHOD(EvLoop, idle)
 /* {{{ proto EvCheck EvLoop::check() */
 PHP_METHOD(EvLoop, check)
 {
-	php_ev_check_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(check, getThis());
 }
 /* }}} */
 #endif
@@ -300,7 +300,7 @@ PHP_METHOD(EvLoop, check)
 /* {{{ proto EvPrepare EvLoop::prepare() */
 PHP_METHOD(EvLoop, prepare)
 {
-	php_ev_prepare_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(prepare, getThis());
 }
 /* }}} */
 #endif
@@ -309,7 +309,7 @@ PHP_METHOD(EvLoop, prepare)
 /* {{{ proto EvEmbed EvLoop::embed() */
 PHP_METHOD(EvLoop, embed)
 {
-	php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(embed, getThis());
 }
 /* }}} */
 #endif
@@ -318,7 +318,7 @@ PHP_METHOD(EvLoop, embed)
 /* {{{ proto EvFork EvLoop::fork() */
 PHP_METHOD(EvLoop, fork)
 {
-	php_ev_fork_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, getThis());
+	PHP_EV_WATCHER_FACTORY(fork, getThis());
 }
 /* }}} */
 #endif

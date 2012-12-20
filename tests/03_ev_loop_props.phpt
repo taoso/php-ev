@@ -17,7 +17,7 @@ function cb($w, $r) {
 	return FALSE;
 }
 
-$l                   = EvLoop::default_loop();
+$l                   = EvLoop::defaultLoop();
 $l->data             = "ld";
 $l->io_interval      = 1.1;
 $l->timeout_interval = 1.2;
