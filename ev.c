@@ -93,7 +93,7 @@ zend_module_entry ev_module_entry = {
 #elif ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
 #endif
-    "Ev",
+    "ev",
     ev_functions,
     PHP_MINIT(ev),
     PHP_MSHUTDOWN(ev),
@@ -761,15 +761,6 @@ php_ev_object *php_ev_object_new(zend_class_entry *ce TSRMLS_DC)
 	intern->ptr          = NULL;
 	intern->prop_handler = NULL;
 
-#if 0
-	while (ce_parent) {
-	    if (ce_parent == ev_watcher_class_entry_ptr
-	    		|| ce_parent == ev_loop_class_entry_ptr) {
-	    	break;
-	    }
-	    ce_parent = ce_parent->parent;
-	}
-#endif
 	while (ce_parent->type != ZEND_INTERNAL_CLASS && ce_parent->parent != NULL) {
 		ce_parent = ce_parent->parent;
 	}

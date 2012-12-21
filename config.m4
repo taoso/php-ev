@@ -24,7 +24,7 @@ PHP_ARG_ENABLE(ev-libevent-api, for libevent compatibility API support,
 [  --enable-ev-libevent-api       Enable libevent compatibility API support], yes, no)
 
 PHP_ARG_ENABLE(ev-sockets, for sockets support,
-[  --enable-ev-sockets     Enable sockets support in Ev], yes, no)
+[  --enable-ev-sockets     Enable sockets support in ev], yes, no)
 
 if test "$PHP_EV" != "no"; then
   export OLD_CPPFLAGS="$CPPFLAGS"
