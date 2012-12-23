@@ -20,9 +20,6 @@ PHP_ARG_ENABLE(ev, whether to enable ev,
 PHP_ARG_ENABLE(ev-debug, for ev debug support,
 [  --enable-ev-debug       Enable ev debug support], no, no)
 
-PHP_ARG_ENABLE(ev-libevent-api, for libevent compatibility API support,
-[  --enable-ev-libevent-api       Enable libevent compatibility API support], yes, no)
-
 PHP_ARG_ENABLE(ev-sockets, for sockets support,
 [  --enable-ev-sockets     Enable sockets support in ev], yes, no)
 
@@ -38,10 +35,6 @@ if test "$PHP_EV" != "no"; then
 [AC_MSG_RESULT(ok)],
 [AC_MSG_ERROR([need at least PHP 5.4.0])])
   export CPPFLAGS="$OLD_CPPFLAGS"
-
-  if test "$PHP_LIBEVENT_API" != "no"; then
-    AC_DEFINE(PHP_EV_LIBEVENT_API, 1, [Enable libevent compatibility API support])
-  fi
 
   if test "$PHP_EV_DEBUG" != "no"; then
     CFLAGS="$CFLAGS -Wall -g -ggdb -O0"

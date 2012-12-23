@@ -1062,11 +1062,6 @@ PHP_MINFO_FUNCTION(ev)
 #else
 	php_info_print_table_row(2, "Debug support", "disabled");
 #endif
-#ifdef PHP_EV_LIBEVENT_API
-	php_info_print_table_row(2, "Libevent compatibility API support", "enabled");
-#else
-	php_info_print_table_row(2, "Libevent compatibility API support", "disabled");
-#endif
 	php_info_print_table_row(2, "Version", PHP_EV_VERSION);
 	php_info_print_table_end();
 }

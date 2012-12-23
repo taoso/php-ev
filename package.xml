@@ -13,7 +13,7 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2012-12-21</date>
+  <date>2012-12-23</date>
   <!--{{{ Current version -->
   <version>
     <release>0.1.0</release>
@@ -105,15 +105,16 @@
       <pearinstaller>
         <min>1.4.0a1</min>
       </pearinstaller>
+      <!--
       <os>
         <name>linux</name>
       </os>
+      -->
     </required>
   </dependencies>
   <providesextension>ev</providesextension>
   <extsrcrelease>
     <configureoption default="no" name="enable-ev-debug" prompt="Enable internal debugging in ev"/>
-    <configureoption default="yes" name="enable-ev-libevent-api" prompt="Enable libevent compatibility API support in ev"/>
     <configureoption default="yes" name="enable-ev-sockets" prompt="Enable sockets support in ev"/>
   </extsrcrelease>
   <changelog>
