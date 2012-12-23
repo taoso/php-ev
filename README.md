@@ -263,6 +263,70 @@ Sample output:
 	Connection: close
 
 
+EMBEDDING ONE LOOP INTO ANOTHER
+-------------------------------
+
+*Example 1*
+
+	<?php
+	/*
+ 	 * Try to get an embeddable event loop and embed it into the default event loop. 
+ 	 * If it is impossible, use the default
+ 	 * loop. The default loop is stored in $loop_hi, while the embeddable loop is 
+ 	 * stored in $loop_lo(which is $loop_hi in the case no embeddable loop can be 
+ 	 * used).
+ 	 * 
+ 	 * Sample translated to PHP
+ 	 * http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples_CONTENT-9
+ 	 */
+	$loop_hi = EvLoop::defaultLoop();
+	$loop_lo = NULL;
+	$embed   = NULL;
+
+	/*
+	* See if there is a chance of getting one that works
+	* (flags' value of 0 means autodetection)
+	*/
+	$loop_lo = ev_embeddable_backends() & ev_recommended_backends()
+    	? new EvLoop(ev_embeddable_backends() & ev_recommended_backends())
+    	: 0;
+
+	if ($loop_lo) {
+		$embed = new EvEmbed($loop_lo, function () {});
+	} else {
+		$loop_lo = $loop_hi;
+	}
+	?>
+
+*Example 2*
+
+	<?php
+	/*
+ 	 * Check if kqueue is available but not recommended and create a kqueue backend 
+ 	 * for use with sockets (which usually work with any kqueue implementation). 
+ 	 * Store the kqueue/socket-only event loop in loop_socket. (One might optionally 
+ 	 * use EVFLAG_NOENV, too)
+ 	 *
+ 	 * Example borrowed from
+ 	 * http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples_CONTENT-9
+ 	 */
+	$loop        = EvLoop::defaultLoop();
+	$socket_loop = NULL;
+	$embed       = NULL;
+
+	if (ev_supported_backends() & ~ev_recommended_backends() & EVBACKEND_KQUEUE) {
+		if (($socket_loop = new EvLoop(EVBACKEND_KQUEUE))) {
+			$embed = new EvEmbed($loop);
+		}
+	}
+
+	if (!$socket_loop) {
+		$socket_loop = $loop; 
+	}
+
+	// Now use $socket_loop for all sockets, and $loop for anything else
+	?>
+
 SIGNALS
 -------
 
@@ -348,6 +412,7 @@ PROCESS STATUS CHANGES
 		exit(2);
 	}
 	?>
+
 
 AUTHORS
 =======

@@ -988,6 +988,15 @@ PHP_MINIT_FUNCTION(ev)
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_CUSTOM);
 	PHP_EV_REGISTER_LONG_CONSTANT(EV_ERROR);
 
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_SELECT);
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_POLL);
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_EPOLL);
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_KQUEUE);
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_DEVPOLL);
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_PORT);
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_ALL);
+	PHP_EV_REGISTER_LONG_CONSTANT(EVBACKEND_MASK);
+
 #if !defined(_WIN32) && !defined(_MINIX)
 	pthread_atfork(0, 0, php_ev_default_fork);
 #endif
@@ -1125,6 +1134,24 @@ PHP_MINFO_FUNCTION(ev)
                                                                                   \
         RETURN_LONG(ev_ ## name(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj)));          \
     }
+
+#define PHP_EV_LOOP_FUNC_VOID_VOID(name)                                          \
+    PHP_FUNCTION(ev_ ## name)                                                     \
+    {                                                                             \
+        zval          *zloop;                                                     \
+        php_ev_object *ev_obj;                                                    \
+                                                                                  \
+        if (zend_parse_parameters_none() == FAILURE) {                            \
+            return;                                                               \
+        }                                                                         \
+                                                                                  \
+        zloop  = php_ev_default_loop(TSRMLS_C);                                   \
+        ev_obj = (php_ev_object *) zend_object_store_get_object(zloop TSRMLS_CC); \
+                                                                                  \
+        PHP_EV_CONSTRUCT_CHECK(ev_obj);                                           \
+                                                                                  \
+        ev_ ## name(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj));                       \
+    }
 /* }}} */
 
 PHP_EV_FUNC_INT_VOID(supported_backends)
@@ -1252,6 +1279,23 @@ PHP_FUNCTION(ev_verify)
 	ev_verify(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj));
 }
 /* }}} */
+
+/* {{{ proto int ev_backend(void) */
+PHP_EV_LOOP_FUNC_INT_VOID(backend)
+/* }}} */
+
+/* {{{ proto void ev_now_update(void) */
+PHP_EV_LOOP_FUNC_VOID_VOID(now_update)
+/* }}} */
+
+/* {{{ proto void ev_suspend(void) */
+PHP_EV_LOOP_FUNC_VOID_VOID(suspend)
+/* }}} */
+
+/* {{{ proto void ev_resume(void) */
+PHP_EV_LOOP_FUNC_VOID_VOID(resume)
+/* }}} */
+
 
 /* }}} */
 

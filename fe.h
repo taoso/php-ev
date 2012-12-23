@@ -32,6 +32,10 @@ PHP_FUNCTION(ev_break);
 PHP_FUNCTION(ev_iteration);
 PHP_FUNCTION(ev_depth);
 PHP_FUNCTION(ev_verify);
+PHP_FUNCTION(ev_backend);
+PHP_FUNCTION(ev_now_update);
+PHP_FUNCTION(ev_suspend);
+PHP_FUNCTION(ev_resume);
 
 /* {{{ EvLoop */
 PHP_METHOD(EvLoop, __construct);
@@ -42,6 +46,7 @@ PHP_METHOD(EvLoop, invokePending);
 PHP_METHOD(EvLoop, nowUpdate);
 PHP_METHOD(EvLoop, suspend);
 PHP_METHOD(EvLoop, resume);
+PHP_METHOD(EvLoop, backend);
 PHP_METHOD(EvLoop, now);
 PHP_METHOD(EvLoop, run);
 PHP_METHOD(EvLoop, break);

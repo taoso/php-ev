@@ -339,6 +339,7 @@ const zend_function_entry ev_functions[] = {
 	PHP_FE(ev_iteration,            arginfo_ev__void)
 	PHP_FE(ev_depth,                arginfo_ev__void)
 	PHP_FE(ev_verify,               arginfo_ev__void)
+	PHP_FE(ev_backend,              arginfo_ev__void)
 
 	{NULL, NULL, NULL}
 };
@@ -354,6 +355,7 @@ const zend_function_entry ev_loop_class_entry_functions[] = {
 	PHP_ME(EvLoop, nowUpdate,         arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, suspend,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, resume,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, backend,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, now,               arginfo_ev__void,             ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, run,               arginfo_ev_run,               ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, break,             arginfo_ev_break,             ZEND_ACC_PUBLIC)

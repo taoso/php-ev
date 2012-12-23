@@ -133,12 +133,25 @@ PHP_METHOD(EvLoop, __construct)
         ev_ ## evname(EV_A);                           \
     }
 
+#define PHP_EV_LOOP_METHOD_INT_VOID(name, evname)      \
+    PHP_METHOD(EvLoop, name)                           \
+    {                                                  \
+        PHP_EV_LOOP_FETCH_FROM_THIS;                   \
+                                                       \
+        if (zend_parse_parameters_none() == FAILURE) { \
+            return;                                    \
+        }                                              \
+                                                       \
+        RETURN_LONG(ev_ ## evname(EV_A));              \
+    }
+
 PHP_EV_LOOP_METHOD_VOID(loopFork, loop_fork)
 PHP_EV_LOOP_METHOD_VOID(verify, verify)
 PHP_EV_LOOP_METHOD_VOID(invokePending, invoke_pending)
 PHP_EV_LOOP_METHOD_VOID(nowUpdate, now_update)
 PHP_EV_LOOP_METHOD_VOID(suspend, suspend)
 PHP_EV_LOOP_METHOD_VOID(resume, resume)
+PHP_EV_LOOP_METHOD_INT_VOID(backend, backend)
 
 /* {{{ proto double EvLoop::now(void) */
 PHP_METHOD(EvLoop, now)
