@@ -158,6 +158,8 @@ PERIODIC TIMERS
 I/O EVENTS
 ----------
 
+*Example 1*
+
 	<?php
 	// Wait until STDIN is readable
 	$w = new EvIo(STDIN, EV_READ, function ($watcher, $revents) {
@@ -165,6 +167,101 @@ I/O EVENTS
 	});
 	ev_run(EVRUN_ONCE);
 	?>
+
+*Example 2*
+
+	<?php
+	/* Use some async I/O to access a socket */
+
+	// `sockets' extension still logs warnings
+	// for EINPROGRESS, EAGAIN/EWOULDBLOCK etc.
+	error_reporting(E_ERROR);
+
+	$e_nonblocking = array (/*EAGAIN or EWOULDBLOCK*/11, /*EINPROGRESS*/115);
+
+	// Get the port for the WWW service
+	$service_port = getservbyname('www', 'tcp');
+
+	// Get the IP address for the target host
+	$address = gethostbyname('google.co.uk');
+
+	// Create a TCP/IP socket
+	$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+	if ($socket === FALSE) {
+    	echo "socket_create() failed: reason: "
+			.socket_strerror(socket_last_error()) . "\n";
+	}
+
+	// Set O_NONBLOCK flag
+	socket_set_nonblock($socket);
+
+	// Abort on timeout
+	$timeout_watcher = new EvTimer(10.0, 0., function () use ($socket) {
+		socket_close($socket);
+		ev_break(EVBREAK_ALL);
+	});
+
+	// Make HEAD request when the socket is writable
+	$write_watcher = new EvIo($socket, EV_WRITE, function ($w)
+		use ($socket, $timeout_watcher, $e_nonblocking) {
+		// Stop timeout watcher
+		$timeout_watcher->stop();
+		// Stop write watcher
+		$w->stop();
+
+		$in = "HEAD / HTTP/1.1\r\n";
+		$in .= "Host: google.co.uk\r\n";
+		$in .= "Connection: Close\r\n\r\n";
+
+		if (!socket_write($socket, $in, strlen($in))) {
+			trigger_error("Failed writing $in to socket", E_USER_ERROR);
+		}
+
+		$read_watcher = new EvIo($socket, EV_READ, function ($w, $re)
+			use ($socket, $e_nonblocking) {
+			// Socket is readable. recv() 20 bytes using non-blocking mode
+			$ret = socket_recv($socket, $out, 20, MSG_DONTWAIT);
+
+			if ($ret) {
+    			echo $out;
+			} elseif ($ret === 0) {
+				// All read
+				$w->stop();
+				socket_close($socket);
+				return;
+			}
+
+			// Caught EINPROGRESS, EAGAIN, or EWOULDBLOCK
+			if (in_array(socket_last_error(), $e_nonblocking)) {
+				return;
+			}
+
+			$w->stop();
+			socket_close($socket);
+		});
+
+		ev_run();
+	});
+
+	$result = socket_connect($socket, $address, $service_port);
+
+	ev_run();
+	?>
+
+Sample output:
+
+	HTTP/1.1 301 Moved Permanently
+	Location: http://www.google.co.uk/
+	Content-Type: text/html; charset=UTF-8
+	Date: Sun, 23 Dec 2012 16:08:27 GMT
+	Expires: Tue, 22 Jan 2013 16:08:27 GMT
+	Cache-Control: public, max-age=2592000
+	Server: gws
+	Content-Length: 221
+	X-XSS-Protection: 1; mode=block
+	X-Frame-Options: SAMEORIGIN
+	Connection: close
+
 
 SIGNALS
 -------
