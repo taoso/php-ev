@@ -165,29 +165,6 @@
 
 #define PHP_EV_EXIT_LOOP(__loop) ev_break((__loop), EVBREAK_ALL)
 
-
-#define PHP_EV_PROP_ZVAL_READ(data)          \
-    do {                                     \
-        if (!data) {                         \
-            ALLOC_INIT_ZVAL(*retval);        \
-            return SUCCESS;                  \
-        }                                    \
-                                             \
-        MAKE_STD_ZVAL(*retval);              \
-        REPLACE_ZVAL_VALUE(retval, data, 1); \
-    } while (0)
-
-#define PHP_EV_PROP_ZVAL_WRITE(ppz)                                     \
-    do {                                                                \
-        /* Make a copy of the zval, avoid direct binding to the address \
-         * of value, since it breaks refcount in php_ev_read_property() \
-         * causing further leaks and memory access violations */        \
-        if (!*ppz) {                                                    \
-            MAKE_STD_ZVAL(*ppz);                                        \
-        }                                                               \
-        REPLACE_ZVAL_VALUE(ppz, value, 1);                              \
-    } while (0)
-
 #define PHP_EV_CHECK_REPEAT(repeat)                                                 \
     if (repeat < 0.) {                                                              \
         php_error_docref(NULL TSRMLS_CC, E_ERROR, # repeat " value must be >= 0."); \
