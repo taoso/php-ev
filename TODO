@@ -1,3 +1,17 @@
+__clone handlers
+================
+
+Add __clone handlers for all object types? Is it really needed?
+
+Let's assume we are cloning a loop having a set of active watchers. Some of them
+may finish before __clone handler did it's job. Because of such kind of issues
+(and many others) we probably don't need __clone handler for EvLoop.
+
+However, sometimes clone handler may be useful to copy entire watcher with it's
+settings and bind to another event loop.
+
+Will wait for user requests, or bug reports.
+
 libevent buffer functionality?
 =============================
 
@@ -62,3 +76,11 @@ SAMPLE OUTPUT
 	</cross-domain-policy>
 	"
 	failure
+
+But should it be in ev extension?! Sockets' buffering should be somewhere in
+sockets extension, isn't it?  libevent functionality should be in libevent
+itself. libevent extension currently doesn't support libevent 2. Consider
+forking the project, or even writing something new.
+
+
+vim: ft=markdown
