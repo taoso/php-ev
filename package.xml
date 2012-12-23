@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-  <name>Ev</name>
+  <name>ev</name>
   <channel>pecl.php.net</channel>
   <summary>Provides interface to libev library</summary>
   <description>
-  Ev is a PECL extension providing inteface to libev library - high performance
+  ev is a PECL extension providing inteface to libev library - high performance
   full-featured event loop written in C.
   </description>
   <lead>
@@ -13,7 +13,7 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2012-12-20</date>
+  <date>2012-12-21</date>
   <!--{{{ Current version -->
   <version>
     <release>0.1.0</release>
@@ -72,6 +72,7 @@
         <file role="src" name="01_load.phpt"/>
         <file role="src" name="02_ev_construct_variation.phpt"/>
         <file role="src" name="03_ev_loop_props.phpt"/>
+        <file role="src" name="04_timer_variation.phpt"/>
         <file role="src" name="05_timer.phpt"/>
         <file role="src" name="06_keepalive.phpt"/>
         <file role="src" name="07_stat.phpt"/>
@@ -109,11 +110,11 @@
       </os>
     </required>
   </dependencies>
-  <providesextension>Ev</providesextension>
+  <providesextension>ev</providesextension>
   <extsrcrelease>
-    <configureoption default="no" name="enable-ev-debug" prompt="Enable internal debugging in Ev"/>
-    <configureoption default="yes" name="enable-ev-libevent-api" prompt="Enable libevent compatibility API support in Ev"/>
-    <configureoption default="yes" name="enable-ev-sockets" prompt="Enable sockets support in Ev"/>
+    <configureoption default="no" name="enable-ev-debug" prompt="Enable internal debugging in ev"/>
+    <configureoption default="yes" name="enable-ev-libevent-api" prompt="Enable libevent compatibility API support in ev"/>
+    <configureoption default="yes" name="enable-ev-sockets" prompt="Enable sockets support in ev"/>
   </extsrcrelease>
   <changelog>
     <version>

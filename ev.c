@@ -93,7 +93,7 @@ zend_module_entry ev_module_entry = {
 #elif ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
 #endif
-    "Ev",
+    "ev",
     ev_functions,
     PHP_MINIT(ev),
     PHP_MSHUTDOWN(ev),
@@ -190,11 +190,11 @@ static void php_ev_add_property(HashTable *h, const char *name, size_t name_len,
 /* {{{ php_ev_read_property */
 static zval *php_ev_read_property(zval *object, zval *member, int type, const zend_literal *key TSRMLS_DC)
 {
-	zval            tmp_member;
-	zval            *retval;
-	php_ev_object   *obj;
+	zval                 tmp_member;
+	zval                *retval;
+	php_ev_object       *obj;
 	php_ev_prop_handler *hnd;
-	int             ret;
+	int                  ret;
 
 	ret = FAILURE;
 	obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
@@ -761,15 +761,6 @@ php_ev_object *php_ev_object_new(zend_class_entry *ce TSRMLS_DC)
 	intern->ptr          = NULL;
 	intern->prop_handler = NULL;
 
-#if 0
-	while (ce_parent) {
-	    if (ce_parent == ev_watcher_class_entry_ptr
-	    		|| ce_parent == ev_loop_class_entry_ptr) {
-	    	break;
-	    }
-	    ce_parent = ce_parent->parent;
-	}
-#endif
 	while (ce_parent->type != ZEND_INTERNAL_CLASS && ce_parent->parent != NULL) {
 		ce_parent = ce_parent->parent;
 	}
@@ -803,6 +794,7 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	/* {{{ EvLoop */
 	PHP_EV_REGISTER_CLASS_ENTRY("EvLoop", ev_loop_class_entry_ptr, ev_loop_class_entry_functions);
 	ce = ev_loop_class_entry_ptr;
+	ce->ce_flags |= ZEND_ACC_FINAL_CLASS;
 	zend_hash_init(&php_ev_properties, 0, NULL, NULL, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_properties, ev_loop_property_entries);
 	PHP_EV_DECL_CLASS_PROPERTIES(ce, ev_loop_property_entry_info);
@@ -951,7 +943,7 @@ PHP_MINIT_FUNCTION(ev)
 
 	memcpy(&ev_object_handlers, std_hnd, sizeof(zend_object_handlers));
 
-	ev_object_handlers.clone_obj            = NULL;
+	ev_object_handlers.clone_obj            = NULL; /* TODO: add __clone() handler */
 	ev_object_handlers.read_property        = php_ev_read_property;
 	ev_object_handlers.write_property       = php_ev_write_property;
 	ev_object_handlers.get_property_ptr_ptr = std_hnd->get_property_ptr_ptr;

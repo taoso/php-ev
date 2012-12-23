@@ -148,6 +148,7 @@ ZEND_END_ARG_INFO();
 
 /* {{{ EvWatcher */
 
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_watcher_invoke, 0, 0, 1)
 	ZEND_ARG_INFO(0, revents)
 ZEND_END_ARG_INFO();
@@ -395,14 +396,14 @@ const zend_function_entry ev_loop_class_entry_functions[] = {
 const zend_function_entry ev_watcher_class_entry_functions[] = {
 	PHP_ABSTRACT_ME(EvWatcher, __construct, NULL)
 
-	PHP_ME(EvWatcher, start,        arginfo_ev__void,                ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, stop,         arginfo_ev__void,                ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, clear,        arginfo_ev__void,                ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, invoke,       arginfo_ev_watcher_invoke,       ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, feed,         arginfo_ev_watcher_feed,         ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, getLoop,      arginfo_ev__void,                ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, keepalive,    arginfo_ev_watcher_keepalive,    ZEND_ACC_PUBLIC)
-	PHP_ME(EvWatcher, setCallback,  arginfo_ev_watcher_set_callback, ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, start,       arginfo_ev__void,                ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, stop,        arginfo_ev__void,                ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, clear,       arginfo_ev__void,                ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, invoke,      arginfo_ev_watcher_invoke,       ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, feed,        arginfo_ev_watcher_feed,         ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, getLoop,     arginfo_ev__void,                ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, keepalive,   arginfo_ev_watcher_keepalive,    ZEND_ACC_PUBLIC)
+	PHP_ME(EvWatcher, setCallback, arginfo_ev_watcher_set_callback, ZEND_ACC_PUBLIC)
 
 	{ NULL, NULL, NULL }
 };

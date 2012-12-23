@@ -16,12 +16,31 @@
    +----------------------------------------------------------------------+
 */
 
-#if 0
-#include "embed.h"
-#include "priv.h"
-#endif
 #include "php_ev.h"
 #include "watcher.h"
+
+static inline void php_ev_prop_write_zval(zval **ppz, const zval *value)
+{
+	if (!*ppz) {
+		MAKE_STD_ZVAL(*ppz);
+	}
+
+    /* Make a copy of the zval, avoid direct binding to the address
+     * of value, since it breaks refcount in php_ev_read_property()
+     * causing further leaks and memory access violations */
+	REPLACE_ZVAL_VALUE(ppz, value, 1);
+}
+
+static inline void php_ev_prop_read_zval(const zval *pz, zval **retval)
+{
+	if (!pz) {
+		ALLOC_INIT_ZVAL(*retval);
+		return;
+	}
+
+    MAKE_STD_ZVAL(*retval);
+    REPLACE_ZVAL_VALUE(retval, pz, 1);
+}
 
 
 /* {{{ EvLoop property handlers */
@@ -33,7 +52,7 @@ static int ev_loop_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 
 	zval *data = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data;
 
-	PHP_EV_PROP_ZVAL_READ(data);
+	php_ev_prop_read_zval(data, retval);
 
 	return SUCCESS;
 }
@@ -44,9 +63,7 @@ static int ev_loop_prop_data_write(php_ev_object *obj, zval *value TSRMLS_DC)
 {
 	PHP_EV_ASSERT(obj->ptr);
 
-	zval **data_ptr_ptr = &(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj))->data;
-
-	PHP_EV_PROP_ZVAL_WRITE(data_ptr_ptr);
+	php_ev_prop_write_zval(&(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj))->data, value);
 
 	return SUCCESS;
 }
@@ -193,7 +210,7 @@ static int ev_watcher_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC
 
 	zval *data = PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data;
 
-	PHP_EV_PROP_ZVAL_READ(data);
+	php_ev_prop_read_zval(data, retval);
 
 	return SUCCESS;
 }
@@ -204,9 +221,7 @@ static int ev_watcher_prop_data_write(php_ev_object *obj, zval *value TSRMLS_DC)
 {
 	PHP_EV_ASSERT(obj->ptr);
 
-	zval **data_ptr_ptr = &(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj))->data;
-
-	PHP_EV_PROP_ZVAL_WRITE(data_ptr_ptr);
+	php_ev_prop_write_zval(&(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj))->data, value);
 
 	return SUCCESS;
 }
@@ -542,7 +557,7 @@ static int ev_embed_prop_other_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 
 	php_ev_embed *embed_ptr = (php_ev_embed *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
-	PHP_EV_PROP_ZVAL_READ(embed_ptr->other);
+	php_ev_prop_read_zval(embed_ptr->other, retval);
 
 	return SUCCESS;
 }
