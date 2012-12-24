@@ -16,7 +16,7 @@
   <date>2012-12-24</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.1.0</release>
+    <release>0.1.1</release>
     <api>0.1.0</api>
   </version>
   <stability>
@@ -116,7 +116,23 @@
     <configureoption default="no" name="enable-ev-debug" prompt="Enable internal debugging in ev"/>
     <configureoption default="yes" name="enable-ev-sockets" prompt="Enable sockets support in ev"/>
   </extsrcrelease>
+  <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 0.1.1 (beta) -->
+    <version>
+      <release>0.1.1</release>
+      <api>0.1.0</api>
+    </version>
+    <stability>
+      <release>beta</release>
+      <api>beta</api>
+    </stability>
+    <license uri="http://www.php.net/license">PHP</license>
+    <notes>
+    Fix: PECL build error
+    </notes>
+    <!--}}}-->
+    <!--{{{ 0.1.0 (beta) -->
     <version>
       <release>0.1.0</release>
       <api>0.1.0</api>
@@ -129,6 +145,8 @@
     <notes>
     Initial release
     </notes>
+    <!--}}}-->
   </changelog>
+  <!--}}}-->
 </package>
 <!-- vim: set et sts=2 ts=2 sw=2 fdm=marker: -->
