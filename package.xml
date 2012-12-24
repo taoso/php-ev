@@ -50,7 +50,6 @@
       <file role="src" name="io.c"/>
       <file role="src" name="loop.c"/>
       <file role="src" name="macros.h"/>
-      <file role="src" name="package.xml"/>
       <file role="src" name="pe.c"/>
       <file role="src" name="periodic.c"/>
       <file role="src" name="php_ev.h"/>
