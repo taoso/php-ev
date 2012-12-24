@@ -119,32 +119,36 @@
   <!--{{{ changelog-->
   <changelog>
     <!--{{{ 0.1.1 (beta) -->
-    <version>
-      <release>0.1.1</release>
-      <api>0.1.0</api>
-    </version>
-    <stability>
-      <release>beta</release>
-      <api>beta</api>
-    </stability>
-    <license uri="http://www.php.net/license">PHP</license>
-    <notes>
+    <release>
+      <version>
+        <release>0.1.1</release>
+        <api>0.1.0</api>
+      </version>
+      <stability>
+        <release>beta</release>
+        <api>beta</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes>
     Fix: PECL build error
     </notes>
+    </release>
     <!--}}}-->
     <!--{{{ 0.1.0 (beta) -->
-    <version>
-      <release>0.1.0</release>
-      <api>0.1.0</api>
-    </version>
-    <stability>
-      <release>beta</release>
-      <api>beta</api>
-    </stability>
-    <license uri="http://www.php.net/license">PHP</license>
-    <notes>
+    <release>
+      <version>
+        <release>0.1.0</release>
+        <api>0.1.0</api>
+      </version>
+      <stability>
+        <release>beta</release>
+        <api>beta</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes>
     Initial release
     </notes>
+    </release>
     <!--}}}-->
   </changelog>
   <!--}}}-->
