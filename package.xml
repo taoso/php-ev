@@ -36,8 +36,6 @@
       <file role="doc" name="LICENSE"/>
       <file role="doc" name="README.md"/>
       <file role="doc" name="TODO.md"/>
-      <file role="doc" name="libev/LICENSE"/>
-      <file role="doc" name="libev/README"/>
       <file role="src" name="check.c"/>
       <file role="src" name="child.c"/>
       <file role="src" name="common.h"/>
@@ -50,7 +48,6 @@
       <file role="src" name="fork.c"/>
       <file role="src" name="idle.c"/>
       <file role="src" name="io.c"/>
-      <file role="src" name="libev"/>
       <file role="src" name="loop.c"/>
       <file role="src" name="macros.h"/>
       <file role="src" name="package.xml"/>
@@ -80,6 +77,8 @@
         <file role="src" name="09_loop_timer.phpt"/>
       </dir>
       <dir name="libev">
+        <file role="doc" name="LICENSE"/>
+        <file role="doc" name="README"/>
         <file role="src" name="ev.c"/>
         <file role="src" name="ev.h"/>
         <file role="src" name="ev_epoll.c"/>
