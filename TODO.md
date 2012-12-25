@@ -1,11 +1,18 @@
-__clone handlers
-================
+Rename `EvLoop::run` / `ev_run` etc.
+====================================
 
-Add __clone handlers for all object types? Is it really needed?
+For some reason these functions supposed to be mapped in *phd* :( I have to
+whether rename methods/functions, or move the functions to namespace, or Ev
+class, for instance.
+
+Clone  handlers
+===============
+
+Add `__clone` handlers for all object types? Is it really needed?
 
 Let's assume we are cloning a loop having a set of active watchers. Some of them
-may finish before __clone handler did it's job. Because of such kind of issues
-(and many others) we probably don't need __clone handler for EvLoop.
+may finish before `__clone` handler did it's job. Because of such kind of issues
+(and many others) we probably don't need `__clone` handler for EvLoop.
 
 However, sometimes clone handler may be useful to copy entire watcher with it's
 settings and bind to another event loop.
