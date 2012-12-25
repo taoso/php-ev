@@ -181,8 +181,8 @@ PHP_METHOD(EvLoop, run)
 }
 /* }}} */
 
-/* {{{ proto void EvLoop::break([int how = 0]) */
-PHP_METHOD(EvLoop, break)
+/* {{{ proto void EvLoop::stop([int how = 0]) */
+PHP_METHOD(EvLoop, stop)
 {
 	PHP_EV_LOOP_FETCH_FROM_THIS;
 

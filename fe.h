@@ -20,22 +20,24 @@
 
 #include "embed.h"
 
-PHP_FUNCTION(ev_supported_backends);
-PHP_FUNCTION(ev_recommended_backends);
-PHP_FUNCTION(ev_embeddable_backends);
-PHP_FUNCTION(ev_feed_signal);
-PHP_FUNCTION(ev_sleep);
-PHP_FUNCTION(ev_time);
-PHP_FUNCTION(ev_run);
-PHP_FUNCTION(ev_now);
-PHP_FUNCTION(ev_break);
-PHP_FUNCTION(ev_iteration);
-PHP_FUNCTION(ev_depth);
-PHP_FUNCTION(ev_verify);
-PHP_FUNCTION(ev_backend);
-PHP_FUNCTION(ev_now_update);
-PHP_FUNCTION(ev_suspend);
-PHP_FUNCTION(ev_resume);
+/* {{{ Ev */
+PHP_METHOD(Ev, supportedBackends);
+PHP_METHOD(Ev, recommendedBackends);
+PHP_METHOD(Ev, embeddableBackends);
+PHP_METHOD(Ev, feedSignal);
+PHP_METHOD(Ev, sleep);
+PHP_METHOD(Ev, time);
+PHP_METHOD(Ev, run);
+PHP_METHOD(Ev, now);
+PHP_METHOD(Ev, stop);
+PHP_METHOD(Ev, iteration);
+PHP_METHOD(Ev, depth);
+PHP_METHOD(Ev, verify);
+PHP_METHOD(Ev, backend);
+PHP_METHOD(Ev, nowUpdate);
+PHP_METHOD(Ev, suspend);
+PHP_METHOD(Ev, resume);
+/* }}} */
 
 /* {{{ EvLoop */
 PHP_METHOD(EvLoop, __construct);
@@ -49,7 +51,7 @@ PHP_METHOD(EvLoop, resume);
 PHP_METHOD(EvLoop, backend);
 PHP_METHOD(EvLoop, now);
 PHP_METHOD(EvLoop, run);
-PHP_METHOD(EvLoop, break);
+PHP_METHOD(EvLoop, stop);
 PHP_METHOD(EvLoop, feedSignalEvent);
 PHP_METHOD(EvLoop, io);
 PHP_METHOD(EvLoop, timer);

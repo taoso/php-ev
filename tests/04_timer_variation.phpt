@@ -6,34 +6,35 @@ Check for EvTimer various calls
 
 error_reporting(0);
 
-$a = new EvTimer(1.6, 0, function() { echo "not ok 2\n"; ev_break(); });
-$b = new EvTimer(0.3, 0, function() { echo "ok 2\n"; ev_break(); });
+
+$a = new EvTimer(1.6, 0, function() { echo "not ok 2\n"; Ev::stop(); });
+$b = new EvTimer(0.3, 0, function() { echo "ok 2\n"; Ev::stop(); });
 
 echo "ok 1\n";
-ev_run();
+Ev::run();
 echo "ok 3\n";
 
-$b = new EvTimer(0.3, 0, function() { echo "ok 5\n"; ev_break(); });
-$a = new EvTimer(1.6, 0, function() { echo "not ok 5\n"; ev_break(); });
+$b = new EvTimer(0.3, 0, function() { echo "ok 5\n"; Ev::stop(); });
+$a = new EvTimer(1.6, 0, function() { echo "not ok 5\n"; Ev::stop(); });
 
 echo "ok 4\n";
-ev_run();
+Ev::run();
 echo "ok 6\n";
 
-$a = new EvTimer(1.9, 0, function() { echo "not ok 8\n"; ev_break(); });
-$b = new EvTimer(1.6, 0, function() { echo "not ok 8\n"; ev_break(); });
-$c = new EvTimer(0.3, 0, function() { echo "ok 8\n"; ev_break(); });
+$a = new EvTimer(1.9, 0, function() { echo "not ok 8\n"; Ev::stop(); });
+$b = new EvTimer(1.6, 0, function() { echo "not ok 8\n"; Ev::stop(); });
+$c = new EvTimer(0.3, 0, function() { echo "ok 8\n"; Ev::stop(); });
 
 echo "ok 7\n";
-ev_run();
+Ev::run();
 echo "ok 9\n";
 
-$a = new EvTimer(1.6, 0, function() { echo "not ok 11\n"; ev_break(); });
-$b = new EvTimer(0.3, 0, function() { echo "ok 11\n"; ev_break(); });
-$c = new EvTimer(1.9, 0, function() { echo "not ok 11\n"; ev_break(); });
+$a = new EvTimer(1.6, 0, function() { echo "not ok 11\n"; Ev::stop(); });
+$b = new EvTimer(0.3, 0, function() { echo "ok 11\n"; Ev::stop(); });
+$c = new EvTimer(1.9, 0, function() { echo "not ok 11\n"; Ev::stop(); });
 
 echo "ok 10\n";
-ev_run();
+Ev::run();
 echo "ok 12\n";
 ?>
 --EXPECT--

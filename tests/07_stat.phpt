@@ -16,31 +16,31 @@ $w = new EvStat("$fh", 0.1, function ($w, $r) {
 	echo FALSE == $w->attr() ? "" : "not ", "ok 9\n";
 	echo FALSE == $w->stat() ? "" : "not ", "ok 10\n";
 
-   	ev_break();
+   	Ev::stop();
 });
 $w->start();
 
 
 $t = new EvTimer(0.2, 0, function ($w, $r) {
 	echo "ok 2\n";
-	ev_break();
+	Ev::stop();
 });
 $t->start();
 
 echo $w->stat() ? "" : "not ", "ok 1\n";
-ev_run();
+Ev::run();
 echo "ok 3\n";
 
 unlink($fh);
 
 $t = new EvTimer(0.2, 0, function ($w, $r) {
 	echo "ok 2\n";
-	ev_break();
+	Ev::stop();
 });
 $t->start();
 
 echo "ok 4\n";
-ev_run();
+Ev::run();
 echo "ok 11\n";
 
 ?>

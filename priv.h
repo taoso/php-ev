@@ -23,6 +23,7 @@
 #include "macros.h"
 
 extern const zend_function_entry ev_functions[];
+extern const zend_function_entry ev_class_entry_functions[];
 extern const zend_function_entry ev_loop_class_entry_functions[];
 extern const zend_function_entry ev_watcher_class_entry_functions[];
 extern const zend_function_entry ev_io_class_entry_functions[];

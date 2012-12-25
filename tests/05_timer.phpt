@@ -7,8 +7,8 @@ error_reporting(0);
 $fudge = 0.02;
 $id = 1;
 
-$base = ev_now();
-$prev = ev_now();
+$base = Ev::now();
+$prev = Ev::now();
 
 for ($i = 1; $i <= 5; ++$i) {
 	$t = $i * $i * 1.735435336;
@@ -16,9 +16,9 @@ for ($i = 1; $i <= 5; ++$i) {
 
 	$timer = new EvTimer($t, 0, function ($w, $r)
 		use (&$id, &$prev, $base, $i, $t, $fudge) {
-			$now = ev_now();
+			$now = Ev::now();
 
-			ev_verify();
+			Ev::verify();
 
 			echo $now + $fudge >= $prev ? "" : "not ", "ok ", ++$id,
 				" # t0 $i $now + $fudge >= $prev\n";
@@ -41,9 +41,9 @@ for ($i = 1; $i <= 5; ++$i) {
 
 	$periodic = new EvPeriodic($base + $t, 0, NULL, function ($w, $r)
 		use (&$id, &$prev, $base, $i, $t) {
-			$now = ev_now();
+			$now = Ev::now();
 
-			ev_verify();
+			Ev::verify();
 
 			echo $now >= $prev ? "" : "not ", "ok ", ++$id,
 				" # p0 $i $now >= $prev\n";
@@ -62,7 +62,7 @@ for ($i = 1; $i <= 5; ++$i) {
 }
 
 echo "ok 1\n";
-ev_run();
+Ev::run();
 echo "ok 32\n";
 ?>
 --EXPECTF--

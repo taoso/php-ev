@@ -56,7 +56,7 @@ for ($i = 1; $i <= /*125*/25; ++$i) {
 		});
 }
 
-#ev_run();
+#Ev::run();
 print "ok 1\n";
 $l->run();
 print "ok 152\n";

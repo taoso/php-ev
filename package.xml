@@ -13,11 +13,11 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2012-12-24</date>
+  <date>2012-12-26</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.1.2</release>
-    <api>0.1.0</api>
+    <release>0.2.0</release>
+    <api>0.2.0</api>
   </version>
   <stability>
     <release>beta</release>
@@ -25,7 +25,9 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes>
-  Small fixes
+  Change: moved ev_* functions to Ev singleton(due to some issues with reflection)
+  Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
+  Fix: release version
   </notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -117,10 +119,10 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
-  <!--{{{ 0.1.2 (beta) -->
+  <!--{{{ 0.2.0 (beta) -->
   <version>
-    <release>0.1.2</release>
-    <api>0.1.0</api>
+    <release>0.2.0</release>
+    <api>0.2.0</api>
   </version>
   <stability>
     <release>beta</release>
@@ -128,7 +130,9 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes>
-  Small fixes
+  Change: moved ev_* functions to Ev singleton(due to some issues with reflection)
+  Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
+  Fix: release version
   </notes>
   <!--}}}-->
     <!--{{{ 0.1.1 (beta) -->

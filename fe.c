@@ -44,7 +44,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_run, 0, 0, 0)
 	ZEND_ARG_INFO(0, flags)
 ZEND_END_ARG_INFO();
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_break, 0, 0, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_stop, 0, 0, 0)
 	ZEND_ARG_INFO(0, how)
 ZEND_END_ARG_INFO();
 
@@ -320,48 +320,46 @@ ZEND_END_ARG_INFO();
 
 /* ARGINFO }}} */
 
-PHP_METHOD(EvLoop, supported_backends);
-PHP_METHOD(EvLoop, recommended_backends);
-PHP_METHOD(EvLoop, embeddable_backends);
-PHP_METHOD(EvLoop, feed_signal);
+/* {{{ ev_class_entry_functions */
+const zend_function_entry ev_class_entry_functions[] = {
+	PHP_ME(Ev, supportedBackends,   arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, recommendedBackends, arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, embeddableBackends,  arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, sleep,               arginfo_ev_sleep,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, time,                arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, feedSignal,          arginfo_ev_feed_signal, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, run,                 arginfo_ev_run,         ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, now,                 arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, stop,                arginfo_ev_stop,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, iteration,           arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, depth,               arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, verify,              arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, backend,             arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, nowUpdate,           arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, suspend,             arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+	PHP_ME(Ev, resume,              arginfo_ev__void,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 
-/* {{{ ev_functions[] */
-const zend_function_entry ev_functions[] = {
-	PHP_FE(ev_supported_backends,   arginfo_ev__void)
-	PHP_FE(ev_recommended_backends, arginfo_ev__void)
-	PHP_FE(ev_embeddable_backends,  arginfo_ev__void)
-	PHP_FE(ev_sleep,                arginfo_ev_sleep)
-	PHP_FE(ev_time,                 arginfo_ev__void)
-	PHP_FE(ev_feed_signal,          arginfo_ev_feed_signal)
-	PHP_FE(ev_run,                  arginfo_ev_run)
-	PHP_FE(ev_now,                  arginfo_ev__void)
-	PHP_FE(ev_break,                arginfo_ev_break)
-	PHP_FE(ev_iteration,            arginfo_ev__void)
-	PHP_FE(ev_depth,                arginfo_ev__void)
-	PHP_FE(ev_verify,               arginfo_ev__void)
-	PHP_FE(ev_backend,              arginfo_ev__void)
-
-	{NULL, NULL, NULL}
+	{ NULL, NULL, NULL }
 };
 /* }}} */
 
 /* {{{ ev_loop_class_entry_functions */
 const zend_function_entry ev_loop_class_entry_functions[] = {
-	PHP_ME(EvLoop, __construct,       arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
-	PHP_ME(EvLoop, defaultLoop,       arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
-	PHP_ME(EvLoop, loopFork,          arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, verify,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, invokePending,     arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, nowUpdate,         arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, suspend,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, resume,            arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, backend,           arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, now,               arginfo_ev__void,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, run,               arginfo_ev_run,               ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, break,             arginfo_ev_break,             ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, feedSignalEvent,  arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, io,                arginfo_ev_loop_io,           ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, timer,             arginfo_ev_loop_timer,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, __construct,     arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
+	PHP_ME(EvLoop, defaultLoop,     arginfo_ev_default_loop,      ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvLoop, loopFork,        arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, verify,          arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, invokePending,   arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, nowUpdate,       arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, suspend,         arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, resume,          arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, backend,         arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, now,             arginfo_ev__void,             ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, run,             arginfo_ev_run,               ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, stop,            arginfo_ev_stop,              ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, feedSignalEvent, arginfo_ev_feed_signal_event, ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, io,              arginfo_ev_loop_io,           ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, timer,           arginfo_ev_loop_timer,        ZEND_ACC_PUBLIC)
 #if EV_PERIODIC_ENABLE
 	PHP_ME(EvLoop, periodic,          arginfo_ev_loop_periodic,     ZEND_ACC_PUBLIC)
 #endif

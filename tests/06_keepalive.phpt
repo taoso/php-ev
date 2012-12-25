@@ -11,7 +11,7 @@ $timer = EvTimer::createStopped(1, 0.3, function ($w, $r) {
 $timer->keepalive(1);
 
 echo "ok 1\n";
-ev_run();
+Ev::run();
 echo "ok 2\n";
 
 $timer->start();
@@ -28,14 +28,14 @@ $timer2 = new EvTimer(-1, 0, function ($w, $r) {
 $timer2->keepalive(0);
 
 echo "ok 3\n";
-ev_run(0);
+Ev::run(0);
 echo "ok 5\n";
 
 
 $timer->keepalive(1);
 
 echo "ok 6\n";
-ev_run();
+Ev::run();
 echo "ok 8\n";
 ?>
 --EXPECT--

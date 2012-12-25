@@ -24,6 +24,7 @@
 ZEND_DECLARE_MODULE_GLOBALS(ev)
 static PHP_GINIT_FUNCTION(ev);
 
+zend_class_entry *ev_class_entry_ptr;
 zend_class_entry *ev_loop_class_entry_ptr;
 zend_class_entry *ev_watcher_class_entry_ptr;
 zend_class_entry *ev_io_class_entry_ptr;
@@ -94,7 +95,7 @@ zend_module_entry ev_module_entry = {
 	STANDARD_MODULE_HEADER,
 #endif
     "ev",
-    ev_functions,
+    NULL, /* functions */
     PHP_MINIT(ev),
     PHP_MSHUTDOWN(ev),
     NULL,                         /* PHP_RINIT(ev)     */
@@ -791,6 +792,12 @@ static inline void php_ev_register_classes(TSRMLS_D)
 {
 	zend_class_entry *ce;
 
+	/* {{{ Ev */
+	PHP_EV_REGISTER_CLASS_ENTRY("Ev", ev_class_entry_ptr, ev_class_entry_functions);
+	ce = ev_class_entry_ptr;
+	ce->ce_flags |= ZEND_ACC_FINAL_CLASS;
+	/* }}} */
+
 	/* {{{ EvLoop */
 	PHP_EV_REGISTER_CLASS_ENTRY("EvLoop", ev_loop_class_entry_ptr, ev_loop_class_entry_functions);
 	ce = ev_loop_class_entry_ptr;
@@ -1100,10 +1107,10 @@ PHP_MINFO_FUNCTION(ev)
 #include "loop.c" 
 
 
-/* {{{ Global functions */
+/* {{{ Ev methods */
 
-#define PHP_EV_FUNC_INT_VOID(name)                                                \
-    PHP_FUNCTION(ev_ ## name)                                                     \
+#define PHP_EV_METHOD_INT_VOID(name, method)                                      \
+    PHP_METHOD(Ev, method)                                                        \
     {                                                                             \
         if (zend_parse_parameters_none() == FAILURE) {                            \
             return;                                                               \
@@ -1112,8 +1119,8 @@ PHP_MINFO_FUNCTION(ev)
         RETURN_LONG((long) ev_ ## name());                                        \
     }
 
-#define PHP_EV_LOOP_FUNC_INT_VOID(name)                                           \
-    PHP_FUNCTION(ev_ ## name)                                                     \
+#define PHP_EV_METHOD_DEFAULT_LOOP_INT_VOID(name, method)                         \
+    PHP_METHOD(Ev, method)                                                        \
     {                                                                             \
         zval          *zloop;                                                     \
         php_ev_object *ev_obj;                                                    \
@@ -1130,8 +1137,8 @@ PHP_MINFO_FUNCTION(ev)
         RETURN_LONG(ev_ ## name(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj)));          \
     }
 
-#define PHP_EV_LOOP_FUNC_VOID_VOID(name)                                          \
-    PHP_FUNCTION(ev_ ## name)                                                     \
+#define PHP_EV_METHOD_VOID_VOID(name, method)                                     \
+    PHP_METHOD(Ev, method)                                                        \
     {                                                                             \
         zval          *zloop;                                                     \
         php_ev_object *ev_obj;                                                    \
@@ -1147,14 +1154,13 @@ PHP_MINFO_FUNCTION(ev)
                                                                                   \
         ev_ ## name(PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj));                       \
     }
-/* }}} */
 
-PHP_EV_FUNC_INT_VOID(supported_backends)
-PHP_EV_FUNC_INT_VOID(recommended_backends)
-PHP_EV_FUNC_INT_VOID(embeddable_backends)
+PHP_EV_METHOD_INT_VOID(supported_backends,   supportedBackends)
+PHP_EV_METHOD_INT_VOID(recommended_backends, recommendedBackends)
+PHP_EV_METHOD_INT_VOID(embeddable_backends,  embeddableBackends)
 
-/* {{{ proto void ev_feed_signal(int signum) */
-PHP_FUNCTION(ev_feed_signal)
+/* {{{ proto void Ev::feedSignal(int signum) */
+PHP_METHOD(Ev, feedSignal)
 {
 	long signum;
 
@@ -1166,8 +1172,8 @@ PHP_FUNCTION(ev_feed_signal)
 }
 /* }}} */
 
-/* {{{ proto void ev_sleep(double seconds) */
-PHP_FUNCTION(ev_sleep)
+/* {{{ proto void Ev::sleep(double seconds) */
+PHP_METHOD(Ev, sleep)
 {
 	double seconds;
 
@@ -1179,8 +1185,8 @@ PHP_FUNCTION(ev_sleep)
 }
 /* }}} */
 
-/* {{{ proto double ev_time(void) */
-PHP_FUNCTION(ev_time)
+/* {{{ proto double Ev::time(void) */
+PHP_METHOD(Ev, time)
 {
     if (zend_parse_parameters_none() == FAILURE) {
         return;
@@ -1190,8 +1196,8 @@ PHP_FUNCTION(ev_time)
 }
 /* }}} */
 
-/* {{{ proto void ev_run([int flags = 0]) */
-PHP_FUNCTION(ev_run)
+/* {{{ proto void Ev::run([int flags = 0]) */
+PHP_METHOD(Ev, run)
 {
 	long           flags  = 0;
 	zval          *zloop;
@@ -1210,8 +1216,8 @@ PHP_FUNCTION(ev_run)
 }
 /* }}} */
 
-/* {{{ proto double ev_now(void) */
-PHP_FUNCTION(ev_now)
+/* {{{ proto double Ev::now(void) */
+PHP_METHOD(Ev, now)
 {
 	zval          *zloop;
 	php_ev_object *ev_obj;
@@ -1229,8 +1235,8 @@ PHP_FUNCTION(ev_now)
 }
 /* }}} */
 
-/* {{{ proto void ev_break([int how = 0]) */
-PHP_FUNCTION(ev_break)
+/* {{{ proto void Ev::stop([int how = 0]) */
+PHP_METHOD(Ev, stop)
 {
 	long  how   = EVBREAK_ONE;
 	zval *zloop;
@@ -1248,16 +1254,8 @@ PHP_FUNCTION(ev_break)
 }
 /* }}} */
 
-/* {{{ proto int ev_iteration(void) */
-PHP_EV_LOOP_FUNC_INT_VOID(iteration)
-/* }}} */
-
-/* {{{ proto int ev_depth(void) */
-PHP_EV_LOOP_FUNC_INT_VOID(depth)
-/* }}} */
-
-/* {{{ proto void ev_verify(void) */
-PHP_FUNCTION(ev_verify)
+/* {{{ proto void Ev::verify(void) */
+PHP_METHOD(Ev, verify)
 {
 	zval *zloop;
 	php_ev_object *ev_obj;
@@ -1275,24 +1273,15 @@ PHP_FUNCTION(ev_verify)
 }
 /* }}} */
 
-/* {{{ proto int ev_backend(void) */
-PHP_EV_LOOP_FUNC_INT_VOID(backend)
+PHP_EV_METHOD_DEFAULT_LOOP_INT_VOID(iteration, iteration)
+PHP_EV_METHOD_DEFAULT_LOOP_INT_VOID(depth,     depth)
+PHP_EV_METHOD_DEFAULT_LOOP_INT_VOID(backend,   backend)
+
+PHP_EV_METHOD_VOID_VOID(now_update, nowUpdate)
+PHP_EV_METHOD_VOID_VOID(suspend,    suspend)
+PHP_EV_METHOD_VOID_VOID(resume,     resume)
 /* }}} */
 
-/* {{{ proto void ev_now_update(void) */
-PHP_EV_LOOP_FUNC_VOID_VOID(now_update)
-/* }}} */
-
-/* {{{ proto void ev_suspend(void) */
-PHP_EV_LOOP_FUNC_VOID_VOID(suspend)
-/* }}} */
-
-/* {{{ proto void ev_resume(void) */
-PHP_EV_LOOP_FUNC_VOID_VOID(resume)
-/* }}} */
-
-
-/* }}} */
 
 #endif /* HAVE_EV */
 

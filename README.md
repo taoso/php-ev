@@ -57,12 +57,12 @@ SIMPLE TIMERS
 	// until we manually stop it
 	$w2 = new EvTimer(2, 1, function ($w) {
 		echo "is called every second, is launched after 2 seconds\n";
-		echo "iteration = ", ev_iteration(), PHP_EOL;
+		echo "iteration = ", Ev::iteration(), PHP_EOL;
 
 		// Stop the watcher after 5 iterations
-		ev_iteration() == 5 and $w->stop();
+		Ev::iteration() == 5 and $w->stop();
 		// Stop the watcher if further calls cause more than 10 iterations
-		ev_iteration() >= 10 and $w->stop();
+		Ev::iteration() >= 10 and $w->stop();
 	});
 
 	// Create stopped timer. It will be inactive until we start it ourselves
@@ -70,24 +70,24 @@ SIMPLE TIMERS
 		echo "Callback of a timer created as stopped\n";
 
 		// Stop the watcher after 2 iterations
-		ev_iteration() >= 2 and $w->stop();
+		Ev::iteration() >= 2 and $w->stop();
 	});
 
-	// Loop until ev_break() is called or all of watchers stop
-	ev_run();
+	// Loop until Ev::stop() is called or all of watchers stop
+	Ev::run();
 
 	// Start and look if it works
 	$w_stopped->start();
 	echo "Run single iteration\n";
-	ev_run(EVRUN_ONCE);
+	Ev::run(EVRUN_ONCE);
 
 	echo "Restart the second watcher and try to handle the same events, but don't block\n";
 	$w2->again();
-	ev_run(EVRUN_NOWAIT);
+	Ev::run(EVRUN_NOWAIT);
 
 	$w = new EvTimer(10, 0, function() {});
 	echo "Running a blocking loop\n";
-	ev_run();
+	Ev::run();
 	echo "END\n";
 	?>
 
@@ -126,7 +126,7 @@ PERIODIC TIMERS
 	$w = new EvPeriodic(0., 10.5, NULL, function ($w, $revents) {
 		echo time(), PHP_EOL;
 	});
-	ev_run();
+	Ev::run();
 	?>
 
 *Example 2*
@@ -142,17 +142,17 @@ PERIODIC TIMERS
 	$w = new EvPeriodic(0., 0., "reschedule_cb", function ($w, $revents) {
 		echo time(), PHP_EOL;
 	});
-	ev_run();
+	Ev::run();
 	?>
 
 *Example 3*
 
 	<?php
 	// Tick every 10.5 seconds starting at now
-	$w = new EvPeriodic(fmod(ev_now(), 10.5), 10.5, NULL, function ($w, $revents) {
+	$w = new EvPeriodic(fmod(Ev::now(), 10.5), 10.5, NULL, function ($w, $revents) {
 		echo time(), PHP_EOL;
 	});
-	ev_run();
+	Ev::run();
 	?>
 
 I/O EVENTS
@@ -165,7 +165,7 @@ I/O EVENTS
 	$w = new EvIo(STDIN, EV_READ, function ($watcher, $revents) {
 		echo "STDIN is readable\n";
 	});
-	ev_run(EVRUN_ONCE);
+	Ev::run(EVRUN_ONCE);
 	?>
 
 *Example 2*
@@ -198,7 +198,7 @@ I/O EVENTS
 	// Abort on timeout
 	$timeout_watcher = new EvTimer(10.0, 0., function () use ($socket) {
 		socket_close($socket);
-		ev_break(EVBREAK_ALL);
+		Ev::stop(EVBREAK_ALL);
 	});
 
 	// Make HEAD request when the socket is writable
@@ -240,12 +240,12 @@ I/O EVENTS
 			socket_close($socket);
 		});
 
-		ev_run();
+		Ev::run();
 	});
 
 	$result = socket_connect($socket, $address, $service_port);
 
-	ev_run();
+	Ev::run();
 	?>
 
 Sample output:
@@ -270,14 +270,14 @@ EMBEDDING ONE LOOP INTO ANOTHER
 
 	<?php
 	/*
- 	 * Try to get an embeddable event loop and embed it into the default event loop. 
+ 	 * Try to get an embeddable event loop and embed it into the default event loop.
  	 * If it is impossible, use the default
- 	 * loop. The default loop is stored in $loop_hi, while the embeddable loop is 
- 	 * stored in $loop_lo(which is $loop_hi in the case no embeddable loop can be 
+ 	 * loop. The default loop is stored in `$loop_hi`, while the embeddable loop is
+ 	 * stored in `$loop_lo`(which is `$loop_hi` in the case no embeddable loop can be
  	 * used).
- 	 * 
+ 	 *
  	 * Sample translated to PHP
- 	 * http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples_CONTENT-9
+ 	 * <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples_CONTENT-9>
  	 */
 	$loop_hi = EvLoop::defaultLoop();
 	$loop_lo = NULL;
@@ -287,8 +287,8 @@ EMBEDDING ONE LOOP INTO ANOTHER
 	* See if there is a chance of getting one that works
 	* (flags' value of 0 means autodetection)
 	*/
-	$loop_lo = ev_embeddable_backends() & ev_recommended_backends()
-    	? new EvLoop(ev_embeddable_backends() & ev_recommended_backends())
+	$loop_lo = Ev::embeddableBackends() & Ev::recommendedBackends()
+    	? new EvLoop(Ev::embeddableBackends() & Ev::recommendedBackends())
     	: 0;
 
 	if ($loop_lo) {
@@ -302,26 +302,26 @@ EMBEDDING ONE LOOP INTO ANOTHER
 
 	<?php
 	/*
- 	 * Check if kqueue is available but not recommended and create a kqueue backend 
- 	 * for use with sockets (which usually work with any kqueue implementation). 
- 	 * Store the kqueue/socket-only event loop in loop_socket. (One might optionally 
- 	 * use EVFLAG_NOENV, too)
+ 	 * Check if kqueue is available but not recommended and create a kqueue backend
+ 	 * for use with sockets (which usually work with any kqueue implementation).
+ 	 * Store the kqueue/socket-only event loop in `$socket_loop`. (One might optionally
+ 	 * use `EVFLAG_NOENV`, too)
  	 *
  	 * Example borrowed from
- 	 * http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples_CONTENT-9
+ 	 * <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples_CONTENT-9>
  	 */
 	$loop        = EvLoop::defaultLoop();
 	$socket_loop = NULL;
 	$embed       = NULL;
 
-	if (ev_supported_backends() & ~ev_recommended_backends() & EVBACKEND_KQUEUE) {
+	if (Ev::supportedBackends() & ~Ev::recommendedBackends() & EVBACKEND_KQUEUE) {
 		if (($socket_loop = new EvLoop(EVBACKEND_KQUEUE))) {
 			$embed = new EvEmbed($loop);
 		}
 	}
 
 	if (!$socket_loop) {
-		$socket_loop = $loop; 
+		$socket_loop = $loop;
 	}
 
 	// Now use $socket_loop for all sockets, and $loop for anything else
@@ -336,7 +336,7 @@ SIGNALS
 		echo "SIGTERM received\n";
 		$watcher->stop();
 	});
-	ev_run();
+	Ev::run();
 	?>
 
 STAT - FILE STATUS CHANGES
@@ -362,7 +362,7 @@ STAT - FILE STATUS CHANGES
 		}
 	});
 
-	ev_run();
+	Ev::run();
 	?>
 
 *Example 2*
@@ -385,7 +385,7 @@ STAT - FILE STATUS CHANGES
 
 	$timer->data = $stat;
 
-	ev_run();
+	Ev::run();
 	?>
 
 PROCESS STATUS CHANGES
@@ -403,7 +403,7 @@ PROCESS STATUS CHANGES
 			printf("Process %d exited with status %d\n", $w->rpid, $w->rstatus);
 		});
 
-		ev_run();
+		Ev::run();
 
 		// Protect against Zombies
 		pcntl_wait($status);
