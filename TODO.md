@@ -1,10 +1,3 @@
-Rename `EvLoop::run` / `ev_run` etc.
-====================================
-
-For some reason these functions supposed to be mapped in *phd* :( I have to
-whether rename methods/functions, or move the functions to namespace, or Ev
-class, for instance.
-
 Clone  handlers
 ===============
 
