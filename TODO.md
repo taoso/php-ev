@@ -1,3 +1,8 @@
+Add EvLoop::setInvokePendingCallback(`ev_set_invoke_pending_cb`)?
+=================================================================
+
+Who needs it in PHP :/?
+
 Clone  handlers
 ===============
 

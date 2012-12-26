@@ -809,6 +809,7 @@ static inline void php_ev_register_classes(TSRMLS_D)
 	/* {{{ EvWatcher */
 	PHP_EV_REGISTER_CLASS_ENTRY("EvWatcher", ev_watcher_class_entry_ptr, ev_watcher_class_entry_functions);
 	ce = ev_watcher_class_entry_ptr;
+	ce->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	zend_hash_init(&php_ev_watcher_properties, 0, NULL, NULL, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_watcher_properties, ev_watcher_property_entries);
 	PHP_EV_DECL_CLASS_PROPERTIES(ce, ev_watcher_property_entry_info);

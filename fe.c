@@ -198,9 +198,10 @@ ZEND_END_ARG_INFO();
 
 #if EV_PERIODIC_ENABLE
 /* {{{ EvPeriodic */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_periodic, 0, 0, 4)
 	ZEND_ARG_INFO(0, offset)
 	ZEND_ARG_INFO(0, interval)
+	ZEND_ARG_INFO(0, reschedule_cb)
 	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, priority)
