@@ -44,15 +44,12 @@
 #endif
 
 
-#define PHP_EV_REGISTER_LONG_CONSTANT(name) \
-	REGISTER_LONG_CONSTANT(#name, name, CONST_CS | CONST_PERSISTENT)
+#define PHP_EV_REGISTER_LONG_CONSTANT(name)                           \
+    REGISTER_LONG_CONSTANT(#name, name, CONST_CS | CONST_PERSISTENT)
 
-#define PHP_EV_REGISTER_CLASS_LONG_CONSTANT(name, zconst)     \
-    zconst = pemalloc(sizeof(zval), 1);                       \
-    INIT_PZVAL(zconst);                                       \
-    ZVAL_LONG(zconst, name);                                  \
-    zend_hash_add(&ce->constants_table, #name, sizeof(#name), \
-            (void*) &zconst, sizeof(zval*), NULL);
+#define REGISTER_EV_CLASS_CONST_LONG(const_name, value)               \
+    zend_declare_class_constant_long(ev_class_entry_ptr, #const_name, \
+            sizeof(#const_name)-1, (long) value TSRMLS_CC)
 
 #define PHP_EV_REGISTER_CLASS_ENTRY(name, ce, ce_functions) \
 {                                                           \

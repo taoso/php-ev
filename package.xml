@@ -27,6 +27,7 @@
   <notes>
   Change: moved ev_* functions to Ev singleton(due to some issues with reflection)
   Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
+  Change: moved all constants to Ev class
   Fix: release version
   </notes>
   <!--}}}-->
@@ -132,6 +133,7 @@
   <notes>
   Change: moved ev_* functions to Ev singleton(due to some issues with reflection)
   Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
+  Change: moved all constants to Ev class
   Fix: release version
   </notes>
   <!--}}}-->
