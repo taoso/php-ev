@@ -30,11 +30,9 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 	double                  io_collect_interval      = 0.;
 	double                  timeout_collect_interval = 0.;
 	zval                   *data                     = NULL;
-	zend_fcall_info         fci                      = empty_fcall_info;
-	zend_fcall_info_cache   fcc                      = empty_fcall_info_cache;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|lf!z!dd",
-				&flags, &fci, &fcc, &data, 
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|lz!dd",
+				&flags, &data, 
 				&io_collect_interval, &timeout_collect_interval) == FAILURE) {
 		return;
 	}
@@ -88,8 +86,6 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 	php_ev_loop *ptr = (php_ev_loop *) emalloc(sizeof(php_ev_loop));
 	memset(ptr, 0, sizeof(php_ev_loop));
 	ptr->loop = loop;
-
-	PHP_EV_COPY_FCALL_INFO(ptr->fci, ptr->fcc, &fci, &fcc);
 
 	if (data) {
 		Z_ADDREF_P(data);

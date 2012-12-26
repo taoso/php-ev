@@ -13,10 +13,6 @@ function my_print_props($l) {
 	echo "depth:";            var_dump($l->depth);
 }
 
-function cb($w, $r) {
-	return FALSE;
-}
-
 $l                   = EvLoop::defaultLoop();
 $l->data             = "ld";
 $l->io_interval      = 1.1;
@@ -25,7 +21,7 @@ my_print_props($l);
 
 
 $flags               = Ev::FLAG_NOENV | Ev::FLAG_NOINOTIFY; /* 17825792 */
-$l                   = new EvLoop($flags, "cb", "data", 1.1, 1.2);
+$l                   = new EvLoop($flags, "data", 1.1, 1.2);
 $l->data             = "ld2";
 $l->io_interval      = 2.1;
 $l->timeout_interval = 2.2;

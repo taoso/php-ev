@@ -396,8 +396,6 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
 		ptr->loop = NULL;
 	}
 
-	PHP_EV_FREE_FCALL_INFO(ptr->fci, ptr->fcc);
-
 	if (ptr->data) {
 		zval_ptr_dtor(&ptr->data);
 		ptr->data = NULL;

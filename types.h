@@ -34,8 +34,6 @@ typedef struct php_ev_object {
 typedef struct php_ev_loop {
 	struct ev_loop        *loop;
 	zval                  *data;                       /* User custom data attached to event loop                  */
-	zend_fcall_info       *fci;                        /* fci and fcc serve callbacks                              */
-	zend_fcall_info_cache *fcc;
 	double                 io_collect_interval;        /* If > 0, ev_io_collect_interval is called internally      */
 	double                 timeout_collect_interval;   /* If > 0, ev_timeout_collect_interval is called internally */
 	struct ev_watcher     *w;                          /* Head of linked list                                      */

@@ -2,15 +2,12 @@
 Check for constructor and factory methods' behaviour
 --FILE--
 <?php
-function cb() {
-	return FALSE;
-}
 
 $prev_data = "prev_data";
 $third_data = "new_data";
 
 // Passing data var to constructor
-$loop = new EvLoop(0, "cb", $prev_data);
+$loop = new EvLoop(0, $prev_data);
 var_dump($loop->data);
 
 // data property read/write
