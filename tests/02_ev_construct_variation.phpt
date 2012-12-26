@@ -34,7 +34,7 @@ $loop2 = EvLoop::defaultLoop();
 $loop = EvLoop::defaultLoop();
 
 // Overwriting previously created default loop with new loop
-$loop = new EvLoop(EVFLAG_AUTO);
+$loop = new EvLoop(Ev::FLAG_AUTO);
 // Should be NULL
 var_dump($loop->data);
 ?>

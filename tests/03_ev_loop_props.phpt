@@ -24,7 +24,7 @@ $l->timeout_interval = 1.2;
 my_print_props($l);
 
 
-$flags               = EVFLAG_NOENV | EVFLAG_NOINOTIFY; /* 17825792 */
+$flags               = Ev::FLAG_NOENV | Ev::FLAG_NOINOTIFY; /* 17825792 */
 $l                   = new EvLoop($flags, "cb", "data", 1.1, 1.2);
 $l->data             = "ld2";
 $l->io_interval      = 2.1;

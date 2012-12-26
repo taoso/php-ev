@@ -79,11 +79,11 @@ SIMPLE TIMERS
 	// Start and look if it works
 	$w_stopped->start();
 	echo "Run single iteration\n";
-	Ev::run(EVRUN_ONCE);
+	Ev::run(Ev::RUN_ONCE);
 
 	echo "Restart the second watcher and try to handle the same events, but don't block\n";
 	$w2->again();
-	Ev::run(EVRUN_NOWAIT);
+	Ev::run(Ev::RUN_NOWAIT);
 
 	$w = new EvTimer(10, 0, function() {});
 	echo "Running a blocking loop\n";
@@ -162,10 +162,10 @@ I/O EVENTS
 
 	<?php
 	// Wait until STDIN is readable
-	$w = new EvIo(STDIN, EV_READ, function ($watcher, $revents) {
+	$w = new EvIo(STDIN, Ev::READ, function ($watcher, $revents) {
 		echo "STDIN is readable\n";
 	});
-	Ev::run(EVRUN_ONCE);
+	Ev::run(Ev::RUN_ONCE);
 	?>
 
 *Example 2*
@@ -198,11 +198,11 @@ I/O EVENTS
 	// Abort on timeout
 	$timeout_watcher = new EvTimer(10.0, 0., function () use ($socket) {
 		socket_close($socket);
-		Ev::stop(EVBREAK_ALL);
+		Ev::stop(Ev::BREAK_ALL);
 	});
 
 	// Make HEAD request when the socket is writable
-	$write_watcher = new EvIo($socket, EV_WRITE, function ($w)
+	$write_watcher = new EvIo($socket, Ev::WRITE, function ($w)
 		use ($socket, $timeout_watcher, $e_nonblocking) {
 		// Stop timeout watcher
 		$timeout_watcher->stop();
@@ -217,7 +217,7 @@ I/O EVENTS
 			trigger_error("Failed writing $in to socket", E_USER_ERROR);
 		}
 
-		$read_watcher = new EvIo($socket, EV_READ, function ($w, $re)
+		$read_watcher = new EvIo($socket, Ev::READ, function ($w, $re)
 			use ($socket, $e_nonblocking) {
 			// Socket is readable. recv() 20 bytes using non-blocking mode
 			$ret = socket_recv($socket, $out, 20, MSG_DONTWAIT);
@@ -314,8 +314,8 @@ EMBEDDING ONE LOOP INTO ANOTHER
 	$socket_loop = NULL;
 	$embed       = NULL;
 
-	if (Ev::supportedBackends() & ~Ev::recommendedBackends() & EVBACKEND_KQUEUE) {
-		if (($socket_loop = new EvLoop(EVBACKEND_KQUEUE))) {
+	if (Ev::supportedBackends() & ~Ev::recommendedBackends() & Ev::BACKEND_KQUEUE) {
+		if (($socket_loop = new EvLoop(Ev::BACKEND_KQUEUE))) {
 			$embed = new EvEmbed($loop);
 		}
 	}
