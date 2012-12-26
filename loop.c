@@ -99,7 +99,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 }
 /* }}} */
 
-/* {{{ proto EvLoop EvLoop::defaultLoop([int flags = EVLAG_AUTO[, callable callback = NULL[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]]])
+/* {{{ proto EvLoop EvLoop::defaultLoop([int flags = EVLAG_AUTO[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]])
 */
 PHP_METHOD(EvLoop, defaultLoop)
 {
@@ -108,7 +108,7 @@ PHP_METHOD(EvLoop, defaultLoop)
 }
 /* }}} */
 
-/* {{{ proto EvLoop EvLoop::__construct([int flags = EVLAG_AUTO[, callable callback = NULL[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]]]) */
+/* {{{ proto EvLoop EvLoop::__construct([int flags = EVLAG_AUTO[[, mixed data = NULL[, double io_collect_interval = 0.[, double timeout_collect_interval = 0.]]]]) */
 PHP_METHOD(EvLoop, __construct) 
 {
 	php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU,

@@ -30,7 +30,6 @@ ZEND_END_ARG_INFO();
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_ev_default_loop, 0, 0, 0)
 	ZEND_ARG_INFO(0, flags)
-	ZEND_ARG_INFO(0, callback)
 	ZEND_ARG_INFO(0, data)
 	ZEND_ARG_INFO(0, io_collect_interval)
 	ZEND_ARG_INFO(0, timeout_collect_interval)

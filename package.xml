@@ -29,6 +29,7 @@
   Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
   Change: moved all constants to Ev class
   Fix: release version
+  Del: callback parameter from EvLoop constructor/factories
   </notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -135,6 +136,7 @@
   Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
   Change: moved all constants to Ev class
   Fix: release version
+  Del: callback parameter from EvLoop constructor/factories
   </notes>
   <!--}}}-->
     <!--{{{ 0.1.1 (beta) -->
