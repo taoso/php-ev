@@ -25,6 +25,7 @@ PHP_METHOD(Ev, supportedBackends);
 PHP_METHOD(Ev, recommendedBackends);
 PHP_METHOD(Ev, embeddableBackends);
 PHP_METHOD(Ev, feedSignal);
+PHP_METHOD(Ev, feedSignalEvent);
 PHP_METHOD(Ev, sleep);
 PHP_METHOD(Ev, time);
 PHP_METHOD(Ev, run);
@@ -52,7 +53,6 @@ PHP_METHOD(EvLoop, backend);
 PHP_METHOD(EvLoop, now);
 PHP_METHOD(EvLoop, run);
 PHP_METHOD(EvLoop, stop);
-PHP_METHOD(EvLoop, feedSignalEvent);
 PHP_METHOD(EvLoop, io);
 PHP_METHOD(EvLoop, timer);
 #if EV_PERIODIC_ENABLE

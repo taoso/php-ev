@@ -1181,6 +1181,32 @@ PHP_METHOD(Ev, feedSignal)
 }
 /* }}} */
 
+
+/* {{{ proto void Ev::feedSignalEvent(int signum) */
+PHP_METHOD(Ev, feedSignalEvent)
+{
+	long			signum;
+	php_ev_object	*ev_obj;
+	zval			**default_loop_ptr_ptr = &MyG(default_loop);
+	
+	if (!*default_loop_ptr_ptr) {
+		php_error_docref(NULL TSRMLS_CC, E_ERROR,
+				"The default loop is not initialized");
+		return;
+	}
+
+	/* Fetch the default loop */
+	ev_obj = (php_ev_object *) zend_object_store_get_object(*default_loop_ptr_ptr TSRMLS_CC);
+	EV_P = PHP_EV_LOOP_FETCH_FROM_OBJECT(ev_obj);
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &signum) == FAILURE) {
+		return;
+	}
+
+	ev_feed_signal_event(EV_A_ signum);
+}
+/* }}} */
+
 /* {{{ proto void Ev::sleep(double seconds) */
 PHP_METHOD(Ev, sleep)
 {
