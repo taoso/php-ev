@@ -8,14 +8,14 @@ There are problems with the following assertion in ev.c:
 
 Thus, before starting a signal watcher, I have to check it as follows:
 
- 	 if (signals[(w)->signum - 1].loop
- 	 && signals[(w)->signum - 1].loop != my_loop_ptr) {
-     	 /* error */
-     	 }
+	if (signals[(w)->signum - 1].loop
+		&& signals[(w)->signum - 1].loop != my_loop_ptr) {
+		/* error */
+	}
 
 But `signals` declared as static in libev/ev.c:
 
-	static ANSIG signals [EV_NSIG - 1]; 
+	static ANSIG signals [EV_NSIG - 1];
 
 So I need my own(MyG()?) array to check this.
 
@@ -66,7 +66,7 @@ libevent buffer functionality?
                 	echo "failure\n";
         	}
 	);
- 	 
+ 	
 	event_buffer_base_set($buffer, $eventBase);
 	event_buffer_enable($buffer, EV_READ | EV_WRITE | EV_TIMEOUT | EV_PERSIST);
 	event_base_loop($eventBase);
