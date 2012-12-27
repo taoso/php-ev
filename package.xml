@@ -20,7 +20,7 @@
     <api>0.2.0</api>
   </version>
   <stability>
-    <release>beta</release>
+    <release>stable</release>
     <api>stable</api>
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
