@@ -1,3 +1,24 @@
+Handle error when user attempts to attach a signal to different loops
+=====================================================================
+
+There are problems with the following assertion in ev.c:
+
+  assert (("libev: a signal must not be attached to two different loops",
+             !signals [w->signum - 1].loop || signals [w->signum - 1].loop == loop));
+
+Thus, before starting a signal watcher, I have to check it as follows:
+
+ 	 if (signals[(w)->signum - 1].loop
+ 	 && signals[(w)->signum - 1].loop != my_loop_ptr) {
+     	 /* error */
+     	 }
+
+But `signals` declared as static in libev/ev.c:
+
+	static ANSIG signals [EV_NSIG - 1]; 
+
+So I need my own(MyG()?) array to check this.
+
 Add EvLoop::setInvokePendingCallback(`ev_set_invoke_pending_cb`)?
 =================================================================
 

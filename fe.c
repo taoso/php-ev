@@ -358,34 +358,34 @@ const zend_function_entry ev_loop_class_entry_functions[] = {
 	PHP_ME(EvLoop, now,           arginfo_ev__void,        ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, run,           arginfo_ev_run,          ZEND_ACC_PUBLIC)
 	PHP_ME(EvLoop, stop,          arginfo_ev_stop,         ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, io,            arginfo_ev_loop_io,      ZEND_ACC_PUBLIC)
-	PHP_ME(EvLoop, timer,         arginfo_ev_loop_timer,   ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, io,            arginfo_ev_loop_io,      ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
+	PHP_ME(EvLoop, timer,         arginfo_ev_loop_timer,   ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #if EV_PERIODIC_ENABLE
-	PHP_ME(EvLoop, periodic,      arginfo_ev_loop_periodic,     ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, periodic,      arginfo_ev_loop_periodic,     ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_SIGNAL_ENABLE
-	PHP_ME(EvLoop, signal,        arginfo_ev_loop_signal,       ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, signal,        arginfo_ev_loop_signal,       ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_CHILD_ENABLE
-	PHP_ME(EvLoop, child,         arginfo_ev_loop_child,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, child,         arginfo_ev_loop_child,        ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_STAT_ENABLE
-	PHP_ME(EvLoop, stat,          arginfo_ev_loop_stat,         ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, stat,          arginfo_ev_loop_stat,         ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_IDLE_ENABLE
-	PHP_ME(EvLoop, idle,          arginfo_ev_loop_idle,         ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, idle,          arginfo_ev_loop_idle,         ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_CHECK_ENABLE
-	PHP_ME(EvLoop, check,         arginfo_ev_loop_check,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, check,         arginfo_ev_loop_check,        ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_PREPARE_ENABLE
-	PHP_ME(EvLoop, prepare,       arginfo_ev_loop_prepare,      ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, prepare,       arginfo_ev_loop_prepare,      ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_EMBED_ENABLE
-	PHP_ME(EvLoop, embed,         arginfo_ev_loop_embed,        ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, embed,         arginfo_ev_loop_embed,        ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 #if EV_FORK_ENABLE
-	PHP_ME(EvLoop, fork,          arginfo_ev_loop_fork,         ZEND_ACC_PUBLIC)
+	PHP_ME(EvLoop, fork,          arginfo_ev_loop_fork,         ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
 #endif
 
 	{ NULL, NULL, NULL }
@@ -413,7 +413,7 @@ const zend_function_entry ev_watcher_class_entry_functions[] = {
 const zend_function_entry ev_io_class_entry_functions[] = {
 	PHP_ME(EvIo, __construct,   arginfo_ev_io,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvIo, set,           arginfo_ev_io_set, ZEND_ACC_PUBLIC)
-	PHP_ME(EvIo, createStopped, arginfo_ev_io,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvIo, createStopped, arginfo_ev_io,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 	{ NULL, NULL, NULL }
 };
 /* }}} */
@@ -423,7 +423,7 @@ const zend_function_entry ev_timer_class_entry_functions[] = {
 	PHP_ME(EvTimer, __construct,   arginfo_ev_timer,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvTimer, set,           arginfo_ev_timer_set, ZEND_ACC_PUBLIC)
 	PHP_ME(EvTimer, again,         arginfo_ev__void,     ZEND_ACC_PUBLIC)
-	PHP_ME(EvTimer, createStopped, arginfo_ev_timer,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvTimer, createStopped, arginfo_ev_timer,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 
 	{ NULL, NULL, NULL }
 };
@@ -436,7 +436,7 @@ const zend_function_entry ev_periodic_class_entry_functions[] = {
 	PHP_ME(EvPeriodic, set,           arginfo_ev_periodic_set, ZEND_ACC_PUBLIC)
 	PHP_ME(EvPeriodic, again,         arginfo_ev__void,        ZEND_ACC_PUBLIC)
 	PHP_ME(EvPeriodic, at,            arginfo_ev__void,        ZEND_ACC_PUBLIC)
-	PHP_ME(EvPeriodic, createStopped, arginfo_ev_periodic,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvPeriodic, createStopped, arginfo_ev_periodic,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 
 	{ NULL, NULL, NULL }
 };
@@ -448,7 +448,7 @@ const zend_function_entry ev_periodic_class_entry_functions[] = {
 const zend_function_entry ev_signal_class_entry_functions[] = {
 	PHP_ME(EvSignal, __construct,   arginfo_ev_signal,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvSignal, set,           arginfo_ev_signal_set, ZEND_ACC_PUBLIC)
-	PHP_ME(EvSignal, createStopped, arginfo_ev_signal,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvSignal, createStopped, arginfo_ev_signal,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 
 	{ NULL, NULL, NULL }
 };
@@ -460,7 +460,7 @@ const zend_function_entry ev_signal_class_entry_functions[] = {
 const zend_function_entry ev_child_class_entry_functions[] = {
 	PHP_ME(EvChild, __construct,   arginfo_ev_child,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvChild, set,           arginfo_ev_child_set, ZEND_ACC_PUBLIC)
-	PHP_ME(EvChild, createStopped, arginfo_ev_child,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvChild, createStopped, arginfo_ev_child,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 
 	{ NULL, NULL, NULL }
 };
@@ -475,7 +475,7 @@ const zend_function_entry ev_stat_class_entry_functions[] = {
 	PHP_ME(EvStat, attr,          arginfo_ev__void,    ZEND_ACC_PUBLIC)
 	PHP_ME(EvStat, prev,          arginfo_ev__void,    ZEND_ACC_PUBLIC)
 	PHP_ME(EvStat, stat,          arginfo_ev__void,    ZEND_ACC_PUBLIC)
-	PHP_ME(EvStat, createStopped, arginfo_ev_stat,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvStat, createStopped, arginfo_ev_stat,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 
 	{ NULL, NULL, NULL }
 };
@@ -486,7 +486,7 @@ const zend_function_entry ev_stat_class_entry_functions[] = {
 /* {{{ ev_idle_class_entry_functions */
 const zend_function_entry ev_idle_class_entry_functions[] = {
 	PHP_ME(EvIdle, __construct,   arginfo_ev_idle, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	PHP_ME(EvIdle, createStopped, arginfo_ev_idle, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+	PHP_ME(EvIdle, createStopped, arginfo_ev_idle, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 	{ NULL, NULL, NULL }
 };
 /* }}} */
@@ -496,7 +496,7 @@ const zend_function_entry ev_idle_class_entry_functions[] = {
 /* {{{ ev_check_class_entry_functions */
 const zend_function_entry ev_check_class_entry_functions[] = {
 	PHP_ME(EvCheck, __construct,   arginfo_ev_check, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	PHP_ME(EvCheck, createStopped, arginfo_ev_check, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+	PHP_ME(EvCheck, createStopped, arginfo_ev_check, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 	{ NULL, NULL, NULL }
 };
 /* }}} */
@@ -506,7 +506,7 @@ const zend_function_entry ev_check_class_entry_functions[] = {
 /* {{{ ev_prepare_class_entry_functions */
 const zend_function_entry ev_prepare_class_entry_functions[] = {
 	PHP_ME(EvPrepare, __construct,   arginfo_ev_prepare, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	PHP_ME(EvPrepare, createStopped, arginfo_ev_prepare, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+	PHP_ME(EvPrepare, createStopped, arginfo_ev_prepare, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 	{ NULL, NULL, NULL }
 };
 /* }}} */
@@ -518,7 +518,7 @@ const zend_function_entry ev_embed_class_entry_functions[] = {
 	PHP_ME(EvEmbed, __construct,   arginfo_ev_embed,     ZEND_ACC_PUBLIC  | ZEND_ACC_CTOR)
 	PHP_ME(EvEmbed, set,           arginfo_ev_embed_set, ZEND_ACC_PUBLIC)
 	PHP_ME(EvEmbed, sweep,         arginfo_ev__void,     ZEND_ACC_PUBLIC)
-	PHP_ME(EvEmbed, createStopped, arginfo_ev_embed,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC)
+	PHP_ME(EvEmbed, createStopped, arginfo_ev_embed,     ZEND_ACC_PUBLIC  | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 	{ NULL, NULL, NULL }
 };
 /* }}} */
@@ -528,7 +528,7 @@ const zend_function_entry ev_embed_class_entry_functions[] = {
 /* {{{ ev_fork_class_entry_functions */
 const zend_function_entry ev_fork_class_entry_functions[] = {
 	PHP_ME(EvFork, __construct,   arginfo_ev_fork, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	PHP_ME(EvFork, createStopped, arginfo_ev_fork, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+	PHP_ME(EvFork, createStopped, arginfo_ev_fork, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
 	{ NULL, NULL, NULL }
 };
 /* }}} */

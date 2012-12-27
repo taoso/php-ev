@@ -13,7 +13,7 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2012-12-26</date>
+  <date>2012-12-27</date>
   <!--{{{ Current version -->
   <version>
     <release>0.2.0</release>
@@ -21,7 +21,7 @@
   </version>
   <stability>
     <release>beta</release>
-    <api>beta</api>
+    <api>stable</api>
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes>
@@ -30,6 +30,8 @@
   Change: moved all constants to Ev class
   Fix: release version
   Del: callback parameter from EvLoop constructor/factories
+  Change: watcher createStopped methods made final
+  Change: watcher factory methods made final
   </notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -127,8 +129,8 @@
     <api>0.2.0</api>
   </version>
   <stability>
-    <release>beta</release>
-    <api>beta</api>
+    <release>stable</release>
+    <api>stable</api>
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes>
@@ -137,6 +139,8 @@
   Change: moved all constants to Ev class
   Fix: release version
   Del: callback parameter from EvLoop constructor/factories
+  Change: watcher createStopped methods made final
+  Change: watcher factory methods made final
   </notes>
   <!--}}}-->
     <!--{{{ 0.1.1 (beta) -->
