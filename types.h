@@ -43,21 +43,27 @@ typedef struct php_ev_loop {
 
 typedef int (*php_ev_read_t)(php_ev_object  *obj, zval **retval TSRMLS_DC);
 typedef int (*php_ev_write_t)(php_ev_object *obj, zval *newval  TSRMLS_DC);
+#if 0
+typedef zval **(*php_ev_get_prop_ptr_ptr_t)(php_ev_object *obj, zval *object, zval *member, const struct _zend_literal *key TSRMLS_DC);
+#endif
+typedef zval **(*php_ev_get_prop_ptr_ptr_t)(php_ev_object *obj TSRMLS_DC);
 
 /* Property of an Ev* class */
 
 typedef struct php_ev_property_entry {
-	const char     *name;
-	size_t          name_length;
-	php_ev_read_t   read_func;
-	php_ev_write_t  write_func;
+	const char                *name;
+	size_t                     name_length;
+	php_ev_read_t              read_func;
+	php_ev_write_t             write_func;
+	php_ev_get_prop_ptr_ptr_t  get_ptr_ptr_func;
 } php_ev_property_entry;
 
 typedef struct {
-	char           *name;
-	size_t          name_len;
-	php_ev_read_t   read_func;
-	php_ev_write_t  write_func;
+	char                      *name;
+	size_t                     name_len;
+	php_ev_read_t              read_func;
+	php_ev_write_t             write_func;
+	php_ev_get_prop_ptr_ptr_t  get_ptr_ptr_func;
 } php_ev_prop_handler;
 
 

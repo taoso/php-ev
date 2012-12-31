@@ -177,13 +177,14 @@ static int php_ev_prop_write_default(php_ev_object *obj, zval *newval TSRMLS_DC)
 /* }}} */
 
 /* {{{ php_ev_add_property */
-static void php_ev_add_property(HashTable *h, const char *name, size_t name_len, php_ev_read_t read_func, php_ev_write_t write_func TSRMLS_DC) {
+static void php_ev_add_property(HashTable *h, const char *name, size_t name_len, php_ev_read_t read_func, php_ev_write_t write_func, php_ev_get_prop_ptr_ptr_t get_ptr_ptr_func TSRMLS_DC) {
 	php_ev_prop_handler p;
 
-	p.name       = (char *) name;
-	p.name_len   = name_len;
-	p.read_func  = (read_func) ? read_func : php_ev_prop_read_default;
-	p.write_func = (write_func) ? write_func: php_ev_prop_write_default;
+	p.name             = (char *) name;
+	p.name_len         = name_len;
+	p.read_func        = (read_func) ? read_func : php_ev_prop_read_default;
+	p.write_func       = (write_func) ? write_func: php_ev_prop_write_default;
+	p.get_ptr_ptr_func = get_ptr_ptr_func;
 	zend_hash_add(h, name, name_len + 1, &p, sizeof(php_ev_prop_handler), NULL);
 }
 /* }}} */
@@ -234,10 +235,10 @@ static zval *php_ev_read_property(zval *object, zval *member, int type, const ze
 /* {{{ php_ev_write_property */
 void php_ev_write_property(zval *object, zval *member, zval *value, const zend_literal *key TSRMLS_DC)
 {
-	zval             tmp_member;
-	php_ev_object   *obj;
+	zval                 tmp_member;
+	php_ev_object       *obj;
 	php_ev_prop_handler *hnd;
-	int              ret;
+	int                  ret;
 
 	if (member->type != IS_STRING) {
 	    tmp_member = *member;
@@ -348,6 +349,41 @@ static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS
 #endif    
 /* }}} */
 
+/* {{{ php_ev_get_property_ptr_ptr */
+static zval **php_ev_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC)
+{
+	php_ev_object        *obj;
+	zval                  tmp_member;
+	zval                **retval     = NULL;
+	php_ev_prop_handler  *hnd;
+	int                   ret        = FAILURE;
+
+	if (member->type != IS_STRING) {
+		tmp_member = *member;
+		zval_copy_ctor(&tmp_member);
+		convert_to_string(&tmp_member);
+		member = &tmp_member;
+	}
+
+	obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
+
+	if (obj->prop_handler != NULL) {
+		ret = zend_hash_find(obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member) + 1, (void **) &hnd);
+	}
+
+	if (ret == FAILURE) {
+		retval = zend_get_std_object_handlers()->get_property_ptr_ptr(object, member, key TSRMLS_CC);
+	} else if (hnd->get_ptr_ptr_func) {
+		retval = hnd->get_ptr_ptr_func(obj TSRMLS_CC);
+	}
+
+	if (member == &tmp_member) {
+		zval_dtor(member);
+	}
+
+	return retval;
+}
+/* }}} */
 
 /* {{{ php_ev_object_free_storage 
  * Common Ev object cleaner */
@@ -952,7 +988,7 @@ PHP_MINIT_FUNCTION(ev)
 	ev_object_handlers.clone_obj            = NULL; /* TODO: add __clone() handler */
 	ev_object_handlers.read_property        = php_ev_read_property;
 	ev_object_handlers.write_property       = php_ev_write_property;
-	ev_object_handlers.get_property_ptr_ptr = std_hnd->get_property_ptr_ptr;
+	ev_object_handlers.get_property_ptr_ptr = php_ev_get_property_ptr_ptr; /* std_hnd->get_property_ptr_ptr */;
 	ev_object_handlers.has_property         = php_ev_has_property;
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3
 	ev_object_handlers.get_debug_info       = php_ev_object_get_debug_info;
