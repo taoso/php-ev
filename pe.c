@@ -45,6 +45,15 @@ static inline void php_ev_prop_read_zval(const zval *pz, zval **retval)
 
 /* {{{ EvLoop property handlers */
 
+/* {{{ ev_loop_prop_data_get_ptr_ptr */
+static zval **ev_loop_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	return &PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data;
+}
+/* }}} */
+
 /* {{{ ev_loop_prop_data_read  */
 static int ev_loop_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
@@ -578,15 +587,15 @@ static int ev_embed_prop_other_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 
 /* {{{ ev_loop_property_entries[] */
 const php_ev_property_entry ev_loop_property_entries[] = {
-	{"data",             sizeof("data")             - 1, ev_loop_prop_data_read,             ev_loop_prop_data_write},
-	{"backend",          sizeof("backend")          - 1, ev_loop_prop_backend_read,          NULL},
-	{"is_default_loop",  sizeof("is_default_loop")  - 1, ev_loop_prop_is_default_loop_read,  NULL},
-	{"iteration",        sizeof("iteration")        - 1, ev_loop_prop_iteration_loop_read,   NULL},
-	{"pending",          sizeof("pending")          - 1, ev_loop_prop_pending_loop_read,     NULL},
-	{"io_interval",      sizeof("io_interval")      - 1, ev_loop_prop_io_interval_read,      ev_loop_prop_io_interval_write},
-	{"timeout_interval", sizeof("timeout_interval") - 1, ev_loop_prop_timeout_interval_read, ev_loop_prop_timeout_interval_write},
-	{"depth",            sizeof("depth")            - 1, ev_loop_prop_depth_read,            NULL},
-    {NULL, 0, NULL, NULL}
+	{"data",             sizeof("data")             - 1, ev_loop_prop_data_read,             ev_loop_prop_data_write,             ev_loop_prop_data_get_ptr_ptr},
+	{"backend",          sizeof("backend")          - 1, ev_loop_prop_backend_read,          NULL,                                NULL},
+	{"is_default_loop",  sizeof("is_default_loop")  - 1, ev_loop_prop_is_default_loop_read,  NULL,                                NULL},
+	{"iteration",        sizeof("iteration")        - 1, ev_loop_prop_iteration_loop_read,   NULL,                                NULL},
+	{"pending",          sizeof("pending")          - 1, ev_loop_prop_pending_loop_read,     NULL,                                NULL},
+	{"io_interval",      sizeof("io_interval")      - 1, ev_loop_prop_io_interval_read,      ev_loop_prop_io_interval_write,      NULL},
+	{"timeout_interval", sizeof("timeout_interval") - 1, ev_loop_prop_timeout_interval_read, ev_loop_prop_timeout_interval_write, NULL},
+	{"depth",            sizeof("depth")            - 1, ev_loop_prop_depth_read,            NULL,                                NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
