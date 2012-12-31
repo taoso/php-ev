@@ -253,7 +253,7 @@ Sample output:
 	HTTP/1.1 301 Moved Permanently
 	Location: http://www.google.co.uk/
 	Content-Type: text/html; charset=UTF-8
-	Date: Sun, 23 Dec 2012 16:08:27 GMT
+	Date: Sun, 23 Dec 2013 16:08:27 GMT
 	Expires: Tue, 22 Jan 2013 16:08:27 GMT
 	Cache-Control: public, max-age=2592000
 	Server: gws
@@ -423,7 +423,7 @@ Ruslan Osmanov <osmanov@php.net>
 COPYRIGHT
 =========
 
-Copyright (c) 2012 Ruslan Osmanov <osmanov@php.net>
+Copyright (c) 2013 Ruslan Osmanov <osmanov@php.net>
 
 This project is subject to version 3.01 of the PHP license, that is bundled
 with this package in the file LICENSE, and is available through the
