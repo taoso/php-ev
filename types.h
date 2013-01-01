@@ -66,6 +66,7 @@ typedef struct {
 	php_ev_get_prop_ptr_ptr_t  get_ptr_ptr_func;
 } php_ev_prop_handler;
 
+
 #endif /* PHP_EV_TYPES_H */
 
 /*

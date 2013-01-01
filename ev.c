@@ -974,6 +974,7 @@ static inline void php_ev_register_classes(TSRMLS_D)
 static PHP_GINIT_FUNCTION(ev)
 {
 	ev_globals->default_loop = NULL;
+	memset(ev_globals->signal_loops, 0, sizeof(ev_globals->signal_loops));
 }
 /* }}} */
 

@@ -27,6 +27,7 @@
   <notes><![CDATA[
   Fix: get_property_ptr_ptr for zval properties was not supoprted. See
   http://old.nabble.com/Can%27t-get-zval-write-property-handler-working-for-%2B%2B------%2B%2B-and-other-operators-to34843859.html
+  Fix: check for attempts to bind a signal to different event loops
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -75,6 +76,7 @@
         <file role="src" name="07_stat.phpt"/>
         <file role="src" name="08_priority.phpt"/>
         <file role="src" name="09_loop_timer.phpt"/>
+        <file role="src" name="10_signal.phpt"/>
       </dir>
       <dir name="libev">
         <file role="doc" name="LICENSE"/>
@@ -131,6 +133,7 @@
   <notes><![CDATA[
   Fix: get_property_ptr_ptr for zval properties was not supoprted. See
   http://old.nabble.com/Can%27t-get-zval-write-property-handler-working-for-%2B%2B------%2B%2B-and-other-operators-to34843859.html
+  Fix: check for attempts to bind a signal to different event loops
   ]]></notes>
   <!--}}}-->
     <!--{{{ 0.2.0 -->

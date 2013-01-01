@@ -36,6 +36,8 @@ void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bo
 		return;
 	}
 
+	PHP_EV_CHECK_SIGNUM(signum);
+
 	if (ctor) {
 		self = getThis();
 	} else {
@@ -60,7 +62,7 @@ void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bo
 	o_self->ptr = (void *) w;
 
 	if (start) {
-		PHP_EV_WATCHER_START(ev_signal, w);
+		PHP_EV_SIGNAL_START(w);
 	}
 }
 /* }}} */

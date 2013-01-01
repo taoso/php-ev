@@ -16,9 +16,12 @@
    +----------------------------------------------------------------------+
 */
 
+#if 0
 #include "embed.h"
 #include "priv.h"
 #include "watcher.h"
+#endif
+#include "php_ev.h"
 
 /* Defined in ev.c */
 extern zend_class_entry *ev_loop_class_entry_ptr;
@@ -151,7 +154,7 @@ void php_ev_start_watcher(ev_watcher *watcher TSRMLS_DC)
 #endif
 #if EV_SIGNAL_ENABLE
 		case EV_SIGNAL:
-			PHP_EV_WATCHER_START(ev_signal, watcher);
+			PHP_EV_SIGNAL_START((ev_signal *) watcher);
 			break;
 #endif
 #if EV_CHILD_ENABLE
@@ -217,7 +220,7 @@ void php_ev_stop_watcher(ev_watcher *watcher TSRMLS_DC)
 #endif
 #if EV_SIGNAL_ENABLE
 		case EV_SIGNAL:
-			PHP_EV_WATCHER_STOP(ev_signal, watcher);
+			PHP_EV_SIGNAL_STOP((ev_signal *) watcher);
 			break;
 #endif
 #if EV_CHILD_ENABLE
