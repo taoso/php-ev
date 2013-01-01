@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2012 The PHP Group                                |
+   | Copyright (c) 1997-2013 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -36,6 +36,8 @@ void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bo
 		return;
 	}
 
+	PHP_EV_CHECK_SIGNUM(signum);
+
 	if (ctor) {
 		self = getThis();
 	} else {
@@ -60,7 +62,7 @@ void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bo
 	o_self->ptr = (void *) w;
 
 	if (start) {
-		PHP_EV_WATCHER_START(ev_signal, w);
+		PHP_EV_SIGNAL_START(w);
 	}
 }
 /* }}} */

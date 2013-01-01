@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2012 The PHP Group                                |
+   | Copyright (c) 1997-2013 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -78,7 +78,8 @@
     int i = 0;                                                                                 \
     while (b[i].name != NULL) {                                                                \
         php_ev_add_property((a), (b)[i].name, (b)[i].name_length,                              \
-                (php_ev_read_t)(b)[i].read_func, (php_ev_write_t)(b)[i].write_func TSRMLS_CC); \
+                (php_ev_read_t)(b)[i].read_func, (php_ev_write_t)(b)[i].write_func,            \
+                (php_ev_get_prop_ptr_ptr_t)(b)[i].get_ptr_ptr_func TSRMLS_CC);                 \
         i++;                                                                                   \
     }                                                                                          \
 }

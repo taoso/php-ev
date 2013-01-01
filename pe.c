@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2012 The PHP Group                                |
+   | Copyright (c) 1997-2013 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -44,6 +44,15 @@ static inline void php_ev_prop_read_zval(const zval *pz, zval **retval)
 
 
 /* {{{ EvLoop property handlers */
+
+/* {{{ ev_loop_prop_data_get_ptr_ptr */
+static zval **ev_loop_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	return &PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data;
+}
+/* }}} */
 
 /* {{{ ev_loop_prop_data_read  */
 static int ev_loop_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC)
@@ -191,6 +200,7 @@ static int ev_loop_prop_depth_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 
 /* {{{ EvWatcher property handlers */
 
+
 /* {{{ ev_watcher_prop_is_active_read */
 static int ev_watcher_prop_is_active_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
@@ -200,6 +210,15 @@ static int ev_watcher_prop_is_active_read(php_ev_object *obj, zval **retval TSRM
 	ZVAL_BOOL(*retval, ev_is_active(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)));
 
 	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ ev_watcher_prop_data_get_ptr_ptr */
+static zval **ev_watcher_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
+{
+	PHP_EV_ASSERT(obj->ptr);
+
+	return &PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data;
 }
 /* }}} */
 
@@ -568,15 +587,15 @@ static int ev_embed_prop_other_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 
 /* {{{ ev_loop_property_entries[] */
 const php_ev_property_entry ev_loop_property_entries[] = {
-	{"data",             sizeof("data")             - 1, ev_loop_prop_data_read,             ev_loop_prop_data_write},
-	{"backend",          sizeof("backend")          - 1, ev_loop_prop_backend_read,          NULL},
-	{"is_default_loop",  sizeof("is_default_loop")  - 1, ev_loop_prop_is_default_loop_read,  NULL},
-	{"iteration",        sizeof("iteration")        - 1, ev_loop_prop_iteration_loop_read,   NULL},
-	{"pending",          sizeof("pending")          - 1, ev_loop_prop_pending_loop_read,     NULL},
-	{"io_interval",      sizeof("io_interval")      - 1, ev_loop_prop_io_interval_read,      ev_loop_prop_io_interval_write},
-	{"timeout_interval", sizeof("timeout_interval") - 1, ev_loop_prop_timeout_interval_read, ev_loop_prop_timeout_interval_write},
-	{"depth",            sizeof("depth")            - 1, ev_loop_prop_depth_read,            NULL},
-    {NULL, 0, NULL, NULL}
+	{"data",             sizeof("data")             - 1, ev_loop_prop_data_read,             ev_loop_prop_data_write,             ev_loop_prop_data_get_ptr_ptr},
+	{"backend",          sizeof("backend")          - 1, ev_loop_prop_backend_read,          NULL,                                NULL},
+	{"is_default_loop",  sizeof("is_default_loop")  - 1, ev_loop_prop_is_default_loop_read,  NULL,                                NULL},
+	{"iteration",        sizeof("iteration")        - 1, ev_loop_prop_iteration_loop_read,   NULL,                                NULL},
+	{"pending",          sizeof("pending")          - 1, ev_loop_prop_pending_loop_read,     NULL,                                NULL},
+	{"io_interval",      sizeof("io_interval")      - 1, ev_loop_prop_io_interval_read,      ev_loop_prop_io_interval_write,      NULL},
+	{"timeout_interval", sizeof("timeout_interval") - 1, ev_loop_prop_timeout_interval_read, ev_loop_prop_timeout_interval_write, NULL},
+	{"depth",            sizeof("depth")            - 1, ev_loop_prop_depth_read,            NULL,                                NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -596,11 +615,11 @@ const zend_property_info ev_loop_property_entry_info[] = {
 
 /* {{{ ev_watcher_property_entries[] */
 const php_ev_property_entry ev_watcher_property_entries[] = {
-	{"is_active",  sizeof("is_active")  - 1, ev_watcher_prop_is_active_read,  NULL},
-	{"data",       sizeof("data")       - 1, ev_watcher_prop_data_read,       ev_watcher_prop_data_write},
-	{"is_pending", sizeof("is_pending") - 1, ev_watcher_prop_is_pending_read, NULL},
-	{"priority",   sizeof("priority")   - 1, ev_watcher_prop_priority_read,   ev_watcher_prop_priority_write},
-	{NULL, 0, NULL, NULL}
+	{"is_active",  sizeof("is_active")  - 1, ev_watcher_prop_is_active_read,  NULL,                           NULL},
+	{"data",       sizeof("data")       - 1, ev_watcher_prop_data_read,       ev_watcher_prop_data_write,     ev_watcher_prop_data_get_ptr_ptr},
+	{"is_pending", sizeof("is_pending") - 1, ev_watcher_prop_is_pending_read, NULL,                           NULL},
+	{"priority",   sizeof("priority")   - 1, ev_watcher_prop_priority_read,   ev_watcher_prop_priority_write, NULL},
+	{NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -616,9 +635,9 @@ const zend_property_info ev_watcher_property_entry_info[] = {
 
 /* {{{ ev_io_property_entries[] */
 const php_ev_property_entry ev_io_property_entries[] = {
-	{"fd",     sizeof("fd")     - 1, ev_io_prop_fd_read,     NULL},
-	{"events", sizeof("events") - 1, ev_io_prop_events_read, NULL},
-    {NULL, 0, NULL, NULL}
+	{"fd",     sizeof("fd")     - 1, ev_io_prop_fd_read,     NULL, NULL},
+	{"events", sizeof("events") - 1, ev_io_prop_events_read, NULL, NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -632,9 +651,9 @@ const zend_property_info ev_io_property_entry_info[] = {
 
 /* {{{ ev_timer_property_entries[] */
 const php_ev_property_entry ev_timer_property_entries[] = {
-	{"repeat",    sizeof("repeat")    - 1, ev_timer_prop_repeat_read,    ev_timer_prop_repeat_write},
-	{"remaining", sizeof("remaining") - 1, ev_timer_prop_remaining_read, NULL},
-    {NULL, 0, NULL, NULL}
+	{"repeat",    sizeof("repeat")    - 1, ev_timer_prop_repeat_read,    ev_timer_prop_repeat_write, NULL},
+	{"remaining", sizeof("remaining") - 1, ev_timer_prop_remaining_read, NULL, NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -649,9 +668,9 @@ const zend_property_info ev_timer_property_entry_info[] = {
 #if EV_PERIODIC_ENABLE
 /* {{{ ev_periodic_property_entries[] */
 const php_ev_property_entry ev_periodic_property_entries[] = {
-	{"offset",   sizeof("offset")   - 1, ev_periodic_prop_offset_read,   ev_periodic_prop_offset_write},
-	{"interval", sizeof("interval") - 1, ev_periodic_prop_interval_read, ev_periodic_prop_interval_write},
-    {NULL, 0, NULL, NULL}
+	{"offset",   sizeof("offset")   - 1, ev_periodic_prop_offset_read,   ev_periodic_prop_offset_write, NULL},
+	{"interval", sizeof("interval") - 1, ev_periodic_prop_interval_read, ev_periodic_prop_interval_write, NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -667,8 +686,8 @@ const zend_property_info ev_periodic_property_entry_info[] = {
 #if EV_SIGNAL_ENABLE
 /* {{{ ev_signal_property_entries[] */
 const php_ev_property_entry ev_signal_property_entries[] = {
-	{"signum", sizeof("signum") - 1, ev_signal_prop_signum_read, NULL},
-    {NULL, 0, NULL, NULL}
+	{"signum", sizeof("signum") - 1, ev_signal_prop_signum_read, NULL, NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -683,10 +702,10 @@ const zend_property_info ev_signal_property_entry_info[] = {
 #if EV_CHILD_ENABLE
 /* {{{ ev_child_property_entries[] */
 const php_ev_property_entry ev_child_property_entries[] = {
-	{"pid",     sizeof("pid")     - 1, ev_child_prop_pid_read,     NULL},
-	{"rpid",    sizeof("rpid")    - 1, ev_child_prop_rpid_read,    NULL},
-	{"rstatus", sizeof("rstatus") - 1, ev_child_prop_rstatus_read, NULL},
-    {NULL, 0, NULL, NULL}
+	{"pid",     sizeof("pid")     - 1, ev_child_prop_pid_read,     NULL, NULL},
+	{"rpid",    sizeof("rpid")    - 1, ev_child_prop_rpid_read,    NULL, NULL},
+	{"rstatus", sizeof("rstatus") - 1, ev_child_prop_rstatus_read, NULL, NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -703,9 +722,9 @@ const zend_property_info ev_child_property_entry_info[] = {
 #if EV_STAT_ENABLE
 /* {{{ ev_stat_property_entries[] */
 const php_ev_property_entry ev_stat_property_entries[] = {
-	{"path",     sizeof("path")     - 1, ev_stat_prop_path_read,     NULL},
-	{"interval", sizeof("interval") - 1, ev_stat_prop_interval_read, NULL},
-    {NULL, 0, NULL, NULL}
+	{"path",     sizeof("path")     - 1, ev_stat_prop_path_read,     NULL, NULL},
+	{"interval", sizeof("interval") - 1, ev_stat_prop_interval_read, NULL, NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 
@@ -721,8 +740,8 @@ const zend_property_info ev_stat_property_entry_info[] = {
 #if EV_EMBED_ENABLE
 /* {{{ ev_embed_property_entries[] */
 const php_ev_property_entry ev_embed_property_entries[] = {
-	{"other", sizeof("other") - 1, ev_embed_prop_other_read, NULL},
-    {NULL, 0, NULL, NULL}
+	{"other", sizeof("other") - 1, ev_embed_prop_other_read, NULL, NULL},
+    {NULL, 0, NULL, NULL, NULL}
 };
 /* }}} */
 

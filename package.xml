@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2012-12-27</date>
+  <date>2012-01-31</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.0</release>
+    <release>0.2.1</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -24,15 +24,11 @@
     <api>stable</api>
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
-  <notes>
-  Change: moved ev_* functions to Ev singleton(due to some issues with reflection)
-  Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
-  Change: moved all constants to Ev class
-  Fix: release version
-  Del: callback parameter from EvLoop constructor/factories
-  Change: watcher createStopped methods made final
-  Change: watcher factory methods made final
-  </notes>
+  <notes><![CDATA[
+  Fix: get_property_ptr_ptr for zval properties was not supoprted. See
+  http://old.nabble.com/Can%27t-get-zval-write-property-handler-working-for-%2B%2B------%2B%2B-and-other-operators-to34843859.html
+  Fix: check for attempts to bind a signal to different event loops
+  ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
   <contents>
@@ -80,6 +76,7 @@
         <file role="src" name="07_stat.phpt"/>
         <file role="src" name="08_priority.phpt"/>
         <file role="src" name="09_loop_timer.phpt"/>
+        <file role="src" name="10_signal.phpt"/>
       </dir>
       <dir name="libev">
         <file role="doc" name="LICENSE"/>
@@ -123,9 +120,9 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
-  <!--{{{ 0.2.0 -->
+  <!--{{{ 0.2.1 -->
   <version>
-    <release>0.2.0</release>
+    <release>0.2.1</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -133,7 +130,23 @@
     <api>stable</api>
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
-  <notes>
+  <notes><![CDATA[
+  Fix: get_property_ptr_ptr for zval properties was not supoprted. See
+  http://old.nabble.com/Can%27t-get-zval-write-property-handler-working-for-%2B%2B------%2B%2B-and-other-operators-to34843859.html
+  Fix: check for attempts to bind a signal to different event loops
+  ]]></notes>
+  <!--}}}-->
+    <!--{{{ 0.2.0 -->
+    <version>
+      <release>0.2.0</release>
+      <api>0.2.0</api>
+    </version>
+    <stability>
+      <release>stable</release>
+      <api>stable</api>
+    </stability>
+    <license uri="http://www.php.net/license">PHP</license>
+    <notes>
   Change: moved ev_* functions to Ev singleton(due to some issues with reflection)
   Change: renamed EvLoop::break to EvLoop::stop, and ev_break to Ev::stop
   Change: moved all constants to Ev class
@@ -142,7 +155,7 @@
   Change: watcher createStopped methods made final
   Change: watcher factory methods made final
   </notes>
-  <!--}}}-->
+    <!--}}}-->
     <!--{{{ 0.1.1 (beta) -->
     <release>
       <version>

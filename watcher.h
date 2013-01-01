@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2012 The PHP Group                                |
+   | Copyright (c) 1997-2013 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -85,19 +85,26 @@
 
 #define PHP_EV_CHECK_SIGNAL_CAN_START(w)                                                   \
     do {                                                                                   \
-        /* Pulled this part from EV module of Perl */                                      \
-        if (signals [(w)->signum - 1].loop                                                 \
-                && signals [(w)->signum - 1].loop != php_ev_watcher_loop_ptr(w)) {         \
+        struct ev_loop *tmp_loop = MyG(signal_loops[(w)->signum - 1]);                     \
+        if (tmp_loop && tmp_loop != php_ev_watcher_loop_ptr(w)) {                          \
             php_error_docref(NULL TSRMLS_CC, E_WARNING,                                    \
                     "Can't start signal watcher, signal %d already "                       \
-                    "registered in another loop", w->signum);                              \
+                    "registered for another loop", (w)->signum);                           \
+            return;                                                                        \
         }                                                                                  \
     } while (0)
 
 #define PHP_EV_SIGNAL_START(w)                                                             \
     do {                                                                                   \
-        PHP_EV_CHECK_SIGNAL_CAN_START(w);                                                  \
-        PHP_EV_WATCHER_START(ev_signal, w);                                                \
+        PHP_EV_CHECK_SIGNAL_CAN_START(((ev_signal *) (w)));                                \
+        MyG(signal_loops[(w)->signum - 1]) = php_ev_watcher_loop_ptr((w));                 \
+        PHP_EV_WATCHER_START(ev_signal, (w));                                              \
+    } while (0)
+
+#define PHP_EV_SIGNAL_STOP(w)                                                              \
+    do {                                                                                   \
+        MyG(signal_loops[(w)->signum - 1]) = 0;                                            \
+        PHP_EV_WATCHER_STOP(ev_signal, (w));                                               \
     } while (0)
 
 #define PHP_EV_SIGNAL_RESET(w, seta)                                                       \

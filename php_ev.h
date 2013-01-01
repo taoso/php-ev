@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2012 The PHP Group                                |
+   | Copyright (c) 1997-2013 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -29,15 +29,22 @@ PHP_RINIT_FUNCTION(ev);
 PHP_RSHUTDOWN_FUNCTION(ev);
 PHP_MINFO_FUNCTION(ev);
 
+/* Max. signum supported */
+#ifndef EV_NSIG
+# define EV_NSIG 32
+#endif
+
 ZEND_BEGIN_MODULE_GLOBALS(ev)
 	zval *default_loop;
+	/* Helps to prevent binding of different `signum's to a loop */
+	struct ev_loop *signal_loops[EV_NSIG - 1];
 ZEND_END_MODULE_GLOBALS(ev)
 ZEND_EXTERN_MODULE_GLOBALS(ev)
 
 extern zend_module_entry ev_module_entry;
 #define phpext_ev_ptr &ev_module_entry
 
-#define PHP_EV_VERSION "0.2.0"
+#define PHP_EV_VERSION "0.2.1"
 
 #endif /* PHP_EV_H */
 

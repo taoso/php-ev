@@ -2,7 +2,7 @@
    +----------------------------------------------------------------------+
    | PHP Version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2012 The PHP Group                                |
+   | Copyright (c) 1997-2013 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -42,7 +42,6 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 	if (!in_ctor) {
 		/* Factory method mode */
 		if (is_default_loop) {
-
 			if (!*default_loop_ptr_ptr) {
 				loop = ev_default_loop(flags);
 			} else {
@@ -99,7 +98,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 }
 /* }}} */
 
-/* {{{ proto EvLoop EvLoop::defaultLoop([int flags = EVLAG_AUTO[, mixed data = NULL[, double io_interval = 0.[, double timeout_interval = 0.]]]])
+/* {{{ proto EvLoop EvLoop::defaultLoop([int flags = Ev::FLAG_AUTO[, mixed data = NULL[, double io_interval = 0.[, double timeout_interval = 0.]]]])
 */
 PHP_METHOD(EvLoop, defaultLoop)
 {
@@ -108,7 +107,7 @@ PHP_METHOD(EvLoop, defaultLoop)
 }
 /* }}} */
 
-/* {{{ proto EvLoop EvLoop::__construct([int flags = EVLAG_AUTO[[, mixed data = NULL[, double io_interval = 0.[, double timeout_interval = 0.]]]]) */
+/* {{{ proto EvLoop EvLoop::__construct([int flags = Ev::FLAG_AUTO[[, mixed data = NULL[, double io_interval = 0.[, double timeout_interval = 0.]]]]) */
 PHP_METHOD(EvLoop, __construct) 
 {
 	php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU,
