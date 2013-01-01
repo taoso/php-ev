@@ -1,3 +1,19 @@
+libadns (optional) support
+==========================
+
+This small library may be a part of ev, e.g. EvADNS singleton class.  There are
+some ideas how to include libadns into libev by means of prepare/check, timer
+and io watchers:
+
+<http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples-8>
+<http://software.schmorp.de/pkg/EV-ADNS.html>
+
+Still don't like namespaces. I guess EvADNS class will look pretty good.
+
+It's rather simple to install it on different platforms. libadns is packaged
+for many distros.  However, for those who don't like to include it into ev,
+we'll make a configure option.
+
 Add EvLoop::setInvokePendingCallback(`ev_set_invoke_pending_cb`)?
 =================================================================
 
