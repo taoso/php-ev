@@ -3,7 +3,7 @@ ev PECL extension
 DESCRIPTION
 ===========
 
-ev is a PECL extension providing inteface to libev library - high performance
+ev is a PECL extension providing interface to libev library - high performance
 full-featured event loop written in C.
 
 
@@ -253,8 +253,8 @@ Sample output:
 	HTTP/1.1 301 Moved Permanently
 	Location: http://www.google.co.uk/
 	Content-Type: text/html; charset=UTF-8
-	Date: Sun, 23 Dec 2013 16:08:27 GMT
-	Expires: Tue, 22 Jan 2013 16:08:27 GMT
+	Date: Sun, 23 Dec 2012 16:08:27 GMT
+	Expires: Tue, 22 Jan 2012 16:08:27 GMT
 	Cache-Control: public, max-age=2592000
 	Server: gws
 	Content-Length: 221
@@ -423,14 +423,14 @@ Ruslan Osmanov <osmanov@php.net>
 COPYRIGHT
 =========
 
-Copyright (c) 2013 Ruslan Osmanov <osmanov@php.net>
+	Copyright (c) 2012,2013 Ruslan Osmanov <osmanov@php.net>
 
-This project is subject to version 3.01 of the PHP license, that is bundled
-with this package in the file LICENSE, and is available through the
-world-wide-web at the following url: http://www.php.net/license/3_01.txt If you
-did not receive a copy of the PHP license and are unable to obtain it through
-the world-wide-web, please send a note to license@php.net so we can mail you a
-copy immediately.
+	This project is subject to version 3.01 of the PHP license, that is bundled
+	with this package in the file LICENSE, and is available through the
+	world-wide-web at the following url: http://www.php.net/license/3_01.txt If you
+	did not receive a copy of the PHP license and are unable to obtain it through
+	the world-wide-web, please send a note to license@php.net so we can mail you a
+	copy immediately.
 
 
 vim: tw=80 ft=markdown

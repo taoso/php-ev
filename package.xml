@@ -4,7 +4,7 @@
   <channel>pecl.php.net</channel>
   <summary>Provides interface to libev library</summary>
   <description>
-  ev provides inteface to libev library - high performance
+  ev provides interface to libev library - high performance
   full-featured event loop written in C.
   </description>
   <lead>
