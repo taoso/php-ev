@@ -72,7 +72,7 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 		pfci->params         = args;
 		pfci->retval_ptr_ptr = &retval_ptr;
 		pfci->param_count    = 2;
-		pfci->no_separation  = 0;
+		pfci->no_separation  = 1;
 
 		if (zend_call_function(pfci, php_ev_watcher_fcc(watcher) TSRMLS_CC) == SUCCESS
 		        && retval_ptr) {

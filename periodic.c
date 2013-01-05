@@ -60,7 +60,7 @@ static ev_tstamp php_ev_periodic_rescheduler(ev_periodic *w, ev_tstamp now)
 		pfci->params         = args;
 		pfci->retval_ptr_ptr = &retval_ptr;
 		pfci->param_count    = 2;
-		pfci->no_separation  = 0;
+		pfci->no_separation  = 1;
 
 		if (zend_call_function(pfci, periodic_ptr->fcc TSRMLS_CC) == SUCCESS
 		        && retval_ptr) {
