@@ -119,7 +119,7 @@ ZEND_GET_MODULE(ev)
 /* {{{ php_ev_default_fork */
 static void php_ev_default_fork(void)
 {
-	ev_loop_fork(EV_DEFAULT_UC);
+	ev_loop_fork(EV_DEFAULT);
 }
 /* }}} */
 
