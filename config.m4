@@ -20,9 +20,6 @@ PHP_ARG_ENABLE(ev, whether to enable ev,
 PHP_ARG_ENABLE(ev-debug, for ev debug support,
 [  --enable-ev-debug       Enable ev debug support], no, no)
 
-PHP_ARG_ENABLE(ev-sockets, for sockets support,
-[  --enable-ev-sockets     Enable sockets support in ev], yes, no)
-
 if test "$PHP_EV" != "no"; then
   export OLD_CPPFLAGS="$CPPFLAGS"
   export CPPFLAGS="$CPPFLAGS $INCLUDES -DHAVE_EV"
@@ -43,14 +40,14 @@ if test "$PHP_EV" != "no"; then
     AC_DEFINE(NDEBUG, 1, [With NDEBUG defined assert generates no code])
   fi
 
-  if test "$PHP_EV_SOCKETS" != "no"; then
-    PHP_ADD_EXTENSION_DEP(ev, sockets, true)
-    AC_DEFINE([PHP_EV_USE_SOCKETS], 1, [Whether to enable sockets support])
-  fi
+  PHP_ADD_EXTENSION_DEP(ev, sockets, true)
 
   AC_DEFINE(EV_H, "embed.h", [Wrapper for libev/ev.h])
   AC_DEFINE(HAVE_EV, 1, [ ])
   m4_include([libev/libev.m4])
+
+  LDFLAGS="$LDFLAGS -lpthread"
+  dnl PHP_ADD_LIBRARY(pthread)
 
   ev_src="libev/ev.c util.c ev.c watcher.c fe.c pe.c"
   PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared,,$CFLAGS)

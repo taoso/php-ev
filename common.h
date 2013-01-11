@@ -32,7 +32,9 @@
 
 #include <php_network.h>
 #include <php_streams.h>
-#ifdef PHP_EV_USE_SOCKETS
+
+#if PHP_VERSION_ID >= 50301 && (HAVE_SOCKETS || defined(COMPILE_DL_SOCKETS))
+# define PHP_EV_USE_SOCKETS
 # include <ext/sockets/php_sockets.h>
 #endif
 
