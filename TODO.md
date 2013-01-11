@@ -1,18 +1,9 @@
-libadns (optional) support
-==========================
+EvAsync - `ev_async`
+===================
 
-This small library may be a part of ev, e.g. EvADNS singleton class.  There are
-some ideas how to include libadns into libev by means of prepare/check, timer
-and io watchers:
+For connectors like libeio + libev
+<http://pod.tst.eu/http://cvs.schmorp.de/libeio/eio.pod#INITIALISATION_INTEGRATION>
 
-<http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Examples-8>
-<http://software.schmorp.de/pkg/EV-ADNS.html>
-
-Still don't like namespaces. I guess EvADNS class will look pretty good.
-
-It's rather simple to install it on different platforms. libadns is packaged
-for many distros.  However, for those who don't like to include it into ev,
-we'll make a configure option.
 
 Add EvLoop::setInvokePendingCallback(`ev_set_invoke_pending_cb`)?
 =================================================================
@@ -32,76 +23,6 @@ However, sometimes clone handler may be useful to copy entire watcher with it's
 settings and bind to another event loop.
 
 Will wait for user requests, or bug reports.
-
-libevent buffer functionality?
-=============================
-
-	<?php
-	ini_set('display_errors', 'On');
-	error_reporting(-1);
-	$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-	socket_set_nonblock($socket);
-	socket_connect($socket, 'phpdaemon.net', 843);
-	$eventBase = event_base_new();
-	$buffer = event_buffer_new(
-        	$socket,
-        	function ($stream, $arg) use (&$buffer) {
-                	echo "Read\n";
-                	var_dump(event_buffer_read($buffer, 1024));
-        	},
-        	function ($stream, $arg) use (&$buffer)  {
-                	echo "Write\n";
-                	static $first = true;
-                	if ($first) {
-                        	event_buffer_write($buffer, "<policy-file-request/>\x00");
-                        	$first = false;
-                	}
-        	},
-        	function ($stream, $arg)  use (&$buffer)  {
-                	echo "failure\n";
-        	}
-	);
- 	
-	event_buffer_base_set($buffer, $eventBase);
-	event_buffer_enable($buffer, EV_READ | EV_WRITE | EV_TIMEOUT | EV_PERSIST);
-	event_base_loop($eventBase);
-
-SAMPLE OUTPUT
-------
-
-	[root@gf-home-server phpdaemon]# php -q test.php
-
-	Warning: socket_connect(): unable to connect [115]: Operation now in progress in /home/web/phpdaemon/test.php on line 6
-	Write
-	Write
-	Read
-	string(268) "<?xml version="1.0"?>
-	<!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
-	<cross-domain-policy>
- 	 <allow-access-from domain="*" to-ports="*"/>
- 	 <site-control permitted-cross-domain-policies="all"/>
-	</cross-domain-policy>
-	"
-	failure
-	[root@gf-home-server phpdaemon]# php -q test.php
-
-	Warning: socket_connect(): unable to connect [115]: Operation now in progress in /home/web/phpdaemon/test.php on line 6
-	Write
-	Write
-	Read
-	string(268) "<?xml version="1.0"?>
-	<!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
-	<cross-domain-policy>
- 	 <allow-access-from domain="*" to-ports="*"/>
- 	 <site-control permitted-cross-domain-policies="all"/>
-	</cross-domain-policy>
-	"
-	failure
-
-But should it be in ev extension?! Sockets' buffering should be somewhere in
-sockets extension, isn't it?  libevent functionality should be in libevent
-itself. libevent extension currently doesn't support libevent 2. Consider
-forking the project, or even writing something new.
 
 
 vim: ft=markdown
