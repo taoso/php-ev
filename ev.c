@@ -19,6 +19,10 @@
 #include "php_ev.h"
 #include "util.h"
 
+#if !defined(_WIN32) && !defined(_MINIX)
+# include <pthread.h>
+#endif
+
 #if HAVE_EV
 
 ZEND_DECLARE_MODULE_GLOBALS(ev)

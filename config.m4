@@ -47,7 +47,7 @@ if test "$PHP_EV" != "no"; then
   m4_include([libev/libev.m4])
 
   LDFLAGS="$LDFLAGS -lpthread"
-  dnl PHP_ADD_LIBRARY(pthread)
+  PHP_ADD_LIBRARY(pthread)
 
   ev_src="libev/ev.c util.c ev.c watcher.c fe.c pe.c"
   PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared,,$CFLAGS)
