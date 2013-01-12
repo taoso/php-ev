@@ -32,9 +32,21 @@ php_socket_t php_ev_zval_to_fd(zval **ppfd TSRMLS_DC)
 	if (Z_TYPE_PP(ppfd) == IS_RESOURCE) {
 		/* PHP stream or PHP socket resource  */
 		if (ZEND_FETCH_RESOURCE_NO_RETURN(stream, php_stream *, ppfd, -1, NULL, php_file_le_stream())) {
+			php_stream_from_zval_no_verify(stream, ppfd);
+
+			if (stream == NULL) {
+				php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed obtaining fd");
+				return -1;
+			}
+
 			/* PHP stream */
 			if (php_stream_can_cast(stream, PHP_STREAM_AS_FD_FOR_SELECT | PHP_STREAM_CAST_INTERNAL) == SUCCESS) {
 				if (php_stream_cast(stream, PHP_STREAM_AS_FD_FOR_SELECT | PHP_STREAM_CAST_INTERNAL,
+							(void*) &file_desc, 1) != SUCCESS || file_desc < 0) {
+					return -1;
+				}
+			} else if (php_stream_can_cast(stream, PHP_STREAM_AS_FD | PHP_STREAM_CAST_INTERNAL) == SUCCESS) {
+				if (php_stream_cast(stream, PHP_STREAM_AS_FD | PHP_STREAM_CAST_INTERNAL,
 							(void*) &file_desc, 1) != SUCCESS || file_desc < 0) {
 					return -1;
 				}
@@ -44,11 +56,6 @@ php_socket_t php_ev_zval_to_fd(zval **ppfd TSRMLS_DC)
 					return -1;
 				}
 			} else { /* STDIN, STDOUT, STDERR etc. */
-				php_stream_from_zval_no_verify(stream, ppfd);
-				if (stream == NULL) {
-					php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed obtaining fd");
-					return -1;
-				}
 				file_desc = Z_LVAL_P(*ppfd);
 			}
 		} else {
