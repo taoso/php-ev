@@ -16,23 +16,10 @@
    +----------------------------------------------------------------------+
 */
 
-#if 0
-#include "embed.h"
-#include "priv.h"
-#include "watcher.h"
-#endif
 #include "php_ev.h"
 
 /* Defined in ev.c */
 extern zend_class_entry *ev_loop_class_entry_ptr;
-
-/* {{{ php_ev_set_watcher_priority() */
-void php_ev_set_watcher_priority(ev_watcher *watcher, long priority TSRMLS_DC)
-{
-	PHP_EV_CHECK_PENDING_WATCHER(watcher);	
-	ev_set_priority(watcher, priority);
-}
-/* }}} */
 
 /* {{{ php_ev_watcher_callback() */
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
@@ -117,7 +104,7 @@ void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *o_l
 
 	PHP_EV_COPY_FCALL_INFO(php_ev_watcher_fci(w), php_ev_watcher_fcc(w), pfci, pfcc);
 
-	php_ev_set_watcher_priority(w, priority TSRMLS_CC);
+	php_ev_set_watcher_priority(w, priority);
 
 	TSRMLS_SET_CTX(php_ev_watcher_thread_ctx(w));
 }

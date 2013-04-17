@@ -301,7 +301,7 @@ static int ev_watcher_prop_priority_write(php_ev_object *obj, zval *value TSRMLS
 		php_ev_stop_watcher(watcher TSRMLS_CC);
 	}
 
-	php_ev_set_watcher_priority(watcher, priority TSRMLS_CC);
+	php_ev_set_watcher_priority(watcher, priority);
 
 	if (active) {
 		php_ev_start_watcher(watcher TSRMLS_CC);

@@ -124,6 +124,11 @@
 #define PHP_EV_WATCHER_FACTORY_NS(type, zloop)                                             \
     php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, FALSE)
 
+#define php_ev_set_watcher_priority(watcher, priority) \
+    do {                                               \
+        PHP_EV_CHECK_PENDING_WATCHER(watcher);         \
+        ev_set_priority(watcher, priority);            \
+    } while (0);                                       \
 
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents);
 void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *loop,
@@ -131,7 +136,6 @@ void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *loo
 void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *loop,
 		const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC);
 void php_ev_stop_watcher(ev_watcher *watcher TSRMLS_DC);
-void php_ev_set_watcher_priority(ev_watcher *watcher, long priority TSRMLS_DC);
 void php_ev_start_watcher(ev_watcher *watcher TSRMLS_DC);
 
 #endif /* PHP_EV_WATCHER_H */
