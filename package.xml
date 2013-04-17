@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2013-01-12</date>
+  <date>2013-04-17</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.3</release>
+    <release>0.2.4</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,9 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-  Fixed build errors where sockets extension required, made optional(thanks to auroraeos on #php.pecl@efnet IRC).
-  Fixed build errors for non-threaded configuration.
-  Streams' casting fixed and improved.
+  Fix: build error in Mac OS X: inline php_ev_set_watcher_priority function had been exported as a library symbol
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -119,22 +117,38 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
-  <!--{{{ 0.2.3  -->
-  <version>
-    <release>0.2.3</release>
-    <api>0.2.0</api>
-  </version>
-  <stability>
-    <release>stable</release>
-    <api>stable</api>
-  </stability>
-  <license uri="http://www.php.net/license">PHP</license>
-  <notes><![CDATA[
+    <!--{{{ Current version -->
+    <release>
+      <version>
+        <release>0.2.4</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+  Fix: build error in Mac OS X: inline php_ev_set_watcher_priority function had been exported as a library symbol
+  ]]></notes>
+    </release>
+    <!--}}}-->
+    <!--{{{ 0.2.3  -->
+    <version>
+      <release>0.2.3</release>
+      <api>0.2.0</api>
+    </version>
+    <stability>
+      <release>stable</release>
+      <api>stable</api>
+    </stability>
+    <license uri="http://www.php.net/license">PHP</license>
+    <notes><![CDATA[
   Fixed build errors where sockets extension required, made optional(thanks to auroraeos on #php.pecl@efnet IRC).
   Fixed build errors for non-threaded configuration.
   Streams' casting fixed and improved.
   ]]></notes>
-  <!--}}}-->
+    <!--}}}-->
     <!--{{{ 0.2.2 -->
     <version>
       <release>0.2.2</release>
