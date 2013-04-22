@@ -124,11 +124,15 @@
 #define PHP_EV_WATCHER_FACTORY_NS(type, zloop)                                             \
     php_ev_ ## type ## _object_ctor(INTERNAL_FUNCTION_PARAM_PASSTHRU, zloop, FALSE, FALSE)
 
-#define php_ev_set_watcher_priority(watcher, priority) \
-    do {                                               \
-        PHP_EV_CHECK_PENDING_WATCHER(watcher);         \
-        ev_set_priority(watcher, priority);            \
-    } while (0);                                       \
+#define php_ev_set_watcher_priority(watcher, priority)   \
+    do {                                                 \
+        if (ev_is_pending(watcher)) {                    \
+            php_error_docref(NULL TSRMLS_CC, E_WARNING,  \
+                    "Failed modifying pending watcher"); \
+            break;                                       \
+        }                                                \
+        ev_set_priority(watcher, priority);              \
+    } while (0);
 
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents);
 void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *loop,
