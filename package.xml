@@ -16,7 +16,7 @@
   <date>2013-07-16</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.6</release>
+    <release>0.2.5</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -26,6 +26,7 @@
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
   Fix: bug #64788 where var_dump() of EvIo watcher caused disfunction of whole event loop
+  Fix: build error due to return (void) from function returning int on Mac OS X
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -118,22 +119,6 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
-    <!--{{{ Current version -->
-    <release>
-      <version>
-        <release>0.2.6</release>
-        <api>0.2.0</api>
-      </version>
-      <stability>
-        <release>stable</release>
-        <api>stable</api>
-      </stability>
-      <license uri="http://www.php.net/license">PHP</license>
-      <notes><![CDATA[
-  Fix: bug #64788 where var_dump() of EvIo watcher caused disfunction of whole event loop
-  ]]></notes>
-    </release>
-    <!--}}}-->
     <!--{{{ 0.2.5 -->
     <version>
       <release>0.2.5</release>
@@ -146,6 +131,7 @@
     <license uri="http://www.php.net/license">PHP</license>
     <notes><![CDATA[
   Fix: build error due to return (void) from function returning int on Mac OS X
+  Fix: bug #64788 where var_dump() of EvIo watcher caused disfunction of whole event loop
   ]]></notes>
     <!--}}}-->
     <!--{{{ 0.2.4 -->
