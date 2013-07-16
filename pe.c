@@ -18,6 +18,7 @@
 
 #include "php_ev.h"
 #include "watcher.h"
+#include <fcntl.h>
 
 static inline void php_ev_prop_write_zval(zval **ppz, const zval *value)
 {
@@ -319,6 +320,13 @@ static int ev_watcher_prop_priority_write(php_ev_object *obj, zval *value TSRMLS
 static int ev_io_prop_fd_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
 	ev_io *io_watcher = (ev_io *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
+
+	if (io_watcher->fd <= 0 || fcntl(io_watcher->fd, F_GETFD) == -1) {
+		// Invalid fd
+		ALLOC_INIT_ZVAL(*retval); // NULL
+		return SUCCESS;
+	}
+
 	php_stream *stream = php_stream_fopen_from_fd(io_watcher->fd, "r", NULL);
 
 	if (stream) {
