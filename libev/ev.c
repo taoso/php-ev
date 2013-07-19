@@ -359,6 +359,22 @@
 # define EV_HEAP_CACHE_AT EV_FEATURE_DATA
 #endif
 
+#ifdef ANDROID
+/* supposedly, android doesn't typedef fd_mask */
+# undef EV_USE_SELECT
+# define EV_USE_SELECT 0
+/* supposedly, we need to include syscall.h, not sys/syscall.h, so just disable */
+# undef EV_USE_CLOCK_SYSCALL
+# define EV_USE_CLOCK_SYSCALL 0
+#endif
+
+/* aix's poll.h seems to cause lots of trouble */
+#ifdef _AIX
+/* AIX has a completely broken poll.h header */
+# undef EV_USE_POLL
+# define EV_USE_POLL 0
+#endif
+
 /* on linux, we can use a (slow) syscall to avoid a dependency on pthread, */
 /* which makes programs even slower. might work on other unices, too. */
 #if EV_USE_CLOCK_SYSCALL
@@ -374,12 +390,6 @@
 #endif
 
 /* this block fixes any misconfiguration where we know we run into trouble otherwise */
-
-#ifdef _AIX
-/* AIX has a completely broken poll.h header */
-# undef EV_USE_POLL
-# define EV_USE_POLL 0
-#endif
 
 #ifndef CLOCK_MONOTONIC
 # undef EV_USE_MONOTONIC
@@ -507,7 +517,7 @@ struct signalfd_siginfo
 #define ECB_H
 
 /* 16 bits major, 16 bits minor */
-#define ECB_VERSION 0x00010002
+#define ECB_VERSION 0x00010003
 
 #ifdef _WIN32
   typedef   signed char   int8_t;
@@ -538,6 +548,15 @@ struct signalfd_siginfo
     #define ECB_PTRSIZE 8
   #else
     #define ECB_PTRSIZE 4
+  #endif
+#endif
+
+/* work around x32 idiocy by defining proper macros */
+#if __x86_64 || _M_AMD64
+  #if __ILP32
+    #define ECB_AMD64_X32 1
+  #else
+    #define ECB_AMD64 1
   #endif
 #endif
 
@@ -610,7 +629,9 @@ struct signalfd_siginfo
     #elif defined __s390__ || defined __s390x__
       #define ECB_MEMORY_FENCE         __asm__ __volatile__ ("bcr 15,0" : : : "memory")
     #elif defined __mips__
-      #define ECB_MEMORY_FENCE         __asm__ __volatile__ ("sync"     : : : "memory")
+      /* GNU/Linux emulates sync on mips1 architectures, so we force it's use */
+      /* anybody else who still uses mips1 is supposed to send in their version, with detection code. */
+      #define ECB_MEMORY_FENCE         __asm__ __volatile__ (".set mips2; sync; .set mips0" : : : "memory")
     #elif defined __alpha__
       #define ECB_MEMORY_FENCE         __asm__ __volatile__ ("mb"       : : : "memory")
     #elif defined __hppa__
@@ -2087,8 +2108,6 @@ evpipe_init (EV_P)
           fd_intern (fds [0]);
         }
 
-      fd_intern (fds [1]);
-
       evpipe [0] = fds [0];
 
       if (evpipe [1] < 0)
@@ -2103,6 +2122,8 @@ evpipe_init (EV_P)
           dup2 (fds [1], evpipe [1]);
           close (fds [1]);
         }
+
+      fd_intern (evpipe [1]);
 
       ev_io_set (&pipe_w, evpipe [0] < 0 ? evpipe [1] : evpipe [0], EV_READ);
       ev_io_start (EV_A_ &pipe_w);
@@ -2231,8 +2252,9 @@ void
 ev_feed_signal (int signum) EV_THROW
 {
 #if EV_MULTIPLICITY
+  EV_P;
   ECB_MEMORY_FENCE_ACQUIRE;
-  EV_P = signals [signum - 1].loop;
+  EV_A = signals [signum - 1].loop;
 
   if (!EV_A)
     return;
@@ -3895,7 +3917,10 @@ static void noinline stat_timer_cb (EV_P_ ev_timer *w_, int revents);
 static void noinline
 infy_add (EV_P_ ev_stat *w)
 {
-  w->wd = inotify_add_watch (fs_fd, w->path, IN_ATTRIB | IN_DELETE_SELF | IN_MOVE_SELF | IN_MODIFY | IN_DONT_FOLLOW | IN_MASK_ADD);
+  w->wd = inotify_add_watch (fs_fd, w->path,
+                             IN_ATTRIB | IN_DELETE_SELF | IN_MOVE_SELF | IN_MODIFY
+                             | IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO
+                             | IN_DONT_FOLLOW | IN_MASK_ADD);
 
   if (w->wd >= 0)
     {
@@ -3909,10 +3934,16 @@ infy_add (EV_P_ ev_stat *w)
         w->timer.repeat = w->interval ? w->interval : DEF_STAT_INTERVAL;
       else if (!statfs (w->path, &sfs)
                && (sfs.f_type == 0x1373 /* devfs */
+                   || sfs.f_type == 0x4006 /* fat */
+                   || sfs.f_type == 0x4d44 /* msdos */
                    || sfs.f_type == 0xEF53 /* ext2/3 */
+                   || sfs.f_type == 0x72b6 /* jffs2 */
+                   || sfs.f_type == 0x858458f6 /* ramfs */
+                   || sfs.f_type == 0x5346544e /* ntfs */
                    || sfs.f_type == 0x3153464a /* jfs */
+                   || sfs.f_type == 0x9123683e /* btrfs */
                    || sfs.f_type == 0x52654973 /* reiser3 */
-                   || sfs.f_type == 0x01021994 /* tempfs */
+                   || sfs.f_type == 0x01021994 /* tmpfs */
                    || sfs.f_type == 0x58465342 /* xfs */))
         w->timer.repeat = 0.; /* filesystem is local, kernel new enough */
       else
