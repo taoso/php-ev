@@ -26,6 +26,7 @@
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
   Fix: because of a typo in ev.c dump stuff didn't work in PHP<5.5.0
+  Change: removed "Returning previously created default loop" warning 
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -131,6 +132,7 @@
       <license uri="http://www.php.net/license">PHP</license>
       <notes><![CDATA[
   Fix: because of a typo in ev.c dump stuff didn't work in PHP<5.5.0
+  Change: removed "Returning previously created default loop" warning 
   ]]></notes>
     </release>
     <!--}}}-->

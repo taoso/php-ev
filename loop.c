@@ -45,8 +45,6 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 			if (!*default_loop_ptr_ptr) {
 				loop = ev_default_loop(flags);
 			} else {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING,
-						"Returning previously created default loop");
 				RETURN_ZVAL(*default_loop_ptr_ptr, /* copy */ 1, /* dtor*/ 0);
 			}
 		} else {
