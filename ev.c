@@ -258,11 +258,9 @@ void php_ev_write_property(zval *object, zval *member, zval *value, const zend_l
 	    ret = zend_hash_find((HashTable *) obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member)+1, (void **) &hnd);
 	}
 	if (ret == SUCCESS) {
+	    Z_ADDREF_P(value);
 	    hnd->write_func(obj, value TSRMLS_CC);
-	    if (! PZVAL_IS_REF(value) && Z_REFCOUNT_P(value) == 0) {
-	        Z_ADDREF_P(value);
-	        zval_ptr_dtor(&value);
-	    }
+	    zval_ptr_dtor(&value);
 	} else {
 	    zend_object_handlers * std_hnd = zend_get_std_object_handlers();
 	    std_hnd->write_property(object, member, value, key TSRMLS_CC);

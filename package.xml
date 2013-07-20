@@ -16,7 +16,7 @@
   <date>2013-07-20</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.7</release>
+    <release>0.2.8</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,8 +25,8 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-  Fix: because of a typo in ev.c dump stuff didn't work in PHP<5.5.0
-  Change: removed "Returning previously created default loop" warning 
+  Fix: segmentation fault in EvLoop/EvWatcher dtors caused by reference variables stored in 'data' property
+  Fix: EvLoop/EvWatcher object dtors sometimes didn't free the 'data' member until the script shutdown phase
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -75,6 +75,7 @@
         <file role="src" name="08_priority.phpt"/>
         <file role="src" name="09_loop_timer.phpt"/>
         <file role="src" name="10_signal.phpt"/>
+        <file role="src" name="11_watcher_data.phpt"/>
         <file role="src" name="bug64788.phpt"/>
       </dir>
       <dir name="libev">
@@ -118,6 +119,23 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 0.2.8 -->
+    <release>
+      <version>
+        <release>0.2.8</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+  Fix: segmentation fault in EvLoop/EvWatcher dtors caused by reference variables stored in 'data' property
+  Fix: EvLoop/EvWatcher object dtors sometimes didn't free the 'data' member until the script shutdown phase
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.7 -->
     <release>
       <version>

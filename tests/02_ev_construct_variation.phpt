@@ -3,6 +3,11 @@ Check for constructor and factory methods' behaviour
 --FILE--
 <?php
 
+class _A {
+	function __destruct() { echo __METHOD__, PHP_EOL; }
+}
+$obj = new _A();
+
 $prev_data = "prev_data";
 $third_data = "new_data";
 
@@ -22,6 +27,9 @@ var_dump($loop->data);
 $loop->data = $third_data;
 var_dump($loop->data);
 
+$loop->data = &$obj;
+var_dump($loop->data);
+
 // Multiple attempts to create the default loop
 $loop2 = EvLoop::defaultLoop();
 $loop2 = EvLoop::defaultLoop();
@@ -34,11 +42,14 @@ $loop = EvLoop::defaultLoop();
 $loop = new EvLoop(Ev::FLAG_AUTO);
 // Should be NULL
 var_dump($loop->data);
+$obj = NULL;
 ?>
---CLEAN--
 --EXPECTF--
 string(9) "prev_data"
 string(8) "new data"
 string(12) "new new data"
 string(8) "new_data"
+object(_A)#1 (0) {
+}
 NULL
+_A::__destruct
