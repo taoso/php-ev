@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2013-07-19</date>
+  <date>2013-07-20</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.6</release>
+    <release>0.2.7</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,9 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Merged in 5lava/pecl-ev (pull request #1) @ Bitbucket
-    Fix: made php 5.5.0-compatible
-    Upgraded libev to version 4.15
+  Fix: because of a typo in ev.c dump stuff didn't work in PHP<5.5.0
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -120,6 +118,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 0.2.7 -->
+    <release>
+      <version>
+        <release>0.2.7</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+  Fix: because of a typo in ev.c dump stuff didn't work in PHP<5.5.0
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.6 -->
     <release>
       <version>

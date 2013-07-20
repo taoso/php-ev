@@ -357,7 +357,7 @@ static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS
 #if PHP_VERSION_ID >= 50500
 static zval **php_ev_get_property_ptr_ptr(zval *object, zval *member, int type, const zend_literal *key TSRMLS_DC)
 #else
-static zval **get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC)
+static zval **php_ev_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC)
 #endif
 {
 	php_ev_object        *obj;
@@ -383,7 +383,7 @@ static zval **get_property_ptr_ptr(zval *object, zval *member, const zend_litera
 #if PHP_VERSION_ID >= 50500
 		retval = zend_get_std_object_handlers()->get_property_ptr_ptr(object, member, type, key TSRMLS_CC);
 #else
-		retval = zend_get_std_object_handlers()->get_property_ptr_ptr(object, member, ZEND_GET_PPTR_TYPE_CC key TSRMLS_CC);
+		retval = zend_get_std_object_handlers()->get_property_ptr_ptr(object, member, key TSRMLS_CC);
 #endif
 
 	} else if (hnd->get_ptr_ptr_func) {
