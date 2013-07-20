@@ -56,7 +56,6 @@
       <file role="src" name="php_ev.h"/>
       <file role="src" name="prepare.c"/>
       <file role="src" name="priv.h"/>
-      <file role="src" name="reconf.sh"/>
       <file role="src" name="signal.c"/>
       <file role="src" name="stat.c"/>
       <file role="src" name="timer.c"/>
