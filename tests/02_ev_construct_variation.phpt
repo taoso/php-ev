@@ -41,10 +41,4 @@ string(9) "prev_data"
 string(8) "new data"
 string(12) "new new data"
 string(8) "new_data"
-
-Warning: EvLoop::defaultLoop(): Returning previously created default loop in %s on line %d
-
-Warning: EvLoop::defaultLoop(): Returning previously created default loop in %s on line %d
-
-Warning: EvLoop::defaultLoop(): Returning previously created default loop in %s on line %d
 NULL
