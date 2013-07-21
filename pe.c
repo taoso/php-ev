@@ -20,7 +20,7 @@
 #include "watcher.h"
 #include <fcntl.h>
 
-static inline void php_ev_prop_write_zval(zval **ppz, const zval *value)
+static inline void php_ev_prop_write_zval(zval **ppz, zval *value)
 {
 	if (!*ppz) {
 		MAKE_STD_ZVAL(*ppz);
@@ -32,7 +32,7 @@ static inline void php_ev_prop_write_zval(zval **ppz, const zval *value)
 	REPLACE_ZVAL_VALUE(ppz, value, PZVAL_IS_REF((zval *)value));
 }
 
-static inline void php_ev_prop_read_zval(const zval *pz, zval **retval)
+static inline void php_ev_prop_read_zval(zval *pz, zval **retval)
 {
 	if (!pz) {
 		ALLOC_INIT_ZVAL(*retval);
@@ -40,8 +40,10 @@ static inline void php_ev_prop_read_zval(const zval *pz, zval **retval)
 	}
 
     MAKE_STD_ZVAL(*retval);
-
+#if 0
     REPLACE_ZVAL_VALUE(retval, pz, PZVAL_IS_REF((zval *)pz));
+#endif
+	ZVAL_ZVAL(*retval, pz, 1, 0);
 }
 
 

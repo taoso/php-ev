@@ -258,9 +258,7 @@ void php_ev_write_property(zval *object, zval *member, zval *value, const zend_l
 	    ret = zend_hash_find((HashTable *) obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member)+1, (void **) &hnd);
 	}
 	if (ret == SUCCESS) {
-	    Z_ADDREF_P(value);
 	    hnd->write_func(obj, value TSRMLS_CC);
-	    zval_ptr_dtor(&value);
 	} else {
 	    zend_object_handlers * std_hnd = zend_get_std_object_handlers();
 	    std_hnd->write_property(object, member, value, key TSRMLS_CC);
@@ -350,6 +348,46 @@ static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS
 }               
 #endif    
 /* }}} */
+
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4
+/* {{{ get_properties
+   Returns all object properties. */
+static HashTable *get_properties(zval *object TSRMLS_DC)
+{
+	php_ev_object       *obj;
+	php_ev_prop_handler *hnd;
+	HashTable           *props;
+	zval                *val;
+	char                *key;
+	uint                 key_len;
+	HashPosition         pos;
+	ulong                num_key;
+
+	obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
+	props = zend_std_get_properties(object TSRMLS_CC);
+
+	if (obj->prop_handler) {
+		zend_hash_internal_pointer_reset_ex(obj->prop_handler, &pos);
+
+		while (zend_hash_get_current_data_ex(obj->prop_handler,
+					(void **) &hnd, &pos) == SUCCESS) {
+			zend_hash_get_current_key_ex(obj->prop_handler,
+					&key, &key_len, &num_key, 0, &pos);
+			if (!hnd->read_func || hnd->read_func(obj, &val TSRMLS_CC) != SUCCESS) {
+				val = EG(uninitialized_zval_ptr);
+				Z_ADDREF_P(val);
+			}
+			zend_hash_update(props, key, key_len, (void *) &val, sizeof(zval *), NULL);
+			zend_hash_move_forward_ex(obj->prop_handler, &pos);
+		}
+	}
+
+	return obj->zo.properties;
+}
+/* }}} */
+#endif
+
+
 
 /* {{{ php_ev_get_property_ptr_ptr */
 #if PHP_VERSION_ID >= 50500
@@ -509,6 +547,7 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 	data = php_ev_watcher_data(ptr);
 	if (data) {
 		zval_ptr_dtor(&data);
+		php_ev_watcher_data(ptr) = NULL;
 	}
 
 	zval_ptr_dtor(&php_ev_watcher_self(ptr));
@@ -1004,6 +1043,9 @@ PHP_MINIT_FUNCTION(ev)
 	ev_object_handlers.has_property         = php_ev_has_property;
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3
 	ev_object_handlers.get_debug_info       = php_ev_object_get_debug_info;
+#endif
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4
+	ev_object_handlers.get_properties       = get_properties;
 #endif
 
 	zend_hash_init(&classes, 0, NULL, NULL, 1);
