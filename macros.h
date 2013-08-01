@@ -133,15 +133,17 @@
         pfcc_dst = NULL;                                                                        \
     }                                                                                           \
 
-#define PHP_EV_FREE_FCALL_INFO(pfci, pfcc)       \
-    if (pfci && pfcc) {                          \
-        efree(pfcc);                             \
-                                                 \
-        if (ZEND_FCI_INITIALIZED(*pfci)) {       \
-            PHP_EV_FCI_DELREF(pfci);             \
-        }                                        \
-        efree(pfci);                             \
-    }                                            \
+#define PHP_EV_FREE_FCALL_INFO(pfci, pfcc)        \
+    if (pfci && pfcc) {                           \
+        efree(pfcc);                              \
+        pfcc = NULL;                              \
+                                                  \
+        if (ZEND_FCI_INITIALIZED(*pfci)) {        \
+            PHP_EV_FCI_DELREF(pfci);              \
+        }                                         \
+        efree(pfci);                              \
+        pfci = NULL;                              \
+    }
 
 #define PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj) (obj ? (php_ev_loop *) obj->ptr : NULL)
 #define PHP_EV_WATCHER_FETCH_FROM_OBJECT(o)       ((ev_watcher *) o->ptr)

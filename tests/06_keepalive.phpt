@@ -2,7 +2,7 @@
 Check for EvWatcher::keepalive() functionality
 --FILE--
 <?php 
-error_reporting(0);
+//error_reporting(0);
 
 $timer = EvTimer::createStopped(1, 0.3, function ($w, $r) {
 	echo "ok 7\n";

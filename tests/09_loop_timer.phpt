@@ -13,10 +13,13 @@ $id = 1;
 $base = $l->now();
 $prev = $l->now();
 
+$timer = array();
+$periodic = array();
+
 for ($i = 1; $i <= /*125*/25; ++$i) {
 	$t = $i * $i * 1.735435336;
 	$t -= (int) $t;
-	$timer = $l->timer($t, 0, function ($w, $r)
+	$timer[] = $l->timer($t, 0, function ($w, $r)
 		use (&$id, &$prev, $base, $i, $t, $fudge) {
 			$now = $w->getLoop()->now();
 
@@ -37,7 +40,7 @@ for ($i = 1; $i <= /*125*/25; ++$i) {
 
 	$t = $i * $i * 1.375475771;
 	$t -= (int) $t;
-	$periodic = $l->periodic($base + $t, 0, NULL, function ($w, $r)
+	$periodic[] = $l->periodic($base + $t, 0, NULL, function ($w, $r)
 		use (&$id, &$prev, $base, $i, $t, $fudge) {
 			$now = $w->getLoop()->now();
 
@@ -61,6 +64,8 @@ print "ok 1\n";
 $l->run();
 print "ok 152\n";
 
+$timer = null;
+$periodic = null;
 ?>
 --EXPECTF--
 ok 1

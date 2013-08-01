@@ -25,7 +25,6 @@ extern zend_class_entry *ev_loop_class_entry_ptr;
 void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 {
 	zval            **args[2];
-	zval             *key1;
 	zval             *key2;
 	zval             *retval_ptr;
 	zval             *self       = php_ev_watcher_self(watcher);
@@ -34,8 +33,8 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 	TSRMLS_FETCH_FROM_CTX(php_ev_watcher_thread_ctx(watcher));
 
 	/* libev might have stopped watcher */
-	if (php_ev_watcher_flags(watcher) & PHP_EV_WATCHER_FLAG_UNREFED
-			&& !ev_is_active(watcher)) {
+	if (UNEXPECTED(php_ev_watcher_flags(watcher) & PHP_EV_WATCHER_FLAG_UNREFED
+			&& !ev_is_active(watcher))) {
 		PHP_EV_WATCHER_REF(watcher);
 	}
 
@@ -47,9 +46,8 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 		PHP_EV_EXIT_LOOP(EV_A);
 	} else if (ZEND_FCI_INITIALIZED(*pfci)) {
 		/* Setup callback args */
-		key1 = self;
-		args[0] = &key1;
-		zval_add_ref(&key1);
+		args[0] = &self;
+		Z_ADDREF_P(self);
 
 		MAKE_STD_ZVAL(key2);
 		args[1] = &key2;
@@ -69,7 +67,7 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 		            "An error occurred while invoking the callback");
 		}
 
-		zval_ptr_dtor(&key1);
+		zval_ptr_dtor(&self);
 		zval_ptr_dtor(&key2);
 	}
 }
@@ -92,15 +90,18 @@ void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *o_l
 
 	ev_init((ev_watcher *) w, (ZEND_FCI_INITIALIZED(*pfci) ? php_ev_watcher_callback : 0));
 
-	Z_ADDREF_P(self);
 	if (data) {
 		Z_ADDREF_P(data);
 	}
 
+#if 0
+	Z_ADDREF_P(self);
+#endif
+
 	php_ev_watcher_self(w)  = self;
 	php_ev_watcher_data(w)  = data;
 	php_ev_watcher_loop(w)  = o_loop;
-	php_ev_watcher_flags(w) = PHP_EV_WATCHER_FLAG_KEEP_ALIVE;
+	php_ev_watcher_flags(w) = PHP_EV_WATCHER_FLAG_KEEP_ALIVE | PHP_EV_WATCHER_FLAG_SELF_UNREFED;
 
 	PHP_EV_COPY_FCALL_INFO(php_ev_watcher_fci(w), php_ev_watcher_fcc(w), pfci, pfcc);
 

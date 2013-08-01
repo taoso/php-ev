@@ -31,22 +31,45 @@
 
 #define php_ev_watcher_loop_ptr(w)   (php_ev_watcher_loop(w)->loop)
 
-#define PHP_EV_WATCHER_FLAG_KEEP_ALIVE 1
-#define PHP_EV_WATCHER_FLAG_UNREFED    2
+#define PHP_EV_WATCHER_FLAG_KEEP_ALIVE   (1<<0)
+#define PHP_EV_WATCHER_FLAG_UNREFED      (1<<1)
+#define PHP_EV_WATCHER_FLAG_SELF_UNREFED (1<<2)
 
-#define PHP_EV_WATCHER_UNREF(w)                                                            \
-    if (!(php_ev_watcher_flags(w) &                                                        \
-                (PHP_EV_WATCHER_FLAG_KEEP_ALIVE | PHP_EV_WATCHER_FLAG_UNREFED))            \
-            && ev_is_active(w)) {                                                          \
-        ev_unref(php_ev_watcher_loop(w)->loop);                                            \
-        php_ev_watcher_flags(w) |= PHP_EV_WATCHER_FLAG_UNREFED;                            \
-    }
+#define PHP_EV_WATCHER_SELF_UNREF(w)                                             \
+	do {                                                                         \
+		if (php_ev_watcher_self(w)   \
+				&& !(php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_SELF_UNREFED)) { \
+			zval_ptr_dtor(&php_ev_watcher_self(w));                              \
+        	php_ev_watcher_flags(w) |= PHP_EV_WATCHER_FLAG_SELF_UNREFED;         \
+		}                                                                        \
+	} while (0)
 
-#define PHP_EV_WATCHER_REF(w)                                                              \
-    if (php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_UNREFED) {                           \
-        php_ev_watcher_flags(w) &= ~PHP_EV_WATCHER_FLAG_UNREFED;                           \
-        ev_ref(php_ev_watcher_loop(w)->loop);                                              \
-    }
+#define PHP_EV_WATCHER_SELF_REF(w)                                        \
+    	if (php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_SELF_UNREFED) { \
+        	Z_ADDREF_P(php_ev_watcher_self(w));                           \
+        	php_ev_watcher_flags(w) &= ~PHP_EV_WATCHER_FLAG_SELF_UNREFED; \
+        }                                                                 \
+
+#define PHP_EV_WATCHER_UNREF(w)                                                     \
+	do {                                                                            \
+    	if (!(php_ev_watcher_flags(w) &                                             \
+                	(PHP_EV_WATCHER_FLAG_KEEP_ALIVE | PHP_EV_WATCHER_FLAG_UNREFED)) \
+            	&& ev_is_active(w)) {                                               \
+        	ev_unref(php_ev_watcher_loop(w)->loop);                                 \
+        	php_ev_watcher_flags(w) |= PHP_EV_WATCHER_FLAG_UNREFED;                 \
+    	}                                                                           \
+		PHP_EV_WATCHER_SELF_REF(w);                                               \
+	} while (0)
+
+#define PHP_EV_WATCHER_REF(w)                                             \
+	do {                                                                  \
+    	if (php_ev_watcher_flags(w) & PHP_EV_WATCHER_FLAG_UNREFED) {      \
+        	php_ev_watcher_flags(w) &= ~PHP_EV_WATCHER_FLAG_UNREFED;      \
+        	ev_ref(php_ev_watcher_loop(w)->loop);                         \
+    	}                                                                 \
+		PHP_EV_WATCHER_SELF_UNREF(w);                                       \
+    } while (0)
+
 
 #define PHP_EV_WATCHER_STOP(t, w)                                                          \
     do {                                                                                   \
