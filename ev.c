@@ -495,7 +495,7 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
  * This is a helper for derived watcher class objects. */
 static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 {
-	zval        *data;
+	zval        *data, *self;
 	ev_watcher  *w_next  , *w_prev;
 	php_ev_loop *o_loop;
 
@@ -531,8 +531,9 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 		php_ev_watcher_data(ptr) = NULL;
 	}
 
-	if (php_ev_watcher_self(ptr)) {
-		zval_ptr_dtor(&php_ev_watcher_self(ptr));
+	self = php_ev_watcher_self(ptr);
+	if (self && Z_REFCOUNT_P(self) > 1) {
+		zval_ptr_dtor(&self);
 		php_ev_watcher_self(ptr) = NULL;
 	}
 }
