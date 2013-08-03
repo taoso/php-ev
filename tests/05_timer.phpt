@@ -2,7 +2,7 @@
 Check for EvTimer functionality
 --FILE--
 <?php 
-error_reporting(0);
+//error_reporting(0);
 
 $fudge = 0.02;
 $id = 1;
@@ -10,11 +10,14 @@ $id = 1;
 $base = Ev::now();
 $prev = Ev::now();
 
+$timer = array();
+$periodic = array();
+
 for ($i = 1; $i <= 5; ++$i) {
 	$t = $i * $i * 1.735435336;
 	$t -= (int) $t;
 
-	$timer = new EvTimer($t, 0, function ($w, $r)
+	$tmp_timer = new EvTimer($t, 0, function ($w, $r)
 		use (&$id, &$prev, $base, $i, $t, $fudge) {
 			$now = Ev::now();
 
@@ -34,12 +37,13 @@ for ($i = 1; $i <= 5; ++$i) {
 
 			$prev = $now;
 		});
-	$timer->start();
+	$tmp_timer->start();
+	$timer[] = $tmp_timer;
 
 	$t = $i * $i * 1.375475771;
 	$t -= (int) $t;
 
-	$periodic = new EvPeriodic($base + $t, 0, NULL, function ($w, $r)
+	$tmp_periodic = new EvPeriodic($base + $t, 0, NULL, function ($w, $r)
 		use (&$id, &$prev, $base, $i, $t) {
 			$now = Ev::now();
 
@@ -58,12 +62,16 @@ for ($i = 1; $i <= 5; ++$i) {
 
 			$prev = $now;
 		});
-	$periodic->start();
+	$tmp_periodic->start();
+	$periodic[] = $tmp_periodic;
 }
 
 echo "ok 1\n";
 Ev::run();
 echo "ok 32\n";
+
+$timer = null;
+$periodic = null;
 ?>
 --EXPECTF--
 ok 1

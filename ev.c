@@ -237,7 +237,7 @@ static zval *php_ev_read_property(zval *object, zval *member, int type, const ze
 /* }}} */
 
 /* {{{ php_ev_write_property */
-void php_ev_write_property(zval *object, zval *member, zval *value, const zend_literal *key TSRMLS_DC)
+static void php_ev_write_property(zval *object, zval *member, zval *value, const zend_literal *key TSRMLS_DC)
 {
 	zval                 tmp_member;
 	php_ev_object       *obj;
@@ -273,42 +273,42 @@ void php_ev_write_property(zval *object, zval *member, zval *value, const zend_l
 /* {{{ php_ev_has_property */
 static int php_ev_has_property(zval *object, zval *member, int has_set_exists, const zend_literal *key TSRMLS_DC)
 {
-	php_ev_object   *obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
-	int              ret = 0;
+	php_ev_object	*obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
+	int				 ret = 0;
 	php_ev_prop_handler  p;
 
 	if (zend_hash_find(obj->prop_handler, Z_STRVAL_P(member), Z_STRLEN_P(member) + 1, (void **) &p) == SUCCESS) {
-	    switch (has_set_exists) {
-	        case 2:
-	            ret = 1;
-	            break;
-	        case 1: {
-	                	zval *value = php_ev_read_property(object, member, BP_VAR_IS, key TSRMLS_CC);
-	                	if (value != EG(uninitialized_zval_ptr)) {
-	                	    convert_to_boolean(value);
-	                	    ret = Z_BVAL_P(value)? 1:0;
-	                	    /* refcount is 0 */
-	                	    Z_ADDREF_P(value);
-	                	    zval_ptr_dtor(&value);
-	                	}
-	                	break;
-	                }
-	        case 0:{
-	                   zval *value = php_ev_read_property(object, member, BP_VAR_IS, key TSRMLS_CC);
-	                   if (value != EG(uninitialized_zval_ptr)) {
-	                	   ret = Z_TYPE_P(value) != IS_NULL? 1:0;
-	                	   /* refcount is 0 */
-	                	   Z_ADDREF_P(value);
-	                	   zval_ptr_dtor(&value);
-	                   }
-	                   break;
-	               }
-	        default:
-	               php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid value for has_set_exists");
-	    }
+		switch (has_set_exists) {
+			case 2:
+				ret = 1;
+				break;
+			case 1: {
+						zval *value = php_ev_read_property(object, member, BP_VAR_IS, key TSRMLS_CC);
+						if (value != EG(uninitialized_zval_ptr)) {
+							convert_to_boolean(value);
+							ret = Z_BVAL_P(value)? 1:0;
+							/* refcount is 0 */
+							Z_ADDREF_P(value);
+							zval_ptr_dtor(&value);
+						}
+						break;
+					}
+			case 0:{
+					   zval *value = php_ev_read_property(object, member, BP_VAR_IS, key TSRMLS_CC);
+					   if (value != EG(uninitialized_zval_ptr)) {
+						   ret = Z_TYPE_P(value) != IS_NULL? 1:0;
+						   /* refcount is 0 */
+						   Z_ADDREF_P(value);
+						   zval_ptr_dtor(&value);
+					   }
+					   break;
+				   }
+			default:
+				   php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid value for has_set_exists");
+		}
 	} else {
-	    zend_object_handlers *std_hnd = zend_get_std_object_handlers();
-	    ret = std_hnd->has_property(object, member, has_set_exists, key TSRMLS_CC);
+		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+		ret = std_hnd->has_property(object, member, has_set_exists, key TSRMLS_CC);
 	}
 	return ret;
 } /* }}} */
@@ -444,6 +444,7 @@ static void php_ev_object_free_storage(void *obj_ TSRMLS_DC)
 
 	if (obj->ptr) {
 		efree(obj->ptr);
+		obj->ptr = NULL;
 	}
 
 	efree(obj);
@@ -455,7 +456,7 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
 {
 	php_ev_object *obj = (php_ev_object *) obj_;
 
-	PHP_EV_ASSERT(obj->ptr);
+	if (UNEXPECTED(!obj->ptr)) return;
 	php_ev_loop *ptr = (php_ev_loop *) obj->ptr;
 
 	if (ptr->loop) {
@@ -495,7 +496,7 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
  * This is a helper for derived watcher class objects. */
 static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 {
-	zval        *data;
+	zval        *data, *self;
 	ev_watcher  *w_next  , *w_prev;
 	php_ev_loop *o_loop;
 
@@ -521,25 +522,6 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 		o_loop->w = NULL;
 	}
 
-#if 0
-	if (o_loop) {
-		ev_watcher *pw = o_loop->w;
-
-		if (pw == ptr) { /* head of the list */
-			o_loop->w = w_next;
-		} else {
-			while (pw) {
-				if (php_ev_watcher_next(pw) == ptr) {
-					/* pw is the next watcher after ptr */
-					php_ev_watcher_next(pw) = w_next;
-					break;
-				}
-				pw = php_ev_watcher_next(pw);
-			}
-		}
-	}
-#endif
-
 	php_ev_watcher_next(ptr) = php_ev_watcher_prev(ptr) = NULL;
 
 	PHP_EV_FREE_FCALL_INFO(php_ev_watcher_fci(ptr), php_ev_watcher_fcc(ptr));
@@ -550,7 +532,9 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 		php_ev_watcher_data(ptr) = NULL;
 	}
 
-	zval_ptr_dtor(&php_ev_watcher_self(ptr));
+	if (php_ev_watcher_self(ptr) && Z_REFCOUNT_P(php_ev_watcher_self(ptr)) > 1) {
+		Z_DELREF_P(php_ev_watcher_self(ptr));
+	}
 }
 /* }}} */
 
@@ -559,7 +543,7 @@ static void php_ev_io_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_io *ptr = (ev_io *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -575,7 +559,7 @@ static void php_ev_timer_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_timer *ptr = (ev_timer *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -592,7 +576,7 @@ static void php_ev_periodic_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_periodic *ptr              = (ev_periodic *) obj_ptr->ptr;
 	php_ev_periodic *periodic_ptr = (php_ev_periodic *) obj_ptr->ptr;
 
@@ -613,7 +597,7 @@ static void php_ev_signal_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_signal *ptr = (ev_signal *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -631,7 +615,7 @@ static void php_ev_child_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_child *ptr = (ev_child *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -649,7 +633,7 @@ static void php_ev_stat_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_stat *ptr          = (ev_stat *) obj_ptr->ptr;
 	php_ev_stat *stat_ptr = (php_ev_stat *) obj_ptr->ptr;
 
@@ -670,7 +654,7 @@ static void php_ev_idle_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_idle *ptr = (ev_idle *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -688,7 +672,7 @@ static void php_ev_check_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_check *ptr = (ev_check *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -706,7 +690,7 @@ static void php_ev_prepare_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_prepare *ptr = (ev_prepare *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -724,7 +708,7 @@ static void php_ev_embed_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 
 	ev_embed *ptr           = (ev_embed *) obj_ptr->ptr;
 	php_ev_embed *embed_ptr = (php_ev_embed *) obj_ptr->ptr;
@@ -748,7 +732,7 @@ static void php_ev_fork_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_fork *ptr = (ev_fork *) obj_ptr->ptr;
 
 	/* Free base class members */

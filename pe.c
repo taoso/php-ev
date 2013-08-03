@@ -20,16 +20,57 @@
 #include "watcher.h"
 #include <fcntl.h>
 
+#define PHP_EV_PROP_REQUIRE(x)  \
+	do {                        \
+		if (UNEXPECTED(!(x))) { \
+			return FAILURE;     \
+		}                       \
+	} while (0);
+
 static inline void php_ev_prop_write_zval(zval **ppz, zval *value)
 {
+#if 0
+	if (!*ppz) {
+		/* if we assign referenced variable, we should separate it */
+		Z_ADDREF_P(value);
+		if (PZVAL_IS_REF(value)) {
+			SEPARATE_ZVAL(&value);
+		}
+		*ppz = value;
+	} else if (PZVAL_IS_REF(*ppz)) {
+		zval garbage = **ppz; /* old value should be destroyed */
+
+		/* To check: can't *ppz be some system variable like error_zval here? */
+		Z_TYPE_PP(ppz) = Z_TYPE_P(value);
+		(*ppz)->value = value->value;
+		if (Z_REFCOUNT_P(value) > 0) {
+			zval_copy_ctor(*ppz);
+		}
+		zval_dtor(&garbage);
+	} else {
+		zval *garbage = *ppz;
+
+		/* if we assign referenced variable, we should separate it */
+		Z_ADDREF_P(value);
+		if (PZVAL_IS_REF(value)) {
+			SEPARATE_ZVAL(&value);
+		}
+		*ppz = value;
+		zval_ptr_dtor(&garbage);
+	}
+
+#else
+
 	if (!*ppz) {
 		MAKE_STD_ZVAL(*ppz);
 	}
 
-    /* Make a copy of the zval, avoid direct binding to the address
-     * of value, since it breaks refcount in php_ev_read_property()
-     * causing further leaks and memory access violations */
+	/* Make a copy of the zval, avoid direct binding to the address
+	 * of value, since it breaks refcount in read_property()
+	 * causing further leaks and memory access violations */
 	REPLACE_ZVAL_VALUE(ppz, value, PZVAL_IS_REF((zval *)value));
+
+#endif
 }
 
 static inline void php_ev_prop_read_zval(zval *pz, zval **retval)
@@ -39,10 +80,7 @@ static inline void php_ev_prop_read_zval(zval *pz, zval **retval)
 		return;
 	}
 
-    MAKE_STD_ZVAL(*retval);
-#if 0
-    REPLACE_ZVAL_VALUE(retval, pz, PZVAL_IS_REF((zval *)pz));
-#endif
+	MAKE_STD_ZVAL(*retval);
 	ZVAL_ZVAL(*retval, pz, 1, 0);
 }
 
@@ -52,7 +90,7 @@ static inline void php_ev_prop_read_zval(zval *pz, zval **retval)
 /* {{{ ev_loop_prop_data_get_ptr_ptr */
 static zval **ev_loop_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	if (!obj->ptr) return NULL;
 
 	if (!PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data) {
 		MAKE_STD_ZVAL(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data);
@@ -64,7 +102,7 @@ static zval **ev_loop_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
 /* {{{ ev_loop_prop_data_read  */
 static int ev_loop_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	zval *data = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data;
 
@@ -77,7 +115,7 @@ static int ev_loop_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 /* {{{ ev_loop_prop_data_write  */
 static int ev_loop_prop_data_write(php_ev_object *obj, zval *value TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	php_ev_prop_write_zval(&(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj))->data, value);
 
@@ -88,7 +126,7 @@ static int ev_loop_prop_data_write(php_ev_object *obj, zval *value TSRMLS_DC)
 /* {{{ ev_loop_prop_backend_read */
 static int ev_loop_prop_backend_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 	
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_LONG(*retval, ev_backend(PHP_EV_LOOP_FETCH_FROM_OBJECT(obj)));
@@ -100,7 +138,7 @@ static int ev_loop_prop_backend_read(php_ev_object *obj, zval **retval TSRMLS_DC
 /* {{{ ev_loop_prop_is_default_loop_read */
 static int ev_loop_prop_is_default_loop_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 	
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_BOOL(*retval, ev_is_default_loop(PHP_EV_LOOP_FETCH_FROM_OBJECT(obj)));
@@ -112,7 +150,7 @@ static int ev_loop_prop_is_default_loop_read(php_ev_object *obj, zval **retval T
 /* {{{ ev_loop_prop_iteration_loop_read */
 static int ev_loop_prop_iteration_loop_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 	
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_LONG(*retval, ev_iteration(PHP_EV_LOOP_FETCH_FROM_OBJECT(obj)));
@@ -124,7 +162,7 @@ static int ev_loop_prop_iteration_loop_read(php_ev_object *obj, zval **retval TS
 /* {{{ ev_loop_prop_pending_loop_read */
 static int ev_loop_prop_pending_loop_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 	
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_LONG(*retval, ev_pending_count(PHP_EV_LOOP_FETCH_FROM_OBJECT(obj)));
@@ -136,7 +174,7 @@ static int ev_loop_prop_pending_loop_read(php_ev_object *obj, zval **retval TSRM
 /* {{{ ev_loop_prop_io_interval_read */
 static int ev_loop_prop_io_interval_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	php_ev_loop *loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
 
@@ -152,7 +190,7 @@ static int ev_loop_prop_io_interval_write(php_ev_object *obj, zval *value TSRMLS
 {
 	php_ev_loop *loop_obj;
 
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
 
@@ -165,7 +203,7 @@ static int ev_loop_prop_io_interval_write(php_ev_object *obj, zval *value TSRMLS
 /* {{{ ev_loop_prop_timeout_interval_read */
 static int ev_loop_prop_timeout_interval_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	php_ev_loop *loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
 
@@ -181,7 +219,7 @@ static int ev_loop_prop_timeout_interval_write(php_ev_object *obj, zval *value T
 {
 	php_ev_loop *loop_obj;
 
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	loop_obj = PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj);
 
@@ -194,7 +232,7 @@ static int ev_loop_prop_timeout_interval_write(php_ev_object *obj, zval *value T
 /* {{{ ev_loop_prop_depth_read */
 static int ev_loop_prop_depth_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_LONG(*retval, ev_depth(PHP_EV_LOOP_FETCH_FROM_OBJECT(obj)));
@@ -211,7 +249,7 @@ static int ev_loop_prop_depth_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 /* {{{ ev_watcher_prop_is_active_read */
 static int ev_watcher_prop_is_active_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 	
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_BOOL(*retval, ev_is_active(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)));
@@ -223,7 +261,7 @@ static int ev_watcher_prop_is_active_read(php_ev_object *obj, zval **retval TSRM
 /* {{{ ev_watcher_prop_data_get_ptr_ptr */
 static zval **ev_watcher_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	if (!obj->ptr) return NULL;
 
 	zval *data = PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data;
 	if (!data) {
@@ -237,7 +275,7 @@ static zval **ev_watcher_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
 /* {{{ ev_watcher_prop_data_read  */
 static int ev_watcher_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	zval *data = PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data;
 
@@ -250,9 +288,10 @@ static int ev_watcher_prop_data_read(php_ev_object *obj, zval **retval TSRMLS_DC
 /* {{{ ev_watcher_prop_data_write */
 static int ev_watcher_prop_data_write(php_ev_object *obj, zval *value TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
-	php_ev_prop_write_zval(&(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj))->data, value);
+	zval **data = &(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj))->data;
+	php_ev_prop_write_zval(data, value);
 
 	return SUCCESS;
 }
@@ -261,7 +300,7 @@ static int ev_watcher_prop_data_write(php_ev_object *obj, zval *value TSRMLS_DC)
 /* {{{ ev_watcher_prop_is_pending_read */
 static int ev_watcher_prop_is_pending_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 	
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_BOOL(*retval, ev_is_pending(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)));
@@ -273,7 +312,7 @@ static int ev_watcher_prop_is_pending_read(php_ev_object *obj, zval **retval TSR
 /* {{{ ev_watcher_prop_priority_read */
 static int ev_watcher_prop_priority_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 	
 	MAKE_STD_ZVAL(*retval);
 	ZVAL_LONG(*retval, ev_priority(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)));
@@ -285,7 +324,7 @@ static int ev_watcher_prop_priority_read(php_ev_object *obj, zval **retval TSRML
 /* {{{ ev_watcher_prop_priority_write */
 static int ev_watcher_prop_priority_write(php_ev_object *obj, zval *value TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	long priority;
 	ev_watcher *watcher = PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
@@ -370,7 +409,7 @@ static int ev_io_prop_events_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 /* {{{ ev_timer_prop_repeat_read */
 static int ev_timer_prop_repeat_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_timer *timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -389,7 +428,7 @@ static int ev_timer_prop_repeat_write(php_ev_object *obj, zval *value TSRMLS_DC)
 
 	timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	repeat = Z_DVAL_P(value);
 
@@ -404,7 +443,7 @@ static int ev_timer_prop_repeat_write(php_ev_object *obj, zval *value TSRMLS_DC)
 /* {{{ ev_timer_prop_remaining_read */
 static int ev_timer_prop_remaining_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_timer *timer_watcher = (ev_timer *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -424,7 +463,7 @@ static int ev_timer_prop_remaining_read(php_ev_object *obj, zval **retval TSRMLS
 /* {{{ ev_periodic_prop_offset_read */
 static int ev_periodic_prop_offset_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -438,7 +477,7 @@ static int ev_periodic_prop_offset_read(php_ev_object *obj, zval **retval TSRMLS
 /* {{{ ev_periodic_prop_offset_write */
 static int ev_periodic_prop_offset_write(php_ev_object *obj, zval *value TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -451,7 +490,7 @@ static int ev_periodic_prop_offset_write(php_ev_object *obj, zval *value TSRMLS_
 /* {{{ ev_periodic_prop_interval_read */
 static int ev_periodic_prop_interval_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -467,7 +506,7 @@ static int ev_periodic_prop_interval_write(php_ev_object *obj, zval *value TSRML
 {
 	double interval;
 
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_periodic *w = (ev_periodic *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 	interval       = (ev_tstamp) Z_DVAL_P(value);
@@ -489,7 +528,7 @@ static int ev_periodic_prop_interval_write(php_ev_object *obj, zval *value TSRML
 /* {{{ ev_signal_prop_signum_read */
 static int ev_signal_prop_signum_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_signal *signal_watcher = (ev_signal *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -509,7 +548,7 @@ static int ev_signal_prop_signum_read(php_ev_object *obj, zval **retval TSRMLS_D
 /* {{{ ev_child_prop_pid_read */
 static int ev_child_prop_pid_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_child *child_watcher = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -523,7 +562,7 @@ static int ev_child_prop_pid_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 /* {{{ ev_child_prop_rpid_read */
 static int ev_child_prop_rpid_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_child *child_watcher = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -537,7 +576,7 @@ static int ev_child_prop_rpid_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 /* {{{ ev_child_prop_rstatus_read */
 static int ev_child_prop_rstatus_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_child *child_watcher = (ev_child *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -557,7 +596,7 @@ static int ev_child_prop_rstatus_read(php_ev_object *obj, zval **retval TSRMLS_D
 /* {{{ ev_stat_prop_path_read */
 static int ev_stat_prop_path_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	php_ev_stat *stat_ptr = (php_ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -571,7 +610,7 @@ static int ev_stat_prop_path_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 /* {{{ ev_stat_prop_interval_read */
 static int ev_stat_prop_interval_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	ev_stat *stat_watcher = (ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
@@ -591,7 +630,7 @@ static int ev_stat_prop_interval_read(php_ev_object *obj, zval **retval TSRMLS_D
 /* {{{ ev_embed_prop_other_read */
 static int ev_embed_prop_other_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
-	PHP_EV_ASSERT(obj->ptr);
+	PHP_EV_PROP_REQUIRE(obj->ptr);
 
 	php_ev_embed *embed_ptr = (php_ev_embed *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 

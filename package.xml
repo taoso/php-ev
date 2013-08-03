@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2013-07-21</date>
+  <date>2013-08-03</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.8</release>
+    <release>0.2.9</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,9 +25,8 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-  Fix: segmentation fault in EvLoop/EvWatcher dtors caused by reference variables stored in 'data' property
-  Fix: EvLoop/EvWatcher object dtors sometimes didn't free the 'data' member until the script shutdown phase
-  Fix: get_properties property handler was not implemented for PHP >= 5.4.0
+  Fix: memory leaks in objects derived from EvWatcher 
+  Refact: some frequent checks optimized
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -77,6 +76,7 @@
         <file role="src" name="09_loop_timer.phpt"/>
         <file role="src" name="10_signal.phpt"/>
         <file role="src" name="11_watcher_data.phpt"/>
+        <file role="src" name="12_watcher_leak.phpt"/>
         <file role="src" name="bug64788.phpt"/>
       </dir>
       <dir name="libev">
@@ -120,6 +120,23 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 0.2.9 -->
+    <release>
+      <version>
+        <release>0.2.9</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+  Fix: memory leaks in objects derived from EvWatcher 
+  Refact: some frequent checks optimized
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.8 -->
     <release>
       <version>
