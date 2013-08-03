@@ -1,32 +1,39 @@
+--TEST--
+Check for EvWatcher object destructors(leaks)
+--FILE--
 <?php
+ini_set('memory_limit', '1M');
 
-error_reporting(E_ALL);
-ini_set('memory_limit', '5M');
+$limit = 100000;
 
-$i = 0;
-$startedAt = microtime(TRUE);
-$callback = function() use (&$i, $startedAt) {
-    if (!(++$i % 2500)) {
-        echo vsprintf("%d\t%d\t%d\t%.4f\t%d\n", $last = [
-            "job" => $i,
-            "mem" => memory_get_usage(),
-            "real" => memory_get_usage(true),
-            "runtime" => $runtime = (microtime(true) - $startedAt),
-            "jps" => ceil($i / $runtime)
-        ]);
-    }
+$callback = function() {
+	static $i = 0;
+	echo "cb ", ++$i, PHP_EOL;
 };
 
+// Create and destroy EvTimer objects in loop.
+// EvTimer's constructor starts the watcher automatically.
+// Thus, eventually only one timer should fire.
 $n = 0;
-while (++$n < 10000) {
-    //$timer = EvTimer::createStopped(-1, 0, $callback);
+while (++$n < $limit) {
     $timer = new EvTimer(-1, 0, $callback);
     //Ev::run(Ev::RUN_NOWAIT | Ev::RUN_ONCE);
-
 }
-// What is the expected behaviour?
-// timers are created and destructed continuosly in the loop.
-// So very few of them will be actually invoked(if any).
-// Isn't it?
 Ev::run();
-echo "n: $n\n";
+echo $n, PHP_EOL;
+
+// Create stopped timers and destroy them in loop.
+// No timer should fire even after Ev::run() call.
+// We're checking whether stopped watchers exhaust the memory.
+$n = 0;
+while (++$n < $limit) {
+    $timer = EvTimer::createStopped(-1, 0, $callback);
+    //Ev::run(Ev::RUN_NOWAIT | Ev::RUN_ONCE);
+}
+Ev::run();
+echo $n;
+?>
+--EXPECT--
+cb 1
+100000
+100000

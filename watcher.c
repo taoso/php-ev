@@ -38,13 +38,13 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 		PHP_EV_WATCHER_REF(watcher);
 	}
 
-	if (revents & EV_ERROR) {
+	if (UNEXPECTED(revents & EV_ERROR)) {
 		int errorno = errno;
 		php_error_docref(NULL TSRMLS_CC, E_WARNING,
 				"Got unspecified libev error in revents, errno = %d, err = %s", errorno, strerror(errorno));
 
 		PHP_EV_EXIT_LOOP(EV_A);
-	} else if (ZEND_FCI_INITIALIZED(*pfci)) {
+	} else if (EXPECTED(ZEND_FCI_INITIALIZED(*pfci))) {
 		/* Setup callback args */
 		args[0] = &self;
 		Z_ADDREF_P(self);
@@ -59,8 +59,8 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 		pfci->param_count    = 2;
 		pfci->no_separation  = 1;
 
-		if (zend_call_function(pfci, php_ev_watcher_fcc(watcher) TSRMLS_CC) == SUCCESS
-		        && retval_ptr) {
+		if (EXPECTED(zend_call_function(pfci, php_ev_watcher_fcc(watcher) TSRMLS_CC) == SUCCESS
+		        && retval_ptr)) {
 		    zval_ptr_dtor(&retval_ptr);
 		} else {
 		    php_error_docref(NULL TSRMLS_CC, E_WARNING,
@@ -101,7 +101,7 @@ void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *o_l
 	php_ev_watcher_self(w)  = self;
 	php_ev_watcher_data(w)  = data;
 	php_ev_watcher_loop(w)  = o_loop;
-	php_ev_watcher_flags(w) = PHP_EV_WATCHER_FLAG_KEEP_ALIVE | PHP_EV_WATCHER_FLAG_SELF_UNREFED;
+	php_ev_watcher_flags(w) = PHP_EV_WATCHER_FLAG_KEEP_ALIVE /*| PHP_EV_WATCHER_FLAG_SELF_UNREFED*/;
 
 	PHP_EV_COPY_FCALL_INFO(php_ev_watcher_fci(w), php_ev_watcher_fcc(w), pfci, pfcc);
 
@@ -116,8 +116,7 @@ void php_ev_set_watcher(ev_watcher *w, size_t size, zval *self, php_ev_loop *o_l
  */
 void *php_ev_new_watcher(size_t size, zval *self, php_ev_loop *o_loop, const zend_fcall_info *pfci, const zend_fcall_info_cache *pfcc, zval *data, int priority TSRMLS_DC)
 {
-	void *w = emalloc(size);
-	memset(w, 0, size);
+	void *w = ecalloc(1, size);
 
 	php_ev_set_watcher((ev_watcher *) w, size, self, o_loop, pfci, pfcc, data, priority TSRMLS_CC);
 

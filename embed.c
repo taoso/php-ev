@@ -43,7 +43,7 @@ void php_ev_embed_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_boo
 	o_loop_other   = (php_ev_object *) zend_object_store_get_object(loop_other TSRMLS_CC);
 	loop_other_ptr = PHP_EV_LOOP_FETCH_FROM_OBJECT(o_loop_other);
 
-	if (!(ev_backend(loop_other_ptr) & ev_embeddable_backends())) {
+	if (UNEXPECTED(!(ev_backend(loop_other_ptr) & ev_embeddable_backends()))) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING,
         		"Passed loop is not embeddable. Check out your backends.");
         return;

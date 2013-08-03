@@ -444,6 +444,7 @@ static void php_ev_object_free_storage(void *obj_ TSRMLS_DC)
 
 	if (obj->ptr) {
 		efree(obj->ptr);
+		obj->ptr = NULL;
 	}
 
 	efree(obj);
@@ -455,7 +456,7 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
 {
 	php_ev_object *obj = (php_ev_object *) obj_;
 
-	PHP_EV_ASSERT(obj->ptr);
+	if (UNEXPECTED(!obj->ptr)) return;
 	php_ev_loop *ptr = (php_ev_loop *) obj->ptr;
 
 	if (ptr->loop) {
@@ -531,9 +532,8 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 		php_ev_watcher_data(ptr) = NULL;
 	}
 
-	if (php_ev_watcher_self(ptr)) {
-		zval_ptr_dtor(&php_ev_watcher_self(ptr));
-		php_ev_watcher_self(ptr) = NULL;
+	if (php_ev_watcher_self(ptr) && Z_REFCOUNT_P(php_ev_watcher_self(ptr)) > 1) {
+		Z_DELREF_P(php_ev_watcher_self(ptr));
 	}
 }
 /* }}} */
@@ -543,7 +543,7 @@ static void php_ev_io_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_io *ptr = (ev_io *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -576,7 +576,7 @@ static void php_ev_periodic_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_periodic *ptr              = (ev_periodic *) obj_ptr->ptr;
 	php_ev_periodic *periodic_ptr = (php_ev_periodic *) obj_ptr->ptr;
 
@@ -597,7 +597,7 @@ static void php_ev_signal_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_signal *ptr = (ev_signal *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -615,7 +615,7 @@ static void php_ev_child_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_child *ptr = (ev_child *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -633,7 +633,7 @@ static void php_ev_stat_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_stat *ptr          = (ev_stat *) obj_ptr->ptr;
 	php_ev_stat *stat_ptr = (php_ev_stat *) obj_ptr->ptr;
 
@@ -654,7 +654,7 @@ static void php_ev_idle_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_idle *ptr = (ev_idle *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -672,7 +672,7 @@ static void php_ev_check_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_check *ptr = (ev_check *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -690,7 +690,7 @@ static void php_ev_prepare_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_prepare *ptr = (ev_prepare *) obj_ptr->ptr;
 
 	/* Free base class members */
@@ -708,7 +708,7 @@ static void php_ev_embed_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 
 	ev_embed *ptr           = (ev_embed *) obj_ptr->ptr;
 	php_ev_embed *embed_ptr = (php_ev_embed *) obj_ptr->ptr;
@@ -732,7 +732,7 @@ static void php_ev_fork_free_storage(void *object TSRMLS_DC)
 {
 	php_ev_object *obj_ptr = (php_ev_object *) object;
 
-	PHP_EV_ASSERT(obj_ptr->ptr);
+	if (UNEXPECTED(!obj_ptr->ptr)) return;
 	ev_fork *ptr = (ev_fork *) obj_ptr->ptr;
 
 	/* Free base class members */
