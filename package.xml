@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2013-08-05</date>
+  <date>2013-08-16</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.9</release>
+    <release>0.2.10</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,8 +25,9 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-  Fix: memory leaks in objects derived from EvWatcher 
-  Refact: some frequent checks optimized
+  Fix: segmentation fault after watcher restart(Frank Mayer)
+  Fix: missing get_gc property handler
+  Fix: operators applied to uninitialized EvWatcher::data property caused unexpected results
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -78,6 +79,8 @@
         <file role="src" name="11_watcher_data.phpt"/>
         <file role="src" name="12_watcher_leak.phpt"/>
         <file role="src" name="bug64788.phpt"/>
+        <file role="src" name="13_watcher_data.phpt"/>
+        <file role="src" name="14_get_gc.phpt"/>
       </dir>
       <dir name="libev">
         <file role="doc" name="LICENSE"/>
@@ -120,6 +123,24 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 0.2.10 -->
+    <release>
+      <version>
+        <release>0.2.10</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+  Fix: segmentation fault after watcher restart(Frank Mayer)
+  Fix: missing get_gc property handler
+  Fix: operators applied to uninitialized EvWatcher::data property caused unexpected results
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.9 -->
     <release>
       <version>

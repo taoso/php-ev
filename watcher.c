@@ -33,8 +33,8 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 	TSRMLS_FETCH_FROM_CTX(php_ev_watcher_thread_ctx(watcher));
 
 	/* libev might have stopped watcher */
-	if (UNEXPECTED(php_ev_watcher_flags(watcher) & PHP_EV_WATCHER_FLAG_UNREFED
-			&& !ev_is_active(watcher))) {
+	if (php_ev_watcher_flags(watcher) & PHP_EV_WATCHER_FLAG_UNREFED
+			&& !ev_is_active(watcher)) {
 		PHP_EV_WATCHER_REF(watcher);
 	}
 

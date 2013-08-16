@@ -69,7 +69,6 @@ static inline void php_ev_prop_write_zval(zval **ppz, zval *value)
 	 * of value, since it breaks refcount in read_property()
 	 * causing further leaks and memory access violations */
 	REPLACE_ZVAL_VALUE(ppz, value, PZVAL_IS_REF((zval *)value));
-
 #endif
 }
 
@@ -93,7 +92,7 @@ static zval **ev_loop_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
 	if (!obj->ptr) return NULL;
 
 	if (!PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data) {
-		MAKE_STD_ZVAL(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data);
+		ALLOC_INIT_ZVAL(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data);
 	}
 	return &(PHP_EV_LOOP_OBJECT_FETCH_FROM_OBJECT(obj)->data);
 }
@@ -261,11 +260,13 @@ static int ev_watcher_prop_is_active_read(php_ev_object *obj, zval **retval TSRM
 /* {{{ ev_watcher_prop_data_get_ptr_ptr */
 static zval **ev_watcher_prop_data_get_ptr_ptr(php_ev_object *obj TSRMLS_DC)
 {
-	if (!obj->ptr) return NULL;
+	if (!obj->ptr) {
+		return NULL;
+	}
 
 	zval *data = PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data;
 	if (!data) {
-		MAKE_STD_ZVAL(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data);
+		ALLOC_INIT_ZVAL(PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data);
 	}
 
 	return &PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj)->data;

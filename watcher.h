@@ -35,6 +35,7 @@
 #define PHP_EV_WATCHER_FLAG_UNREFED      (1<<1)
 #define PHP_EV_WATCHER_FLAG_SELF_UNREFED (1<<2)
 
+#if 0
 #define PHP_EV_WATCHER_SELF_UNREF(w)                                             \
 	do {                                                                         \
 		if (EXPECTED(php_ev_watcher_self(w) != NULL)                             \
@@ -53,6 +54,10 @@
         	php_ev_watcher_flags(w) &= ~PHP_EV_WATCHER_FLAG_SELF_UNREFED; \
     	}                                                                 \
 	} while (0)
+#endif
+#define PHP_EV_WATCHER_SELF_UNREF(w)
+#define PHP_EV_WATCHER_SELF_REF(w)
+
 
 #define PHP_EV_WATCHER_UNREF(w)                                                     \
 	do {                                                                            \

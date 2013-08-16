@@ -387,7 +387,14 @@ static HashTable *get_properties(zval *object TSRMLS_DC)
 /* }}} */
 #endif
 
-
+/* {{{ php_ev_get_gc */
+static HashTable *php_ev_get_gc(zval *object, zval ***table, int *n TSRMLS_DC)
+{
+	*table = NULL;
+	*n = 0;
+	return zend_std_get_properties(object TSRMLS_CC);
+}
+/* }}} */
 
 /* {{{ php_ev_get_property_ptr_ptr */
 #if PHP_VERSION_ID >= 50500
@@ -1031,6 +1038,7 @@ PHP_MINIT_FUNCTION(ev)
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4
 	ev_object_handlers.get_properties       = get_properties;
 #endif
+	ev_object_handlers.get_gc               = php_ev_get_gc;
 
 	zend_hash_init(&classes, 0, NULL, NULL, 1);
 	php_ev_register_classes(TSRMLS_C);
