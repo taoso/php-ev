@@ -21,20 +21,30 @@ PHP_ARG_ENABLE(ev-debug, for ev debug support,
 [  --enable-ev-debug       Enable ev debug support], no, no)
 
 if test "$PHP_EV" != "no"; then
-  export OLD_CPPFLAGS="$CPPFLAGS"
-  export CPPFLAGS="$CPPFLAGS $INCLUDES -DHAVE_EV"
-  AC_MSG_CHECKING(PHP version)
-  AC_TRY_COMPILE([#include <php_version.h>], [
-#if PHP_VERSION_ID < 50400
-#error  this extension requires at least PHP version 5.4.0
-#endif
-],
-[AC_MSG_RESULT(ok)],
-[AC_MSG_ERROR([need at least PHP 5.4.0])])
-  export CPPFLAGS="$OLD_CPPFLAGS"
+  AC_MSG_CHECKING(whether Ev supports the current PHP version)
+  tmp_php_version=$PHP_VERSION
+  if test -z "$tmp_php_version"; then
+    if test -z "$PHP_CONFIG"; then
+      AC_MSG_ERROR([php-config not found])
+    fi
+    PHP_EV_VERSION_ORIG=`$PHP_CONFIG --version`;
+  else
+    PHP_EV_VERSION_ORIG=$tmp_php_version
+  fi
+
+  if test -z $PHP_EV_VERSION_ORIG; then
+    AC_MSG_ERROR([failed to detect PHP version, please file a bug])
+  fi
+
+  PHP_EV_VERSION_MASK=`echo ${PHP_EV_VERSION_ORIG} | $AWK 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+  if test $PHP_EV_VERSION_MASK -lt 5004000; then
+    AC_MSG_ERROR([need at least PHP 5.4.0])
+  else
+    AC_MSG_RESULT([ok])
+  fi
 
   if test "$PHP_EV_DEBUG" != "no"; then
-    CFLAGS="$CFLAGS -Wall -g -ggdb -O0"
+    PHP_EV_CFLAGS="$PHP_EV_CFLAGS -Wall -g -ggdb -O0"
     AC_DEFINE(PHP_EV_DEBUG, 1, [Enable ev debug support])
   else
     AC_DEFINE(NDEBUG, 1, [With NDEBUG defined assert generates no code])
@@ -44,13 +54,25 @@ if test "$PHP_EV" != "no"; then
 
   AC_DEFINE(EV_H, "embed.h", [Wrapper for libev/ev.h])
   AC_DEFINE(HAVE_EV, 1, [ ])
-  m4_include([libev/libev.m4])
 
-  LDFLAGS="$LDFLAGS -lpthread"
+  if test "$ext_shared" != "yes" && test "$ext_shared" != "shared"; then
+    PHP_EV_CONFIG_H='\"main/php_config.h\"'
+    AC_DEFINE(EV_CONFIG_H, "main/php_config.h", [Overide config.h included in libev/ev.c])
+    PHP_EV_CFLAGS="$PHP_EV_CFLAGS -DEV_CONFIG_H="$PHP_EV_CONFIG_H
+    define('PHP_EV_STATIC', 1)
+  fi
+
+  m4_include(ifdef('PHP_EV_STATIC',PHP_EXT_BUILDDIR(ev)[/],)[libev/libev.m4])
+
+  LIBS="$LIBS -lpthread"
   PHP_ADD_LIBRARY(pthread)
 
+  PHP_EV_CFLAGS="-I@ext_srcdir@/libev $PHP_EV_CFLAGS"
+
   ev_src="libev/ev.c util.c ev.c watcher.c fe.c pe.c"
-  PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared,,$CFLAGS)
+  PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared,,$PHP_EV_CFLAGS)
+
+  PHP_ADD_MAKEFILE_FRAGMENT
 fi
 
 dnl vim: ft=m4.sh fdm=marker cms=dnl\ %s
