@@ -29,16 +29,17 @@ function test() {
 	$t1->stop();
 	$t2->stop();
 	$loop->stop();
+	echo ':';
 
-	$i1     = null;
-	$i2     = null;
-	$timer  = null;
-	$timer2 = null;
-	$loop   = null;
+	$i1   = null; unset($i1);
+	$i2   = null; unset($i2);
+	$t1   = null; unset($t1);
+	$t2   = null; unset($t2);
+	$loop = null; unset($loop);
 	echo "3";
 }
 
 test();
 ?>
 --EXPECT--
-0123
+0:123

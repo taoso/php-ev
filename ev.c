@@ -317,7 +317,7 @@ static int php_ev_has_property(zval *object, zval *member, int has_set_exists, c
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3
 static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS_DC)
 {
-	php_ev_object *obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC); 
+	php_ev_object *obj = (php_ev_object *) zend_objects_get_address(object TSRMLS_CC);
 	HashTable *retval, *props = obj->prop_handler;
 	HashPosition pos;
 	php_ev_prop_handler *entry;
@@ -337,16 +337,16 @@ static HashTable *php_ev_object_get_debug_info(zval *object, int *is_temp TSRMLS
 	    if (value != EG(uninitialized_zval_ptr)) {
 	        Z_ADDREF_P(value);
 	        zend_hash_add(retval, entry->name, entry->name_len + 1, &value, sizeof(zval *) , NULL);
-	    }       
+	    }
 
 	    zend_hash_move_forward_ex(props, &pos);
-	}               
+	}
 
-	*is_temp = 1;   
+	*is_temp = 1;
 
 	return retval;
-}               
-#endif    
+}
+#endif
 /* }}} */
 
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4
@@ -403,6 +403,7 @@ static zval **php_ev_get_property_ptr_ptr(zval *object, zval *member, int type, 
 static zval **php_ev_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC)
 #endif
 {
+	/*php_printf("php_ev_get_property_ptr_ptr\n");*/
 	php_ev_object        *obj;
 	zval                  tmp_member;
 	zval                **retval     = NULL;
@@ -441,10 +442,11 @@ static zval **php_ev_get_property_ptr_ptr(zval *object, zval *member, const zend
 }
 /* }}} */
 
-/* {{{ php_ev_object_free_storage 
+/* {{{ php_ev_object_free_storage
  * Common Ev object cleaner */
 static void php_ev_object_free_storage(void *obj_ TSRMLS_DC)
 {
+	/*php_printf("php_ev_object_free_storage start\n");*/
 	php_ev_object *obj = (php_ev_object *) obj_;
 
 	zend_object_std_dtor(&obj->zo TSRMLS_CC);
@@ -461,6 +463,7 @@ static void php_ev_object_free_storage(void *obj_ TSRMLS_DC)
 /* {{{ php_ev_loop_free_storage */
 static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
 {
+	/*php_printf("php_ev_loop_free_storage start\n");*/
 	php_ev_object *obj = (php_ev_object *) obj_;
 
 	if (UNEXPECTED(!obj->ptr)) return;
@@ -490,15 +493,18 @@ static void php_ev_loop_free_storage(void *obj_ TSRMLS_DC)
 	}
 
 	if (ptr->data) {
+		/*php_printf("php_ev_loop_free_storage destroying ptr->dat\nn");*/
 		zval_ptr_dtor(&ptr->data);
 		ptr->data = NULL;
 	}
 
+	/*php_printf("php_ev_loop_free_storage before php_ev_object_free_storage\n");*/
 	php_ev_object_free_storage(obj TSRMLS_CC);
+	/*php_printf("php_ev_loop_free_storage end\n");*/
 }
 /* }}} */
 
-/* {{{ php_ev_watcher_free_storage() 
+/* {{{ php_ev_watcher_free_storage()
  * There must *not* be EvWatcher instances created by user.
  * This is a helper for derived watcher class objects. */
 static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
@@ -532,7 +538,7 @@ static void php_ev_watcher_free_storage(ev_watcher *ptr TSRMLS_DC)
 	php_ev_watcher_next(ptr) = php_ev_watcher_prev(ptr) = NULL;
 
 	PHP_EV_FREE_FCALL_INFO(php_ev_watcher_fci(ptr), php_ev_watcher_fcc(ptr));
-	
+
 	data = php_ev_watcher_data(ptr);
 	if (data) {
 		zval_ptr_dtor(&data);
@@ -751,7 +757,7 @@ static void php_ev_fork_free_storage(void *object TSRMLS_DC)
 /* }}} */
 #endif
 
-/* {{{ php_ev_register_object 
+/* {{{ php_ev_register_object
  * Is called AFTER php_ev_object_new() */
 zend_object_value php_ev_register_object(zend_class_entry *ce, php_ev_object *intern TSRMLS_DC)
 {
@@ -1011,7 +1017,7 @@ static inline void php_ev_register_classes(TSRMLS_D)
 /* Private functions }}} */
 
 
-/* {{{ PHP_GINIT_FUNCTION */ 
+/* {{{ PHP_GINIT_FUNCTION */
 static PHP_GINIT_FUNCTION(ev)
 {
 	ev_globals->default_loop = NULL;
@@ -1156,7 +1162,7 @@ PHP_MINFO_FUNCTION(ev)
 {
 	php_info_print_table_start();
 	php_info_print_table_row(2, "Ev support", "enabled");
-#ifdef PHP_EV_DEBUG 
+#ifdef PHP_EV_DEBUG
 	php_info_print_table_row(2, "Debug support", "enabled");
 #else
 	php_info_print_table_row(2, "Debug support", "disabled");
@@ -1196,7 +1202,7 @@ PHP_MINFO_FUNCTION(ev)
 #if EV_FORK_ENABLE
 # include "fork.c"
 #endif
-#include "loop.c" 
+#include "loop.c"
 
 
 /* {{{ Ev methods */
@@ -1271,7 +1277,7 @@ PHP_METHOD(Ev, feedSignalEvent)
 	long			signum;
 	php_ev_object	*ev_obj;
 	zval			**default_loop_ptr_ptr = &MyG(default_loop);
-	
+
 	if (!*default_loop_ptr_ptr) {
 		php_error_docref(NULL TSRMLS_CC, E_ERROR,
 				"The default loop is not initialized");
