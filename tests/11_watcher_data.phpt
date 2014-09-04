@@ -17,13 +17,11 @@ function test() {
 	$i1 = new indicator(1);
 	$i2 = new indicator(2);
 
-	// store data as ref to object
 	$t1 = $loop->timer(1, 0, function () {});
-	$t1->data = $i1;
+	$t1->data = &$i1;
 
-	// store data as object
 	$t2 = $loop->timer(1, 0, function () {});
-	$t2->data = &$i2;
+	$t2->data = $i2;
 
 	echo "0";
 	$t1->stop();
