@@ -67,11 +67,15 @@
     ce->create_object = parent_ce->create_object; /*php_ev_object_create; */    \
 }
 
+#if 0
 #define PHP_EV_INIT_CLASS_OBJECT(pz, pce) \
         Z_TYPE_P(pz) = IS_OBJECT;         \
         object_init_ex(pz, pce);          \
         Z_SET_REFCOUNT_P(pz, 1);          \
         Z_SET_ISREF_P(pz)
+#else
+#define PHP_EV_INIT_CLASS_OBJECT(pz, pce) object_init_ex(pz, pce)
+#endif
 
 #define PHP_EV_ADD_CLASS_PROPERTIES(a, b)                                                      \
 {                                                                                              \
@@ -100,19 +104,23 @@
     }
 
 #if PHP_VERSION_ID >= 50300
-# define PHP_EV_FCI_ADDREF(pfci)          \
-{                                         \
-	Z_ADDREF_P(pfci->function_name);      \
-    if (pfci->object_ptr) {               \
-        Z_ADDREF_P(pfci->object_ptr);     \
-    }                                     \
+# define PHP_EV_FCI_ADDREF(pfci)         \
+{                                        \
+	if (pfci->function_name) {           \
+		Z_ADDREF_P(pfci->function_name); \
+	}                                    \
+    if (pfci->object_ptr) {              \
+        Z_ADDREF_P(pfci->object_ptr);    \
+    }                                    \
 }
-# define PHP_EV_FCI_DELREF(pfci)          \
-{                                         \
-	zval_ptr_dtor(&pfci->function_name);  \
-    if (pfci->object_ptr) {               \
-        zval_ptr_dtor(&pfci->object_ptr); \
-    }                                     \
+# define PHP_EV_FCI_DELREF(pfci)             \
+{                                            \
+	if (pfci->function_name) {               \
+		zval_ptr_dtor(&pfci->function_name); \
+	}                                        \
+    if (pfci->object_ptr) {                  \
+        zval_ptr_dtor(&pfci->object_ptr);    \
+    }                                        \
 }
 #else
 # define PHP_EV_FCI_ADDREF(pfci) Z_ADDREF_P(pfci_dst->function_name)

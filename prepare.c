@@ -39,7 +39,7 @@ void php_ev_prepare_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_b
 		self = getThis();
 	} else {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_io_class_entry_ptr);
-		self = return_value; 
+		self = return_value;
 	}
 
 	if (!loop) {

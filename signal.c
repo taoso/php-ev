@@ -42,7 +42,7 @@ void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bo
 		self = getThis();
 	} else {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_signal_class_entry_ptr);
-		self = return_value; 
+		self = return_value;
 	}
 
 	if (!loop) {
@@ -56,7 +56,7 @@ void php_ev_signal_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bo
 			&fci, &fcc, data, priority TSRMLS_CC);
 
 	w->type = EV_SIGNAL;
-	
+
 	ev_signal_set(w, signum);
 
 	o_self->ptr = (void *) w;

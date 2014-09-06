@@ -43,8 +43,13 @@ void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_boo
 	if (ctor) {
 		self = getThis();
 	} else {
+#if 0
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_timer_class_entry_ptr);
-		self = return_value; 
+#else
+		object_init_ex(return_value, ev_timer_class_entry_ptr);
+		// XXX run ctor as in ext/reflection/php_reflection.c, ReflectionClass::newInstance?
+#endif
+		self = return_value;
 	}
 
 	if (!loop) {
@@ -58,7 +63,7 @@ void php_ev_timer_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_boo
 			&fci, &fcc, data, priority TSRMLS_CC);
 
 	w->type = EV_TIMER;
-	
+
 	ev_timer_set(w, after, repeat);
 
 	o_self->ptr = (void *) w;
@@ -118,7 +123,7 @@ PHP_METHOD(EvTimer, again)
 	PHP_EV_CHECK_REPEAT(w->repeat);
 
 	ev_timer_again(php_ev_watcher_loop_ptr(w), w);
-	PHP_EV_WATCHER_UNREF(w); 
+	PHP_EV_WATCHER_UNREF(w);
 }
 /* }}} */
 

@@ -38,7 +38,7 @@ void php_ev_check_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_boo
 	/* If loop is NULL, then we're in __construct() */
 	if (loop) {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_check_class_entry_ptr);
-		self = return_value; 
+		self = return_value;
 	} else {
 		loop = php_ev_default_loop(TSRMLS_C);
 		self = getThis();

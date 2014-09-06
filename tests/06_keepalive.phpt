@@ -1,14 +1,14 @@
 --TEST--
 Check for EvWatcher::keepalive() functionality
 --FILE--
-<?php 
+<?php
 //error_reporting(0);
 
 $timer = EvTimer::createStopped(1, 0.3, function ($w, $r) {
 	echo "ok 7\n";
 	$w->stop();
 });
-$timer->keepalive(1);
+$timer->keepalive();
 
 echo "ok 1\n";
 Ev::run();
@@ -16,7 +16,7 @@ echo "ok 2\n";
 
 $timer->start();
 
-$timer->keepalive(0);
+$timer->keepalive(false);
 
 $timer->again();
 $timer->stop();
@@ -25,14 +25,13 @@ $timer->start();
 $timer2 = new EvTimer(-1, 0, function ($w, $r) {
 	echo "ok 4\n";
 });
-$timer2->keepalive(0);
+$timer2->keepalive();
 
 echo "ok 3\n";
 Ev::run(0);
 echo "ok 5\n";
 
-
-$timer->keepalive(1);
+$timer->keepalive();
 
 echo "ok 6\n";
 Ev::run();

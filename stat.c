@@ -79,7 +79,7 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool
 		self = getThis();
 	} else {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_stat_class_entry_ptr);
-		self = return_value; 
+		self = return_value;
 	}
 
 	if (!loop) {
@@ -88,8 +88,8 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool
 
 	stat_ptr = (php_ev_stat *) emalloc(sizeof(php_ev_stat));
 	memset(stat_ptr, 0, sizeof(php_ev_stat));
-	
-	stat_ptr->path = estrndup(path, path_len); 
+
+	stat_ptr->path = estrndup(path, path_len);
 
 	w = &stat_ptr->stat;
 
@@ -101,7 +101,7 @@ void php_ev_stat_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool
 			&fci, &fcc, data, priority TSRMLS_CC);
 
 	w->type = EV_STAT;
-	
+
 	ev_stat_set(w, stat_ptr->path, interval);
 
 	o_self->ptr = (void *) stat_ptr;
