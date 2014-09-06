@@ -423,7 +423,7 @@ Ruslan Osmanov <osmanov@php.net>
 COPYRIGHT
 =========
 
-	Copyright (c) 2012,2013 Ruslan Osmanov <osmanov@php.net>
+	Copyright (c) 2012,2013,2014 Ruslan Osmanov <osmanov@php.net>
 
 	This project is subject to version 3.01 of the PHP license, that is bundled
 	with this package in the file LICENSE, and is available through the

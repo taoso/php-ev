@@ -13,7 +13,7 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2013-08-23</date>
+  <date>2014-09-06</date>
   <!--{{{ Current version -->
   <version>
     <release>0.2.11</release>
@@ -26,6 +26,9 @@
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
   Fixed #7: static building was not supported(Tim)
+  Fixed #9: factory methods messed up the instance zval properties thus causing fatal errors in PHP 5.6
+  Fixed: EvWatcher::keepalive method didn't regard the default value of the 1st argument.
+  Pulled latest fixes from libev's upstream
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -134,6 +137,9 @@
       <license uri="http://www.php.net/license">PHP</license>
       <notes><![CDATA[
   Fixed #7: static building was not supported(Tim)
+  Fixed #9: factory methods messed up the instance zval properties thus causing fatal errors in PHP 5.6
+  Fixed: EvWatcher::keepalive method didn't regard the default value of the 1st argument.
+  Pulled latest fixes from libev's upstream
   ]]></notes>
     </release>
     <!--}}}-->
@@ -167,7 +173,7 @@
       </stability>
       <license uri="http://www.php.net/license">PHP</license>
       <notes><![CDATA[
-  Fix: memory leaks in objects derived from EvWatcher 
+  Fix: memory leaks in objects derived from EvWatcher
   Refact: some frequent checks optimized
   ]]></notes>
     </release>
@@ -203,7 +209,7 @@
       <license uri="http://www.php.net/license">PHP</license>
       <notes><![CDATA[
   Fix: because of a typo in ev.c dump stuff didn't work in PHP<5.5.0
-  Change: removed "Returning previously created default loop" warning 
+  Change: removed "Returning previously created default loop" warning
   ]]></notes>
     </release>
     <!--}}}-->
