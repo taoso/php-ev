@@ -64,7 +64,7 @@ static void php_ev_loop_object_ctor(INTERNAL_FUNCTION_PARAMETERS, const zend_boo
 
 		/* Save return_value in MyG(default_loop) */
 		if (is_default_loop && !*default_loop_ptr_ptr) {
-			MAKE_STD_ZVAL(*default_loop_ptr_ptr);
+			ALLOC_INIT_ZVAL(*default_loop_ptr_ptr);
 			REPLACE_ZVAL_VALUE(default_loop_ptr_ptr, return_value, 1);
 		}
 	} else {
