@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2014-09-07</date>
+  <date>2014-12-08</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.11</release>
+    <release>0.2.13</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,10 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-  Fixed #7: static building was not supported(Tim)
-  Fixed #9: factory methods messed up the instance zval properties thus causing fatal errors in PHP 5.6
-  Fixed: EvWatcher::keepalive method didn't regard the default value of the 1st argument.
-  Pulled latest fixes from libev's upstream
+    Issue #11: pecl install ev command fails with non-standard PHP installation prefix.
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -124,6 +121,38 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 0.2.13 -->
+    <release>
+      <version>
+        <release>0.2.13</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Issue #11: pecl install ev command fails with non-standard PHP installation prefix.
+  ]]></notes>
+    </release>
+    <!--}}}-->
+    <!--{{{ 0.2.12 -->
+    <release>
+      <version>
+        <release>0.2.12</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+        Fixed #10: Segfault in test suite for ZTS (thanks to Remi Collet)
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.11 -->
     <release>
       <version>

@@ -72,6 +72,8 @@ if test "$PHP_EV" != "no"; then
   ev_src="libev/ev.c util.c ev.c watcher.c fe.c pe.c"
   PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared,,$PHP_EV_CFLAGS)
 
+  PHP_ADD_BUILD_DIR($ext_builddir/libev)
+
   PHP_ADD_MAKEFILE_FRAGMENT
 fi
 
