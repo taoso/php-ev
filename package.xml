@@ -16,7 +16,7 @@
   <date>2015-05-03</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.14</release>
+    <release>0.2.15</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Issue #12: marked as CLI-only extension
+    Issue #12: marked as CLI-only extension (the changes are actually missing in 0.2.14)
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -121,6 +121,20 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <release><!--{{{ 0.2.15 -->
+      <version>
+        <release>0.2.15</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Issue #12: marked as CLI-only extension (the changes are actually missing in 0.2.14)
+  ]]></notes>
+    </release><!--}}}-->
     <!--{{{ 0.2.13 -->
     <release>
       <version>
