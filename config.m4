@@ -70,7 +70,7 @@ if test "$PHP_EV" != "no"; then
   PHP_EV_CFLAGS="-I@ext_srcdir@/libev $PHP_EV_CFLAGS"
 
   ev_src="libev/ev.c util.c ev.c watcher.c fe.c pe.c"
-  PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared,,$PHP_EV_CFLAGS)
+  PHP_NEW_EXTENSION(ev, $ev_src, $ext_shared, cli, $PHP_EV_CFLAGS)
 
   PHP_ADD_BUILD_DIR($ext_builddir/libev)
 

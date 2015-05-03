@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2014-12-08</date>
+  <date>2015-05-03</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.13</release>
+    <release>0.2.14</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Issue #11: pecl install ev command fails with non-standard PHP installation prefix.
+    Issue #12: marked as CLI-only extension
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
