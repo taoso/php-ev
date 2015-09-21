@@ -107,7 +107,7 @@
 #  undef EV_USE_POLL
 #  define EV_USE_POLL 0
 # endif
-   
+
 # if HAVE_EPOLL_CTL && HAVE_SYS_EPOLL_H
 #  ifndef EV_USE_EPOLL
 #   define EV_USE_EPOLL EV_FEATURE_BACKENDS
@@ -116,7 +116,7 @@
 #  undef EV_USE_EPOLL
 #  define EV_USE_EPOLL 0
 # endif
-   
+
 # if HAVE_KQUEUE && HAVE_SYS_EVENT_H
 #  ifndef EV_USE_KQUEUE
 #   define EV_USE_KQUEUE EV_FEATURE_BACKENDS
@@ -125,7 +125,7 @@
 #  undef EV_USE_KQUEUE
 #  define EV_USE_KQUEUE 0
 # endif
-   
+
 # if HAVE_PORT_H && HAVE_PORT_CREATE
 #  ifndef EV_USE_PORT
 #   define EV_USE_PORT EV_FEATURE_BACKENDS
@@ -161,7 +161,7 @@
 #  undef EV_USE_EVENTFD
 #  define EV_USE_EVENTFD 0
 # endif
- 
+
 #endif
 
 #include <stdlib.h>
@@ -926,7 +926,7 @@ ecb_function_ uint8_t  ecb_bitrev8  (uint8_t  x) ecb_const;
 ecb_function_ uint8_t  ecb_bitrev8  (uint8_t  x)
 {
   return (  (x * 0x0802U & 0x22110U)
-          | (x * 0x8020U & 0x88440U)) * 0x10101U >> 16; 
+          | (x * 0x8020U & 0x88440U)) * 0x10101U >> 16;
 }
 
 ecb_function_ uint16_t ecb_bitrev16 (uint16_t x) ecb_const;
@@ -1010,7 +1010,7 @@ ecb_inline uint64_t ecb_rotr64 (uint64_t x, unsigned int count) { return (x << (
   #define ecb_unreachable() __builtin_unreachable ()
 #else
   /* this seems to work fine, but gcc always emits a warning for it :/ */
-  ecb_inline void ecb_unreachable (void) ecb_noreturn;
+  ecb_noreturn ecb_inline void ecb_unreachable (void);
   ecb_inline void ecb_unreachable (void) { }
 #endif
 
@@ -2091,7 +2091,7 @@ downheap (ANHE *heap, int N, int k)
 
       heap [k] = heap [c];
       ev_active (ANHE_w (heap [k])) = k;
-      
+
       k = c;
     }
 
@@ -2511,7 +2511,7 @@ ev_supported_backends (void) EV_THROW
   if (EV_USE_EPOLL ) flags |= EVBACKEND_EPOLL;
   if (EV_USE_POLL  ) flags |= EVBACKEND_POLL;
   if (EV_USE_SELECT) flags |= EVBACKEND_SELECT;
-  
+
   return flags;
 }
 

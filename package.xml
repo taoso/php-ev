@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2015-05-03</date>
+  <date>2015-09-21</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.15</release>
+    <release>0.2.16</release>
     <api>0.2.0</api>
   </version>
   <stability>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Issue #12: marked as CLI-only extension (the changes are actually missing in 0.2.14)
+    Issue #13: Compilation issue in Mac OS X 10.11
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -121,7 +121,24 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
-    <release><!--{{{ 0.2.15 -->
+    <!--{{{ 0.2.16 -->
+    <release>
+      <version>
+        <release>0.2.16</release>
+        <api>0.2.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Issue #13: Compilation issue in Mac OS X 10.11
+  ]]></notes>
+    </release>
+    <!--}}}-->
+    <release>
+      <!--{{{ 0.2.15 -->
       <version>
         <release>0.2.15</release>
         <api>0.2.0</api>
@@ -134,7 +151,8 @@
       <notes><![CDATA[
     Issue #12: marked as CLI-only extension (the changes are actually missing in 0.2.14)
   ]]></notes>
-    </release><!--}}}-->
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.13 -->
     <release>
       <version>
