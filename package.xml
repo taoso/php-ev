@@ -13,11 +13,11 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2015-09-21</date>
+  <date>2015-09-26</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.16</release>
-    <api>0.2.0</api>
+    <release>0.2.17</release>
+    <api>0.3.0</api>
   </version>
   <stability>
     <release>stable</release>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Issue #13: Compilation issue in Mac OS X 10.11
+    EvIo::__construct() and EvIo::set() now throw Exception in case of invalid stream or file descriptor.
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -121,6 +121,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 0.2.17 -->
+    <release>
+      <version>
+        <release>0.2.17</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    EvIo::__construct() and EvIo::set() now throw Exception in case of invalid stream or file descriptor.
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.16 -->
     <release>
       <version>

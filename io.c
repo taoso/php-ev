@@ -55,7 +55,7 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool c
 		self = getThis();
 	} else {
 		PHP_EV_INIT_CLASS_OBJECT(return_value, ev_io_class_entry_ptr);
-		self = return_value; 
+		self = return_value;
 	}
 
 	if (!loop) {
@@ -69,7 +69,7 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool c
 			&fci, &fcc, data, priority TSRMLS_CC);
 
 	w->type = EV_IO;
-	
+
 	ev_io_set(w, fd, events);
 
 	o_self->ptr = (void *) w;

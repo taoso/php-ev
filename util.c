@@ -18,8 +18,9 @@
 
 #include "php_ev.h"
 #include "util.h"
+#include "zend_exceptions.h"
 
-/* {{{ php_ev_zval_to_fd 
+/* {{{ php_ev_zval_to_fd
  * Get numeric file descriptor from PHP stream or Socket resource */
 php_socket_t php_ev_zval_to_fd(zval **ppfd TSRMLS_DC)
 {
@@ -32,26 +33,33 @@ php_socket_t php_ev_zval_to_fd(zval **ppfd TSRMLS_DC)
 	if (Z_TYPE_PP(ppfd) == IS_RESOURCE) {
 		/* PHP stream or PHP socket resource  */
 		if (ZEND_FETCH_RESOURCE_NO_RETURN(stream, php_stream *, ppfd, -1, NULL, php_file_le_stream())) {
+			if (php_stream_is(stream, PHP_STREAM_IS_MEMORY) || php_stream_is(stream, PHP_STREAM_IS_TEMP)) {
+				zend_throw_exception(zend_exception_get_default(TSRMLS_C),
+						"Cannot fetch file descriptor from memory based stream", 0 TSRMLS_CC);
+				return -1;
+			}
+
 			php_stream_from_zval_no_verify(stream, ppfd);
 
 			if (stream == NULL) {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed obtaining fd");
+				zend_throw_exception(zend_exception_get_default(TSRMLS_C),
+						"Stream resource is invalid", 0 TSRMLS_CC);
 				return -1;
 			}
 
 			/* PHP stream */
-			if (php_stream_can_cast(stream, PHP_STREAM_AS_FD_FOR_SELECT | PHP_STREAM_CAST_INTERNAL) == SUCCESS) {
-				if (php_stream_cast(stream, PHP_STREAM_AS_FD_FOR_SELECT | PHP_STREAM_CAST_INTERNAL,
+			if (php_stream_can_cast(stream, PHP_STREAM_AS_FD_FOR_SELECT) == SUCCESS) {
+				if (php_stream_cast(stream, PHP_STREAM_AS_FD_FOR_SELECT,
 							(void*) &file_desc, 1) != SUCCESS || file_desc < 0) {
 					return -1;
 				}
-			} else if (php_stream_can_cast(stream, PHP_STREAM_AS_FD | PHP_STREAM_CAST_INTERNAL) == SUCCESS) {
-				if (php_stream_cast(stream, PHP_STREAM_AS_FD | PHP_STREAM_CAST_INTERNAL,
+			} else if (php_stream_can_cast(stream, PHP_STREAM_AS_FD) == SUCCESS) {
+				if (php_stream_cast(stream, PHP_STREAM_AS_FD,
 							(void*) &file_desc, 1) != SUCCESS || file_desc < 0) {
 					return -1;
 				}
-			} else if (php_stream_can_cast(stream, PHP_STREAM_AS_STDIO | PHP_STREAM_CAST_INTERNAL) == SUCCESS) {
-				if (php_stream_cast(stream, PHP_STREAM_AS_STDIO | PHP_STREAM_CAST_INTERNAL,
+			} else if (php_stream_can_cast(stream, PHP_STREAM_AS_STDIO) == SUCCESS) {
+				if (php_stream_cast(stream, PHP_STREAM_AS_STDIO,
 							(void*) &file_desc, 1) != SUCCESS || file_desc < 0) {
 					return -1;
 				}
@@ -73,12 +81,12 @@ php_socket_t php_ev_zval_to_fd(zval **ppfd TSRMLS_DC)
 
 				return php_sock->bsd_socket;
 			} else {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING,
-						"either valid PHP stream or valid PHP socket resource expected");
+				zend_throw_exception(zend_exception_get_default(TSRMLS_C),
+						"Expected either valid PHP stream or valid PHP socket resource", 0 TSRMLS_CC);
 			}
 #else
-			php_error_docref(NULL TSRMLS_CC, E_WARNING,
-					"valid PHP stream resource expected");
+			zend_throw_exception(zend_exception_get_default(TSRMLS_C),
+					"Expected a valid PHP stream resource", 0 TSRMLS_CC);
 #endif
 			return -1;
 		}
@@ -86,12 +94,13 @@ php_socket_t php_ev_zval_to_fd(zval **ppfd TSRMLS_DC)
 		/* Numeric fd */
 		file_desc = Z_LVAL_PP(ppfd);
 		if (file_desc < 0) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "invalid file descriptor passed");
+			zend_throw_exception(zend_exception_get_default(TSRMLS_C),
+					"Invalid file descriptor", 0 TSRMLS_CC);
 			return -1;
 		}
 	} else {
-		/* Invalid fd */
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "invalid file descriptor passed");
+		zend_throw_exception(zend_exception_get_default(TSRMLS_C),
+				"Invalid file descriptor", 0 TSRMLS_CC);
 		return -1;
 	}
 
