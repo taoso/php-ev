@@ -26,6 +26,7 @@
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
     Fix: EvChild::set() parameter parsing (thanks to Remi)
+    Fix: issue #16 where get_properties handler failed with segmentation fault
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -165,6 +166,7 @@
       <license uri="http://www.php.net/license">PHP</license>
       <notes><![CDATA[
     Fix: EvChild::set() parameter parsing (thanks to Remi)
+    Fix: issue #16 where get_properties handler failed with segmentation fault
   ]]></notes>
     </release>
     <!--}}}-->
