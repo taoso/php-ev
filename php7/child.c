@@ -79,7 +79,7 @@ PHP_METHOD(EvChild, set)
 	zend_bool  trace;
 	ev_child  *w;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "bl",
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "lb",
 				&pid, &trace) == FAILURE) {
 		return;
 	}
