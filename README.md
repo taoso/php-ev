@@ -1,5 +1,7 @@
 ev PECL extension
 
+[![Build Status](https://drone.io/bitbucket.org/osmanov/pecl-ev/status.png)](https://drone.io/bitbucket.org/osmanov/pecl-ev/latest)
+
 DESCRIPTION
 ===========
 
