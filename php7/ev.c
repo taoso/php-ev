@@ -384,11 +384,10 @@ static HashTable * php_ev_get_properties(zval *object)
 	}
 
 	ZEND_HASH_FOREACH_STR_KEY_PTR(obj->prop_handler, key, hnd) {
-		zval *ret;
-		if (hnd->read_func == NULL || hnd->read_func(obj, ret) == NULL) {
-			ret = &EG(uninitialized_zval);
+		zval zret;
+		if (hnd->read_func && hnd->read_func(obj, &zret)) {
+			zend_hash_update(props, key, &zret);
 		}
-		zend_hash_update(props, key, ret);
 	} ZEND_HASH_FOREACH_END();
 
 	return props;
@@ -454,13 +453,21 @@ static HashTable * php_ev_loop_get_gc(zval *object, zval **gc_data, int *gc_coun
 static zval * php_ev_get_property_ptr_ptr(zval *object, zval *member, int type, void **cache_slot)
 {
 	php_ev_object       *obj        = Z_EV_OBJECT_P(object);
-	zend_string         *member_str = zval_get_string(member);
 	zval                *retval     = NULL;
 	php_ev_prop_handler *hnd        = NULL;
+	zval tmp_member;
+
+	if (Z_TYPE_P(member) != IS_STRING) {
+		ZVAL_COPY(&tmp_member, member);
+		convert_to_string(&tmp_member);
+		member = &tmp_member;
+		cache_slot = NULL;
+	}
 
 	if (obj->prop_handler != NULL) {
-		hnd = zend_hash_find_ptr(obj->prop_handler, member_str);
+		hnd = zend_hash_find_ptr(obj->prop_handler, Z_STR_P(member));
 	}
+
 	if (hnd && hnd->get_ptr_ptr_func != NULL) {
 		retval = hnd->get_ptr_ptr_func(obj);
 	} else {
@@ -472,7 +479,10 @@ static zval * php_ev_get_property_ptr_ptr(zval *object, zval *member, int type, 
 		ZVAL_NULL(retval);
 	}
 
-	zend_string_release(member_str);
+	if (member == &tmp_member) {
+		zval_dtor(member);
+	}
+
 	return retval;
 }
 /* }}} */

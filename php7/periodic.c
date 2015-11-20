@@ -63,6 +63,8 @@ static ev_tstamp php_ev_periodic_rescheduler(ev_periodic *w, ev_tstamp now)
 		}
 		zend_exception_restore();
 
+	} else {
+		tstamp = now;
 	}
 
 	return tstamp;
