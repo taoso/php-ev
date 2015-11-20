@@ -1,8 +1,8 @@
 /*
    +----------------------------------------------------------------------+
-   | PHP Version 5                                                        |
+   | PHP Version 7                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2014 The PHP Group                                |
+   | Copyright (c) 1997-2015 The PHP Group                                |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -15,39 +15,34 @@
    | Author: Ruslan Osmanov <osmanov@php.net>                             |
    +----------------------------------------------------------------------+
 */
+#ifndef PHP_EV_COMMON_H
+#define PHP_EV_COMMON_H
 
-#ifndef PHP_EV_H
-#define PHP_EV_H
-
-#include "embed.h"
-#include "priv.h"
-#include "watcher.h"
-
-PHP_MINIT_FUNCTION(ev);
-PHP_MSHUTDOWN_FUNCTION(ev);
-PHP_RINIT_FUNCTION(ev);
-PHP_RSHUTDOWN_FUNCTION(ev);
-PHP_MINFO_FUNCTION(ev);
-
-/* Max. signum supported */
-#ifndef EV_NSIG
-# define EV_NSIG 32
+#ifdef HAVE_CONFIG_H
+# include "config.h"
 #endif
 
-ZEND_BEGIN_MODULE_GLOBALS(ev)
-	zval *default_loop;
-	/* Helps to prevent binding of different `signum's to a loop */
-	struct ev_loop *signal_loops[EV_NSIG - 1];
-ZEND_END_MODULE_GLOBALS(ev)
-ZEND_EXTERN_MODULE_GLOBALS(ev)
+#include <php.h>
+#include <php_ini.h>
+#include <SAPI.h>
+#include <zend_interfaces.h>
+#include <ext/standard/info.h>
+#include <ext/standard/php_string.h>
+#include <Zend/zend_extensions.h>
 
-extern zend_module_entry ev_module_entry;
-#define phpext_ev_ptr &ev_module_entry
+#include <php_network.h>
+#include <php_streams.h>
 
-#define PHP_EV_VERSION "0.2.15"
+#if HAVE_SOCKETS || defined(COMPILE_DL_SOCKETS)
+# define PHP_EV_USE_SOCKETS
+# include <ext/sockets/php_sockets.h>
+#endif
 
-#endif /* PHP_EV_H */
+#ifdef ZTS
+# include "TSRM.h"
+#endif
 
+#endif /* PHP_EV_COMMON_H */
 /*
  * Local variables:
  * tab-width: 4

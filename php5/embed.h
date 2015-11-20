@@ -36,7 +36,7 @@
 # define EV_VERIFY 0
 #endif
 
-/* Thread context. With it we are getting rid of need 
+/* Thread context. With it we are getting rid of need
  * to call the heavy TSRMLS_FETCH() */
 #ifdef ZTS
 # define PHP_EV_COMMON_THREAD_CTX void ***thread_ctx
@@ -61,7 +61,7 @@
 #include "libev/ev.h"
 
 
-/* 
+/*
  * TODO: consider refactoring of embed.h and types.h.
  * We can't declare this above #include "libev/ev.h", since we'll get
  * `field 'periodic' has incomplete type' compilation error.

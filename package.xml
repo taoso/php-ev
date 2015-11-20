@@ -13,19 +13,19 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2015-09-26</date>
+  <date>2015-11-20</date>
   <!--{{{ Current version -->
   <version>
-    <release>0.2.17</release>
+    <release>1.0.0RC1</release>
     <api>0.3.0</api>
   </version>
   <stability>
-    <release>stable</release>
+    <release>beta</release>
     <api>stable</api>
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    EvIo::__construct() and EvIo::set() now throw Exception in case of invalid stream or file descriptor.
+    Added PHP7 support
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -36,33 +36,63 @@
       <file role="doc" name="LICENSE"/>
       <file role="doc" name="README.md"/>
       <file role="doc" name="TODO.md"/>
-      <file role="src" name="check.c"/>
-      <file role="src" name="child.c"/>
-      <file role="src" name="common.h"/>
       <file role="src" name="config.m4"/>
-      <file role="src" name="embed.c"/>
-      <file role="src" name="embed.h"/>
-      <file role="src" name="ev.c"/>
-      <file role="src" name="fe.c"/>
-      <file role="src" name="fe.h"/>
-      <file role="src" name="fork.c"/>
-      <file role="src" name="idle.c"/>
-      <file role="src" name="io.c"/>
-      <file role="src" name="loop.c"/>
-      <file role="src" name="macros.h"/>
-      <file role="src" name="pe.c"/>
-      <file role="src" name="periodic.c"/>
-      <file role="src" name="php_ev.h"/>
-      <file role="src" name="prepare.c"/>
-      <file role="src" name="priv.h"/>
-      <file role="src" name="signal.c"/>
-      <file role="src" name="stat.c"/>
-      <file role="src" name="timer.c"/>
-      <file role="src" name="types.h"/>
-      <file role="src" name="util.c"/>
-      <file role="src" name="util.h"/>
-      <file role="src" name="watcher.c"/>
-      <file role="src" name="watcher.h"/>
+      <dir name="php5">
+        <file role="src" name="check.c"/>
+        <file role="src" name="child.c"/>
+        <file role="src" name="common.h"/>
+        <file role="src" name="embed.c"/>
+        <file role="src" name="embed.h"/>
+        <file role="src" name="ev.c"/>
+        <file role="src" name="fe.c"/>
+        <file role="src" name="fe.h"/>
+        <file role="src" name="fork.c"/>
+        <file role="src" name="idle.c"/>
+        <file role="src" name="io.c"/>
+        <file role="src" name="loop.c"/>
+        <file role="src" name="macros.h"/>
+        <file role="src" name="pe.c"/>
+        <file role="src" name="periodic.c"/>
+        <file role="src" name="php_ev.h"/>
+        <file role="src" name="prepare.c"/>
+        <file role="src" name="priv.h"/>
+        <file role="src" name="signal.c"/>
+        <file role="src" name="stat.c"/>
+        <file role="src" name="timer.c"/>
+        <file role="src" name="types.h"/>
+        <file role="src" name="util.c"/>
+        <file role="src" name="util.h"/>
+        <file role="src" name="watcher.c"/>
+        <file role="src" name="watcher.h"/>
+      </dir>
+      <dir name="php7">
+        <file role="src" name="check.c"/>
+        <file role="src" name="child.c"/>
+        <file role="src" name="common.h"/>
+        <file role="src" name="embed.c"/>
+        <file role="src" name="embed.h"/>
+        <file role="src" name="ev.c"/>
+        <file role="src" name="fe.c"/>
+        <file role="src" name="fe.h"/>
+        <file role="src" name="fork.c"/>
+        <file role="src" name="idle.c"/>
+        <file role="src" name="io.c"/>
+        <file role="src" name="loop.c"/>
+        <file role="src" name="macros.h"/>
+        <file role="src" name="pe.c"/>
+        <file role="src" name="periodic.c"/>
+        <file role="src" name="php_ev.h"/>
+        <file role="src" name="prepare.c"/>
+        <file role="src" name="priv.h"/>
+        <file role="src" name="signal.c"/>
+        <file role="src" name="stat.c"/>
+        <file role="src" name="timer.c"/>
+        <file role="src" name="types.h"/>
+        <file role="src" name="util.c"/>
+        <file role="src" name="util.h"/>
+        <file role="src" name="watcher.c"/>
+        <file role="src" name="watcher.h"/>
+      </dir>
       <dir name="tests">
         <file role="src" name="01_load.phpt"/>
         <file role="src" name="02_ev_construct_variation.phpt"/>
@@ -79,6 +109,7 @@
         <file role="src" name="bug64788.phpt"/>
         <file role="src" name="13_watcher_data.phpt"/>
         <file role="src" name="14_get_gc.phpt"/>
+        <file role="src" name="15_periodic.phpt"/>
       </dir>
       <dir name="libev">
         <file role="doc" name="LICENSE"/>
@@ -121,6 +152,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.0RC1 -->
+    <release>
+      <version>
+        <release>1.0.0RC1</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>beta</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Added PHP7 support
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 0.2.17 -->
     <release>
       <version>
