@@ -13,7 +13,7 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2015-11-20</date>
+  <date>2015-11-22</date>
   <!--{{{ Current version -->
   <version>
     <release>1.0.0RC2</release>
@@ -27,6 +27,8 @@
   <notes><![CDATA[
     Fix: EvChild::set() parameter parsing (thanks to Remi)
     Fix: issue #16 where get_properties handler failed with segmentation fault
+    Fix: issue #17 where EgSignal::$signum property always returned NULL
+    Fix: EvStat::$path property always returned NULL
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -167,9 +169,12 @@
       <notes><![CDATA[
     Fix: EvChild::set() parameter parsing (thanks to Remi)
     Fix: issue #16 where get_properties handler failed with segmentation fault
+    Fix: issue #17 where EgSignal::$signum property always returned NULL
+    Fix: EvStat::$path property always returned NULL
   ]]></notes>
     </release>
     <!--}}}-->
+
     <!--{{{ 1.0.0RC1 -->
     <release>
       <version>

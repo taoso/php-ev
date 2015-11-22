@@ -6,7 +6,7 @@ if (!extension_loaded("pcntl")) print "skip pcntl extension is not loaded";
 if (!extension_loaded("posix")) print "skip posix extension is not loaded";
 ?>
 --FILE--
-<?php 
+<?php
 error_reporting(0);
 
 echo "ok 1\n";
@@ -40,9 +40,9 @@ Ev::run(Ev::RUN_ONCE);
 echo "ok 9\n";
 
 // Re-bind
-$usr2 = new EVSignal(SIGUSR2, function () { echo "ok 11\n"; });
+$usr2 = new EvSignal(SIGUSR2, function ($w) { echo "ok 11\n"; $w->stop(); });
 $sig1->stop();
-$usr1_2 = $loop->signal(SIGUSR1, function () { echo "ok 13\n"; });
+$usr1_2 = $loop->signal(SIGUSR1, function ($w) { echo "ok 13\n"; $w->stop(); });
 
 echo "ok 10\n";
 
@@ -57,6 +57,13 @@ posix_kill(posix_getpid(), SIGUSR1);
 $loop->run(Ev::RUN_NOWAIT);
 
 echo "ok 14\n";
+
+$sw = $loop->signal(SIGUSR1, function ($w) {
+	var_dump($w->signum);
+	$w->stop();
+});
+posix_kill(posix_getpid(), SIGUSR1);
+$loop->run(Ev::RUN_NOWAIT);
 ?>
 --EXPECT--
 ok 1
@@ -73,3 +80,4 @@ ok 11
 ok 12
 ok 13
 ok 14
+int(10)

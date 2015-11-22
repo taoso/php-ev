@@ -427,7 +427,7 @@ static zval * ev_signal_prop_signum_read(php_ev_object *obj, zval *retval)
 	PHP_EV_PROP_REQUIRE(obj->ptr);
 	ev_signal *signal_watcher = (ev_signal *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 	ZVAL_LONG(retval, signal_watcher->signum);
-	return SUCCESS;
+	return retval;
 }
 /* }}} */
 
@@ -483,7 +483,7 @@ static zval * ev_stat_prop_path_read(php_ev_object *obj, zval *retval)
 
 	php_ev_stat *stat_ptr = (php_ev_stat *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 	ZVAL_STRING(retval, stat_ptr->path);
-	return SUCCESS;
+	return retval;
 }
 /* }}} */
 
