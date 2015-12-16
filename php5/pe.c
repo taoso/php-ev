@@ -414,6 +414,8 @@ static int ev_io_prop_fd_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 	php_stream *stream = php_stream_fopen_from_fd(io_watcher->fd, "r", NULL);
 
 	if (stream) {
+		/* Bug #18 */
+		stream->flags |= PHP_STREAM_FLAG_NO_CLOSE;
 		MAKE_STD_ZVAL(*retval);
 		php_stream_to_zval(stream, *retval);
 	} else {

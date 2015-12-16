@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2015-11-22</date>
+  <date>2015-12-16</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.0RC2</release>
+    <release>1.0.0RC3</release>
     <api>0.3.0</api>
   </version>
   <stability>
@@ -25,10 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Fix: EvChild::set() parameter parsing (thanks to Remi)
-    Fix: issue #16 where get_properties handler failed with segmentation fault
-    Fix: issue #17 where EgSignal::$signum property always returned NULL
-    Fix: EvStat::$path property always returned NULL
+    Fix: issue #18
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -155,6 +152,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.0RC3-->
+    <release>
+      <version>
+        <release>1.0.0RC3</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>beta</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Fix: issue #18
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 1.0.0RC2 -->
     <release>
       <version>
@@ -174,7 +187,6 @@
   ]]></notes>
     </release>
     <!--}}}-->
-
     <!--{{{ 1.0.0RC1 -->
     <release>
       <version>

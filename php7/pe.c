@@ -306,6 +306,12 @@ static zval * ev_io_prop_fd_read(php_ev_object *obj, zval *retval)
 
 	if (stream) {
 		php_stream_to_zval(stream, retval);
+		/* Bug #18 */
+#if 0
+		Z_TRY_ADDREF_P(retval);
+#else
+		stream->flags |= PHP_STREAM_FLAG_NO_CLOSE;
+#endif
 	} else {
 		ZVAL_NULL(retval);
 	}
