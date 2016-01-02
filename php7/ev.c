@@ -132,8 +132,8 @@ zend_module_entry ev_module_entry = {
     NULL, /* functions */
     PHP_MINIT(ev),
     PHP_MSHUTDOWN(ev),
-    NULL,                         /* PHP_RINIT(ev)     */
-    NULL,                         /* PHP_RSHUTDOWN(ev) */
+    PHP_RINIT(ev),
+    PHP_RSHUTDOWN(ev),
     PHP_MINFO(ev),
     PHP_EV_VERSION,
     PHP_MODULE_GLOBALS(ev),
