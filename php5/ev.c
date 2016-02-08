@@ -19,10 +19,6 @@
 #include "php_ev.h"
 #include "util.h"
 
-#if !defined(_WIN32) && !defined(_MINIX)
-# include <pthread.h>
-#endif
-
 #if HAVE_EV
 
 ZEND_DECLARE_MODULE_GLOBALS(ev)
@@ -119,13 +115,6 @@ ZEND_GET_MODULE(ev)
 #endif
 
 /* {{{ Private functions */
-
-/* {{{ php_ev_default_fork */
-static void php_ev_default_fork(void)
-{
-	ev_loop_fork(EV_DEFAULT);
-}
-/* }}} */
 
 /* {{{ php_ev_default_loop */
 zval *php_ev_default_loop(TSRMLS_D)
@@ -1101,10 +1090,6 @@ PHP_MINIT_FUNCTION(ev)
 	REGISTER_EV_CLASS_CONST_LONG(BACKEND_PORT,    EVBACKEND_PORT);
 	REGISTER_EV_CLASS_CONST_LONG(BACKEND_ALL,     EVBACKEND_ALL);
 	REGISTER_EV_CLASS_CONST_LONG(BACKEND_MASK,    EVBACKEND_MASK);
-
-#if !defined(_WIN32) && !defined(_MINIX)
-	pthread_atfork(0, 0, php_ev_default_fork);
-#endif
 
 	return SUCCESS;
 }

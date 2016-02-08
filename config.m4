@@ -87,9 +87,6 @@ if test "$PHP_EV" != "no"; then
 
   m4_include(ifdef('PHP_EV_STATIC',PHP_EXT_BUILDDIR(ev)[/],)[libev/libev.m4])
 
-  LIBS="$LIBS -lpthread"
-  PHP_ADD_LIBRARY(pthread)
-
   PHP_EV_CFLAGS="-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I@ext_srcdir@/libev $PHP_EV_CFLAGS"
 
   PHP_NEW_EXTENSION(ev, $PHP_EV_SOURCES, $ext_shared, cli, $PHP_EV_CFLAGS)

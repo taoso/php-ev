@@ -19,10 +19,6 @@
 #include "php_ev.h"
 #include "util.h"
 
-#if !defined(_WIN32) && !defined(_MINIX)
-# include <pthread.h>
-#endif
-
 #if HAVE_EV
 
 ZEND_DECLARE_MODULE_GLOBALS(ev)
@@ -133,7 +129,7 @@ zend_module_entry ev_module_entry = {
     PHP_MINIT(ev),
     PHP_MSHUTDOWN(ev),
     PHP_RINIT(ev),
-    PHP_RSHUTDOWN(ev),
+    NULL, /*PHP_RSHUTDOWN(ev),*/
     PHP_MINFO(ev),
     PHP_EV_VERSION,
     PHP_MODULE_GLOBALS(ev),
@@ -164,13 +160,6 @@ static void copy_prop_handler(zval *zv)
 	Z_PTR_P(zv) = malloc(sizeof(php_ev_prop_handler));
 	memcpy(Z_PTR_P(zv), hnd, sizeof(php_ev_prop_handler));
 }
-
-/* {{{ php_ev_default_fork */
-static void php_ev_default_fork(void)
-{
-	ev_loop_fork(EV_DEFAULT);
-}
-/* }}} */
 
 /* {{{ php_ev_default_loop */
 zval * php_ev_default_loop()
@@ -549,7 +538,8 @@ static void php_ev_loop_object_dtor(zend_object *object)/*{{{*/
 	if (EXPECTED(intern)) {
 		if (ev_is_default_loop(loop_ptr->loop)) {
 			if (!Z_ISUNDEF(MyG(default_loop))) {
-				zval_ptr_dtor(&MyG(default_loop));
+				zval_dtor(&MyG(default_loop));
+				ZVAL_UNDEF(&MyG(default_loop));
 			}
 		}
 		/*php_ev_loop_dtor((php_ev_loop *)intern->ptr);*/
@@ -1223,10 +1213,6 @@ PHP_MINIT_FUNCTION(ev)
 	REGISTER_EV_CLASS_CONST_LONG(BACKEND_ALL,     EVBACKEND_ALL);
 	REGISTER_EV_CLASS_CONST_LONG(BACKEND_MASK,    EVBACKEND_MASK);
 
-#if !defined(_WIN32) && !defined(_MINIX)
-	pthread_atfork(0, 0, php_ev_default_fork);
-#endif
-
 	return SUCCESS;
 }
 /* }}} */
@@ -1266,17 +1252,6 @@ PHP_MSHUTDOWN_FUNCTION(ev)
 PHP_RINIT_FUNCTION(ev)
 {
 	ZVAL_UNDEF(&MyG(default_loop));
-	return SUCCESS;
-}
-/* }}} */
-
-
-/* {{{ PHP_RSHUTDOWN_FUNCTION */
-PHP_RSHUTDOWN_FUNCTION(ev)
-{
-	if (!Z_ISUNDEF(MyG(default_loop))) {
-		zval_ptr_dtor(&MyG(default_loop));
-	}
 	return SUCCESS;
 }
 /* }}} */
