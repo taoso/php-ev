@@ -30,11 +30,13 @@ if (PHP_EV != "no") {
 		ADD_FLAG("CFLAGS_EVENT", "/D NDEBUG");
 	}
 
-	EXTENSION('ev', 'php_ev.c evwrap.c util.c watcher.c fe.c pe.c', true,
+	var ev_sources = 'ev.c util.c watcher.c fe.c pe.c';
+	EXTENSION('ev', ev_sources, true,
 		' /I "' + old_conf_dir + '"'
 		+ ' /I "' + configure_module_dirname + '"'
 		+ ' /DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
 
+	ADD_SOURCES(old_conf_dir, 'evwrap.c', 'ev');
 	//ADD_SOURCES(old_conf_dir, 'libev\\ev.c', 'ev');
 	//ADD_SOURCES(configure_module_dirname, "util.c watcher.c fe.c pe.c", 'ev');
 }
