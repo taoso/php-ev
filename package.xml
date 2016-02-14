@@ -16,7 +16,7 @@
   <date>2016-02-08</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.0RC5</release>
+    <release>1.0.0RC4</release>
     <api>0.3.0</api>
   </version>
   <stability>
@@ -153,23 +153,6 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
-    <!--{{{ 1.0.0RC5 -->
-    <release>
-      <version>
-        <release>1.0.0RC5</release>
-        <api>0.3.0</api>
-      </version>
-      <stability>
-        <release>beta</release>
-        <api>stable</api>
-      </stability>
-      <license uri="http://www.php.net/license">PHP</license>
-      <notes><![CDATA[
-    Fix in PHP7: memory leak due to incorrect default loop destruction
-    Change: removed pthreads dependency(pthread_atfork setup for the ev_loop_fork(EV_DEFAULT) call)
-  ]]></notes>
-    </release>
-    <!--}}}-->
     <!--{{{ 1.0.0RC4 -->
     <release>
       <version>
@@ -182,7 +165,8 @@
       </stability>
       <license uri="http://www.php.net/license">PHP</license>
       <notes><![CDATA[
-    Fix: RINIT and RSHUTDOWN were disabled
+    Fix in PHP7: memory leak due to incorrect default loop destruction
+    Change: removed pthreads dependency(pthread_atfork setup for the ev_loop_fork(EV_DEFAULT) call)
   ]]></notes>
     </release>
     <!--}}}-->
