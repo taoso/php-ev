@@ -1272,7 +1272,6 @@ PHP_MINFO_FUNCTION(ev)
 }
 /* }}} */
 
-
 #include "io.c"
 #include "timer.c"
 #if EV_PERIODIC_ENABLE

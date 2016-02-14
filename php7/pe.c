@@ -18,7 +18,6 @@
 
 #include "php_ev.h"
 #include "watcher.h"
-#include <fcntl.h>
 
 #define PHP_EV_PROP_REQUIRE(x)  do { \
 	if (UNEXPECTED(!(x))) {          \
@@ -296,7 +295,8 @@ static zval * ev_io_prop_fd_read(php_ev_object *obj, zval *retval)
 {
 	ev_io *io_watcher = (ev_io *)PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
-	if (io_watcher->fd <= 0 || fcntl(io_watcher->fd, F_GETFD) == -1) {
+
+	if (io_watcher->fd <= 0 || !ZEND_VALID_SOCKET(io_watcher->fd)) {
 		// Invalid fd
 		ZVAL_NULL(retval);
 		return retval;

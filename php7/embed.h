@@ -29,6 +29,19 @@
 #undef EV_FEATURES
 /* We compile multiple source files.So we don't need static API */
 #undef EV_API_STATIC
+#ifdef _WIN32
+# define EV_USE_INOTIFY 0
+# define EV_USE_SIGNALFD 0
+# define EV_USE_POLL 0
+# define EV_USE_EPOLL 0
+# define EV_USE_KQUEUE 0
+# define EV_USE_DEVPOLL 0
+# define EV_USE_PORT 0
+# define EV_STANDALONE
+# define EV_USE_SELECT 1
+# define EV_SELECT_IS_WINSOCKET 1
+#endif
+
 
 #ifdef PHP_EV_DEBUG
 # define EV_VERIFY 2
@@ -48,8 +61,7 @@
 	zval                  self;                                                              \
 	zval                  data;      /* custom var attached by user */
 
-#include "libev/ev.h"
-
+#include "evwrap.h"
 
 /*
  * TODO: consider refactoring of embed.h and types.h.
