@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2016-02-08</date>
+  <date>2016-02-22</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.0RC4</release>
+    <release>1.0.0RC5</release>
     <api>0.3.0</api>
   </version>
   <stability>
@@ -25,8 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Fix in PHP7: memory leak due to incorrect default loop destruction.
-    Change: removed pthreads dependency(pthread_atfork setup for the ev_loop_fork(EV_DEFAULT) call)
+    Added Windows support
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -153,6 +152,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.0RC5 -->
+    <release>
+      <version>
+        <release>1.0.0RC5</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>beta</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Added Windows support
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 1.0.0RC4 -->
     <release>
       <version>

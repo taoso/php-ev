@@ -1,43 +1,39 @@
 // $Id$
 // vim:ft=javascript
 
-ARG_WITH("ev", "for ev support", "no");
-ARG_ENABLE("ev_debug", "for ev debug support", "no");
+ARG_WITH('ev', 'for ev support', 'no');
+ARG_ENABLE('ev_debug', 'for ev debug support', 'no');
 
-if (PHP_EV != "no") {
-	var dll = get_define("PHPDLL");
+if (PHP_EV != 'no') {
+	if (CHECK_HEADER_ADD_INCLUDE('ev.h', 'CFLAGS_EV', configure_module_dirname + '\\libev;' + PHP_EV)) {
+		var dll = get_define('PHPDLL');
 
-	/* XXX override configure_module_dirname, define the basic extension, then set it back*/
-	var old_conf_dir = configure_module_dirname;
-	if (null != dll.match(/^php5/)) {
-		configure_module_dirname = configure_module_dirname + "\\php5";
-	} else if (null != dll.match(/^php7/)) {
-		configure_module_dirname = configure_module_dirname + "\\php7";
+		/* XXX override configure_module_dirname, define the basic extension, then set it back*/
+		var old_conf_dir = configure_module_dirname;
+		if (null != dll.match(/^php5/)) {
+			configure_module_dirname = configure_module_dirname + "\\php5";
+		} else if (null != dll.match(/^php7/)) {
+			configure_module_dirname = configure_module_dirname + "\\php7";
+		} else {
+			ERROR("Cannot match any known PHP version with '" + dll + "'");
+		}
+		AC_DEFINE('HAVE_EV', 1);
+		ADD_FLAG('CFLAGS_EV', '/D _WIN32');
+
+		ADD_EXTENSION_DEP('ev', 'sockets', true);
+		ADD_FLAG('CFLAGS_EV', '/D PHP_EV_SOCKETS=1');
+
+		if (PHP_EV_DEBUG != 'no') {
+			ADD_FLAG('CFLAGS_EV', '/D PHP_EV_DEBUG=1');
+		} else {
+			ADD_FLAG('CFLAGS_EV', '/D NDEBUG');
+		}
+
+		EXTENSION('ev', 'ev.c util.c watcher.c fe.c pe.c evwrap.c', true, ' /DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+		CHECK_HEADER_ADD_INCLUDE('embed.h', 'CFLAGS_EV', configure_module_dirname);
+		configure_module_dirname = old_conf_dir;
+		//ADD_SOURCES(configure_module_dirname, 'evwrap.c', 'ev');
 	} else {
-		ERROR("Cannot match any known PHP version with '" + dll + "'");
+		WARNING('ev not enabled; libraries and headers not found');
 	}
-	ADD_FLAG("CFLAGS_EVENT", "/D _WIN32=1");
-	ADD_FLAG("CFLAGS_EVENT", "/D HAVE_EV=1");
-	ADD_FLAG("CFLAGS_EVENT", "/D HAVE_EV=1");
-	ADD_FLAG("CFLAGS_EVENT", "/D EV_H=<embed.h>");
-
-	ADD_EXTENSION_DEP("event", "sockets", true);
-	ADD_FLAG("CFLAGS_EVENT", "/D PHP_EVENT_SOCKETS=1");
-
-	if (PHP_EV_DEBUG != "no") {
-		ADD_FLAG("CFLAGS_EVENT", "/D PHP_EV_DEBUG=1");
-	} else {
-		ADD_FLAG("CFLAGS_EVENT", "/D NDEBUG");
-	}
-
-	var ev_sources = 'ev.c util.c watcher.c fe.c pe.c';
-	EXTENSION('ev', ev_sources, true,
-		' /I "' + old_conf_dir + '"'
-		+ ' /I "' + configure_module_dirname + '"'
-		+ ' /DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
-
-	ADD_SOURCES(old_conf_dir, 'evwrap.c', 'ev');
-	//ADD_SOURCES(old_conf_dir, 'libev\\ev.c', 'ev');
-	//ADD_SOURCES(configure_module_dirname, "util.c watcher.c fe.c pe.c", 'ev');
 }
-

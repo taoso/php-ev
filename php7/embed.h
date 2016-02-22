@@ -26,28 +26,31 @@
 #define EV_MINPRI       -2
 #define EV_MAXPRI       2
 
-#undef EV_FEATURES
 /* We compile multiple source files.So we don't need static API */
 #undef EV_API_STATIC
-#ifdef _WIN32
-# define EV_USE_INOTIFY 0
-# define EV_USE_SIGNALFD 0
-# define EV_USE_POLL 0
-# define EV_USE_EPOLL 0
-# define EV_USE_KQUEUE 0
-# define EV_USE_DEVPOLL 0
-# define EV_USE_PORT 0
-# define EV_STANDALONE
-# define EV_USE_SELECT 1
-# define EV_SELECT_IS_WINSOCKET 1
-#endif
-
 
 #ifdef PHP_EV_DEBUG
 # define EV_VERIFY 2
 #else
 # define EV_VERIFY 0
 #endif
+
+#ifdef _WIN32
+# define EV_USE_SELECT          1
+# define EV_SELECT_IS_WINSOCKET 1 /* configure libev for windows select            */
+/* AFAIK, there is no m4 processor for the default PHP build environment for Windows.
+ * So we can't make use of libev.m4, and we'll define libev configuration manually. */
+# define EV_STANDALONE      1
+# define EV_PERIODIC_ENABLE 1
+# define EV_IDLE_ENABLE     1
+# define EV_EMBED_ENABLE    1
+# define EV_STAT_ENABLE     1
+# define EV_PREPARE_ENABLE  1
+# define EV_CHECK_ENABLE    1
+# define EV_FORK_ENABLE     1
+# define EV_SIGNAL_ENABLE   1
+# define EV_ASYNC_ENABLE    1
+#endif /* _WIN32 */
 
 /* Override `data` member of the watcher structs.
  * See types.h and libev/ev.h */
@@ -61,7 +64,7 @@
 	zval                  self;                                                              \
 	zval                  data;      /* custom var attached by user */
 
-#include "evwrap.h"
+#include "../libev/ev.h"
 
 /*
  * TODO: consider refactoring of embed.h and types.h.

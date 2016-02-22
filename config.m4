@@ -60,14 +60,12 @@ if test "$PHP_EV" != "no"; then
       AC_MSG_RESULT([PHP 7.x])
     ])
     export CPPFLAGS="$OLD_CPPFLAGS"
-    PHP_EV_SOURCES="libev/ev.c $subdir/util.c $subdir/ev.c $subdir/watcher.c $subdir/fe.c $subdir/pe.c"
+    PHP_EV_SOURCES="$subdir/evwrap.c $subdir/util.c $subdir/ev.c $subdir/watcher.c $subdir/fe.c $subdir/pe.c"
   else
     AC_MSG_ERROR([unknown])
-    PHP_EV_SOURCES="libev/ev.c util.c ev.c watcher.c fe.c pe.c"
   fi
 
   AC_DEFINE(HAVE_EV, 1, [ ])
-  AC_DEFINE_UNQUOTED(EV_H, [<embed.h>], [Wrapper for libev/ev.h])
 
   if test "$PHP_EV_DEBUG" != "no"; then
     PHP_EV_CFLAGS="$PHP_EV_CFLAGS -Wall -g -ggdb -O0"

@@ -26,7 +26,6 @@
 #define EV_MINPRI       -2
 #define EV_MAXPRI       2
 
-#undef EV_FEATURES
 /* We compile multiple source files.So we don't need static API */
 #undef EV_API_STATIC
 
@@ -35,6 +34,24 @@
 #else
 # define EV_VERIFY 0
 #endif
+
+#ifdef _WIN32
+# define EV_USE_SELECT          1
+# define EV_SELECT_IS_WINSOCKET 1 /* configure libev for windows select            */
+/* AFAIK, there is no m4 processor for the default PHP build environment for Windows.
+ * So we can't make use of libev.m4, and we'll define libev configuration manually. */
+# define EV_STANDALONE      1
+# define EV_PERIODIC_ENABLE 1
+# define EV_IDLE_ENABLE     1
+# define EV_EMBED_ENABLE    1
+# define EV_STAT_ENABLE     1
+# define EV_PREPARE_ENABLE  1
+# define EV_CHECK_ENABLE    1
+# define EV_FORK_ENABLE     1
+# define EV_SIGNAL_ENABLE   1
+# define EV_ASYNC_ENABLE    1
+# define EV_CHILD_ENABLE    1
+#endif /* _WIN32 */
 
 /* Thread context. With it we are getting rid of need
  * to call the heavy TSRMLS_FETCH() */
@@ -58,7 +75,7 @@
     void                  *e_prev;    /* Previous item of doubly linked list(ev_watcher *) */ \
     PHP_EV_COMMON_THREAD_CTX;
 
-#include "libev/ev.h"
+#include "../libev/ev.h"
 
 
 /*
