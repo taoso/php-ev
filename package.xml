@@ -16,7 +16,7 @@
   <date>2016-02-22</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.0RC5</release>
+    <release>1.0.0RC6</release>
     <api>0.3.0</api>
   </version>
   <stability>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Added Windows support
+    Fixed Windows build
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -37,6 +37,7 @@
       <file role="doc" name="README.md"/>
       <file role="doc" name="TODO.md"/>
       <file role="src" name="config.m4"/>
+      <file role="src" name="config.w32"/>
       <dir name="php5">
         <file role="src" name="check.c"/>
         <file role="src" name="child.c"/>
@@ -152,6 +153,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.0RC6 -->
+    <release>
+      <version>
+        <release>1.0.0RC6</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>beta</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Fixed Windows build
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 1.0.0RC5 -->
     <release>
       <version>
