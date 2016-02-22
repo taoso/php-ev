@@ -16,7 +16,7 @@
   <date>2016-02-22</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.0RC6</release>
+    <release>1.0.0RC8</release>
     <api>0.3.0</api>
   </version>
   <stability>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Fixed Windows build
+    Another Windows fix
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -45,6 +45,7 @@
         <file role="src" name="embed.c"/>
         <file role="src" name="embed.h"/>
         <file role="src" name="ev.c"/>
+        <file role="src" name="evwrap.c"/>
         <file role="src" name="fe.c"/>
         <file role="src" name="fe.h"/>
         <file role="src" name="fork.c"/>
@@ -73,6 +74,7 @@
         <file role="src" name="embed.c"/>
         <file role="src" name="embed.h"/>
         <file role="src" name="ev.c"/>
+        <file role="src" name="evwrap.c"/>
         <file role="src" name="fe.c"/>
         <file role="src" name="fe.h"/>
         <file role="src" name="fork.c"/>
@@ -153,6 +155,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.0RC7 -->
+    <release>
+      <version>
+        <release>1.0.0RC7</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>beta</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Fixed PECL package
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 1.0.0RC6 -->
     <release>
       <version>

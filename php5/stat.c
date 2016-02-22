@@ -169,7 +169,6 @@ PHP_METHOD(EvStat, attr)
 	st = &w->attr;
 
 	if (!st->st_nlink) {
-		errno = ENOENT;
 		RETURN_FALSE;
 	}
 
@@ -191,7 +190,6 @@ PHP_METHOD(EvStat, prev)
 	st = &w->prev;
 
 	if (!st->st_nlink) {
-		errno = ENOENT;
 		RETURN_FALSE;
 	}
 
