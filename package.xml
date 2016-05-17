@@ -13,19 +13,19 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2016-02-22</date>
+  <date>2016-05-17</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.0RC9</release>
+    <release>1.0.0</release>
     <api>0.3.0</api>
   </version>
   <stability>
-    <release>beta</release>
+    <release>stable</release>
     <api>stable</api>
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Windows package fix
+    Fix: issue #24
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -109,6 +109,7 @@
         <file role="src" name="10_signal.phpt"/>
         <file role="src" name="11_watcher_data.phpt"/>
         <file role="src" name="12_watcher_leak.phpt"/>
+        <file role="src" name="bug24.phpt"/>
         <file role="src" name="bug64788.phpt"/>
         <file role="src" name="13_watcher_data.phpt"/>
         <file role="src" name="14_get_gc.phpt"/>
@@ -153,6 +154,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.0 -->
+    <release>
+      <version>
+        <release>1.0.0</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Fix: issue #24
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 1.0.0RC9 -->
     <release>
       <version>

@@ -405,7 +405,7 @@ static int ev_io_prop_fd_read(php_ev_object *obj, zval **retval TSRMLS_DC)
 {
 	ev_io *io_watcher = (ev_io *) PHP_EV_WATCHER_FETCH_FROM_OBJECT(obj);
 
-	if (io_watcher->fd <= 0 || fcntl(io_watcher->fd, F_GETFD) == -1) {
+	if (io_watcher->fd < 0 || fcntl(io_watcher->fd, F_GETFD) == -1) {
 		// Invalid fd
 		ALLOC_INIT_ZVAL(*retval); // NULL
 		return SUCCESS;
