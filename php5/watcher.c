@@ -54,9 +54,11 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 		ZVAL_LONG(key2, revents);
 
 		/* Prepare callback */
+		zend_uint fcc_param_count = php_ev_watcher_fcc(watcher)->function_handler ?
+			php_ev_watcher_fcc(watcher)->function_handler->common.num_args : 0;
 		pfci->params         = args;
 		pfci->retval_ptr_ptr = &retval_ptr;
-		pfci->param_count    = 2;
+		pfci->param_count    = MIN(2, fcc_param_count);
 		pfci->no_separation  = 1;
 
 		if (EXPECTED(zend_call_function(pfci, php_ev_watcher_fcc(watcher) TSRMLS_CC) == SUCCESS

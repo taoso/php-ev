@@ -27,6 +27,14 @@
 # define FALSE 0
 #endif
 
+#ifndef MAX
+# define MAX(a, b)  (((a)>(b))?(a):(b))
+#endif
+
+#ifndef MIN
+# define MIN(a, b)  (((a)<(b))?(a):(b))
+#endif
+
 #ifdef PHP_EV_DEBUG
 # define PHP_EV_ASSERT(x) assert(x)
 #else

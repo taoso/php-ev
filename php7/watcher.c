@@ -50,7 +50,8 @@ void php_ev_watcher_callback(EV_P_ ev_watcher *watcher, int revents)
 		zend_call_method(Z_ISUNDEF(pf->obj) ? NULL : &pf->obj, pf->ce, &pf->func_ptr,
 				ZSTR_VAL(pf->func_ptr->common.function_name),
 				ZSTR_LEN(pf->func_ptr->common.function_name),
-				retval, 2, &php_ev_watcher_self(watcher), &zrevents);
+				retval, MIN(2, pf->func_ptr->common.num_args),
+				&php_ev_watcher_self(watcher), &zrevents);
 		zend_exception_save();
 		if (retval) {
 			zval_ptr_dtor(retval);
