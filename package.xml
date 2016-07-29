@@ -16,7 +16,7 @@
   <date>2016-07-29</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.2</release>
+    <release>1.0.3</release>
     <api>0.3.0</api>
   </version>
   <stability>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Fix: issue #28 where generator test failed with PHP 5.4
+    Fix: issue #29 where object properties were wrapped in double quotes
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -155,6 +155,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.3 -->
+    <release>
+      <version>
+        <release>1.0.3</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Fix: issue #29 where object properties were wrapped in double quotes
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 1.0.2 -->
     <release>
       <version>

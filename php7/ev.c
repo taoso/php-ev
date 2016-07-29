@@ -940,14 +940,14 @@ static inline void php_ev_register_classes()
 	ce->ce_flags |= ZEND_ACC_FINAL;
 	zend_hash_init(&php_ev_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_properties, ev_loop_property_entries);
-	PHP_EV_DECL_PROP_NULL(ce, "data",             ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "backend",          ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "is_default_loop",  ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "iteration",        ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "pending",          ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "io_interval",      ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "timeout_interval", ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "depth",            ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, data,             ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, backend,          ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, is_default_loop,  ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, iteration,        ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, pending,          ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, io_interval,      ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, timeout_interval, ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, depth,            ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_properties);
 	/* }}} */
 
@@ -957,10 +957,10 @@ static inline void php_ev_register_classes()
 	ce->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	zend_hash_init(&php_ev_watcher_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_watcher_properties, ev_watcher_property_entries);
-	PHP_EV_DECL_PROP_NULL(ce, "is_active",  ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "data",       ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "is_pending", ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "priority",   ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, is_active,  ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, data,       ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, is_pending, ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, priority,   ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_watcher_properties);
 	/* }}} */
 
@@ -970,8 +970,8 @@ static inline void php_ev_register_classes()
 	zend_hash_init(&php_ev_io_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_io_properties, ev_io_property_entries);
 	zend_hash_merge(&php_ev_io_properties, &php_ev_watcher_properties, copy_prop_handler, 0);
-	PHP_EV_DECL_PROP_NULL(ce, "fd",     ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "events", ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, fd,     ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, events, ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_io_properties);
 	/* }}} */
 
@@ -981,8 +981,8 @@ static inline void php_ev_register_classes()
 	zend_hash_init(&php_ev_timer_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_timer_properties, ev_timer_property_entries);
 	zend_hash_merge(&php_ev_timer_properties, &php_ev_watcher_properties, copy_prop_handler, 0);
-	PHP_EV_DECL_PROP_NULL(ce, "repeat",    ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "remaining", ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, repeat,    ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, remaining, ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_timer_properties);
 	/* }}} */
 
@@ -993,8 +993,8 @@ static inline void php_ev_register_classes()
 	zend_hash_init(&php_ev_periodic_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_periodic_properties, ev_periodic_property_entries);
 	zend_hash_merge(&php_ev_periodic_properties, &php_ev_watcher_properties, copy_prop_handler, 0);
-	PHP_EV_DECL_PROP_NULL(ce, "offset",   ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "interval", ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, offset,   ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, interval, ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_periodic_properties);
 	/* }}} */
 #endif
@@ -1006,7 +1006,7 @@ static inline void php_ev_register_classes()
 	zend_hash_init(&php_ev_signal_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_signal_properties, ev_signal_property_entries);
 	zend_hash_merge(&php_ev_signal_properties, &php_ev_watcher_properties, copy_prop_handler, 0);
-	PHP_EV_DECL_PROP_NULL(ce, "signum", ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, signum, ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_signal_properties);
 	/* }}} */
 #endif
@@ -1018,9 +1018,9 @@ static inline void php_ev_register_classes()
 	zend_hash_init(&php_ev_child_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_child_properties, ev_child_property_entries);
 	zend_hash_merge(&php_ev_child_properties, &php_ev_watcher_properties, copy_prop_handler, 0);
-	PHP_EV_DECL_PROP_NULL(ce, "pid",     ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "rpid",    ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "rstatus", ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, pid,     ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, rpid,    ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, rstatus, ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_child_properties);
 	/* }}} */
 #endif
@@ -1032,8 +1032,8 @@ static inline void php_ev_register_classes()
 	zend_hash_init(&php_ev_stat_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_stat_properties, ev_stat_property_entries);
 	zend_hash_merge(&php_ev_stat_properties, &php_ev_watcher_properties, copy_prop_handler, 0);
-	PHP_EV_DECL_PROP_NULL(ce, "path",     ZEND_ACC_PUBLIC);
-	PHP_EV_DECL_PROP_NULL(ce, "interval", ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, path,     ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, interval, ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_stat_properties);
 	/* }}} */
 #endif
@@ -1069,7 +1069,7 @@ static inline void php_ev_register_classes()
 	zend_hash_init(&php_ev_embed_properties, 0, NULL, free_prop_handler, 1);
 	PHP_EV_ADD_CLASS_PROPERTIES(&php_ev_embed_properties, ev_embed_property_entries);
 	zend_hash_merge(&php_ev_embed_properties, &php_ev_watcher_properties, copy_prop_handler, 0);
-	PHP_EV_DECL_PROP_NULL(ce, "embed", ZEND_ACC_PUBLIC);
+	PHP_EV_DECL_PROP_NULL(ce, embed, ZEND_ACC_PUBLIC);
 	zend_hash_add_ptr(&classes, ce->name, &php_ev_embed_properties);
 	/* }}} */
 #endif

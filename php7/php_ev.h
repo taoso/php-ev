@@ -49,7 +49,7 @@ ZEND_EXTERN_MODULE_GLOBALS(ev)
 extern zend_module_entry ev_module_entry;
 #define phpext_ev_ptr &ev_module_entry
 
-#define PHP_EV_VERSION "1.0.2"
+#define PHP_EV_VERSION "1.0.3"
 
 #endif /* PHP_EV_H */
 /*
