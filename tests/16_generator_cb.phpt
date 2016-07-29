@@ -1,5 +1,7 @@
 --TEST--
 Check for accepting Generator::send as a watcher callback
+--SKIPIF--
+<?php if (PHP_VERSION_ID < 50500) print "skip this PHP version doesn't support generators"; ?>
 --FILE--
 <?php
 function gen () {
