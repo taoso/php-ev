@@ -542,7 +542,9 @@ static void php_ev_loop_object_dtor(zend_object *object)/*{{{*/
 				ZVAL_UNDEF(&MyG(default_loop));
 			}
 		}
-		/*php_ev_loop_dtor((php_ev_loop *)intern->ptr);*/
+#if 0
+		php_ev_loop_dtor((php_ev_loop *)intern->ptr);
+#endif
 	}
 
 	php_ev_object_dtor(object);
@@ -625,6 +627,8 @@ static void php_ev_object_free_storage(zend_object *object)
 	PHP_EV_EFREE(intern->ptr);
 #if 0
 	efree(intern);
+#else
+	OBJ_RELEASE(object);
 #endif
 }
 /* }}} */
