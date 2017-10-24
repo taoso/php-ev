@@ -13,10 +13,10 @@
     <email>osmanov@php.net</email>
     <active>yes</active>
   </lead>
-  <date>2016-12-02</date>
+  <date>2017-10-24</date>
   <!--{{{ Current version -->
   <version>
-    <release>1.0.4</release>
+    <release>1.0.5</release>
     <api>0.3.0</api>
   </version>
   <stability>
@@ -25,7 +25,7 @@
   </stability>
   <license uri="http://www.php.net/license">PHP</license>
   <notes><![CDATA[
-    Fix: memory leak in PHP 7.0.13
+    Fixed bug #33 in PHP 7 where the return value of EvPeriodic reschedule callback was ignored
   ]]></notes>
   <!--}}}-->
   <!--{{{ Contents -->
@@ -110,6 +110,7 @@
         <file role="src" name="11_watcher_data.phpt"/>
         <file role="src" name="12_watcher_leak.phpt"/>
         <file role="src" name="bug24.phpt"/>
+        <file role="src" name="bug33.phpt"/>
         <file role="src" name="bug64788.phpt"/>
         <file role="src" name="13_watcher_data.phpt"/>
         <file role="src" name="14_get_gc.phpt"/>
@@ -155,6 +156,22 @@
   </extsrcrelease>
   <!--{{{ changelog-->
   <changelog>
+    <!--{{{ 1.0.5 -->
+    <release>
+      <version>
+        <release>1.0.5</release>
+        <api>0.3.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.php.net/license">PHP</license>
+      <notes><![CDATA[
+    Fixed bug #33 in PHP 7 where the return value of EvPeriodic reschedule callback was ignored
+  ]]></notes>
+    </release>
+    <!--}}}-->
     <!--{{{ 1.0.4 -->
     <release>
       <version>

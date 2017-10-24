@@ -41,7 +41,7 @@ static ev_tstamp php_ev_periodic_rescheduler(ev_periodic *w, ev_tstamp now)
 	pf = &periodic_ptr->func;
 
 	if (EXPECTED(pf->func_ptr)) {
-		zval *retval = NULL;
+		zval retval;
 		zval znow;
 
 		ZVAL_DOUBLE(&znow, (double)now);
@@ -49,18 +49,13 @@ static ev_tstamp php_ev_periodic_rescheduler(ev_periodic *w, ev_tstamp now)
 		zend_call_method(Z_ISUNDEF(pf->obj) ? NULL : &pf->obj, pf->ce, &pf->func_ptr,
 				ZSTR_VAL(pf->func_ptr->common.function_name),
 				ZSTR_LEN(pf->func_ptr->common.function_name),
-				retval, 2, self, &znow);
+				&retval, 2, self, &znow);
 		zend_exception_save();
-		if (retval) {
-			tstamp = (ev_tstamp)Z_DVAL_P(retval);
-			if (tstamp < now) {
-				tstamp = now;
-			}
-			zval_ptr_dtor(retval);
-			retval = NULL;
-		} else {
+		tstamp = (ev_tstamp)Z_DVAL(retval);
+		if (tstamp < now) {
 			tstamp = now;
 		}
+		zval_ptr_dtor(&retval);
 		zend_exception_restore();
 
 	} else {
