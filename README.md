@@ -1,14 +1,38 @@
-ev PECL extension
+# libev extension for php
 
-DESCRIPTION
-===========
+## Why fork
+
+The ev 1.x EvIo has a property named **fd**. Its not a reference of the
+original fd. For example,
+
+```
+<?php
+$fd = socket_create(...);
+
+$w = new EvIo($fd, Ev::READ, function ($watcher, $revents) {
+    var_dump($watcher);
+    fgets($watcher->fd);
+});
+
+Ev::run();
+```
+
+We register the **$fd** into to loop. When the event occurring, we want get
+the original **$fd** from the `$watcher->fd`. However, in the 1.x, the
+property `fd` is a presudo property, and it references the real fd of the
+**STDIN**. When you read this property you will get a new **stream resource**.
+So you cannot use the `socket_*` function. And instead, you need transfer the
+original fd in you own way.
+
+I made a [PR](https://bitbucket.org/osmanov/pecl-ev/pull-requests/6), but be declined.
+
+## DESCRIPTION
 
 ev is a PECL extension providing interface to libev library - high performance
 full-featured event loop written in C.
 
 
-ABOUT LIBEV
------------
+### ABOUT LIBEV
 
 Libev is an event loop: you register interest in certain events (such as a file
 descriptor being readable or a timeout occurring), and it will manage these
@@ -27,25 +51,21 @@ For details refer to the libev's homepage:
 For installation instructions see file named INSTALL.
 
 
-LIBEV IS EMBEDDED
------------------
+### LIBEV IS EMBEDDED
 
 You don't need to install libev separately, since it is embedded into this
 extension.
 
 
-PORTABILITY
------------
+### PORTABILITY
 
 Currently GNU/Linux platforms supported only. But likely will work on others
 too.
 
 
-EXAMPLES
-========
+## EXAMPLES
 
-SIMPLE TIMERS
--------------
+### SIMPLE TIMERS
 
 	<?php
 	// Create and start timer firing after 2 seconds
@@ -116,8 +136,7 @@ SIMPLE TIMERS
 	iteration = 10
 	END
 
-PERIODIC TIMERS
----------------
+### PERIODIC TIMERS
 
 *Example 1*
 
@@ -155,8 +174,7 @@ PERIODIC TIMERS
 	Ev::run();
 	?>
 
-I/O EVENTS
-----------
+### I/O EVENTS
 
 *Example 1*
 
@@ -196,14 +214,15 @@ I/O EVENTS
 	socket_set_nonblock($socket);
 
 	// Abort on timeout
-	$timeout_watcher = new EvTimer(10.0, 0., function () use ($socket) {
-		socket_close($socket);
+	$timeout_watcher = new EvTimer(10.0, 0., function ($w) {
+		socket_close($w->fd);
 		Ev::stop(Ev::BREAK_ALL);
 	});
 
 	// Make HEAD request when the socket is writable
 	$write_watcher = new EvIo($socket, Ev::WRITE, function ($w)
-		use ($socket, $timeout_watcher, $e_nonblocking) {
+		use ($timeout_watcher, $e_nonblocking) {
+		$socket = $w->fd;
 		// Stop timeout watcher
 		$timeout_watcher->stop();
 		// Stop write watcher
@@ -218,7 +237,8 @@ I/O EVENTS
 		}
 
 		$read_watcher = new EvIo($socket, Ev::READ, function ($w, $re)
-			use ($socket, $e_nonblocking) {
+			use ($e_nonblocking) {
+			$socket = $w->fd;
 			// Socket is readable. recv() 20 bytes using non-blocking mode
 			$ret = socket_recv($socket, $out, 20, MSG_DONTWAIT);
 
@@ -263,8 +283,7 @@ Sample output:
 	Connection: close
 
 
-EMBEDDING ONE LOOP INTO ANOTHER
--------------------------------
+### EMBEDDING ONE LOOP INTO ANOTHER
 
 *Example 1*
 
@@ -327,8 +346,7 @@ EMBEDDING ONE LOOP INTO ANOTHER
 	// Now use $socket_loop for all sockets, and $loop for anything else
 	?>
 
-SIGNALS
--------
+### SIGNALS
 
 	<?php
 	// Handle SIGTERM signal
@@ -339,8 +357,7 @@ SIGNALS
 	Ev::run();
 	?>
 
-STAT - FILE STATUS CHANGES
---------------------------
+### STAT - FILE STATUS CHANGES
 
 *Example 1*
 
@@ -414,14 +431,12 @@ PROCESS STATUS CHANGES
 	?>
 
 
-AUTHORS
-=======
+## AUTHORS
 
 Ruslan Osmanov <osmanov@php.net>
 
 
-COPYRIGHT
-=========
+## COPYRIGHT
 
 	Copyright (c) 2012,2013,2014 Ruslan Osmanov <osmanov@php.net>
 
@@ -431,7 +446,3 @@ COPYRIGHT
 	did not receive a copy of the PHP license and are unable to obtain it through
 	the world-wide-web, please send a note to license@php.net so we can mail you a
 	copy immediately.
-
-
-vim: tw=80 ft=markdown
-
