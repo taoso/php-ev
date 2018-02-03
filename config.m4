@@ -12,6 +12,7 @@ dnl | obtain it through the world-wide-web, please send a note to          |
 dnl | license@php.net so we can mail you a copy immediately.               |
 dnl +----------------------------------------------------------------------+
 dnl | Author: Ruslan Osmanov <osmanov@php.net>                             |
+dnl | Author: Haitao Lv <php@lvht.net>                                     |
 dnl +----------------------------------------------------------------------+
 
 PHP_ARG_ENABLE(ev, whether to enable ev,
@@ -44,26 +45,17 @@ if test "$PHP_EV" != "no"; then
   fi
 
   AC_MSG_CHECKING(PHP version)
-  if test -d $abs_srcdir/php7; then
-    dnl # only for PECL, not for PHP
-    export OLD_CPPFLAGS="$CPPFLAGS"
-    export CPPFLAGS="$CPPFLAGS $INCLUDES"
-    AC_TRY_COMPILE([#include <php_version.h>], [
-      #if PHP_MAJOR_VERSION > 5
-      # error PHP > 5
-      #endif
-    ], [
-      subdir=php5
-      AC_MSG_RESULT([PHP 5.x])
-    ], [
-      subdir=php7
-      AC_MSG_RESULT([PHP 7.x])
-    ])
-    export CPPFLAGS="$OLD_CPPFLAGS"
-    PHP_EV_SOURCES="$subdir/evwrap.c $subdir/util.c $subdir/ev.c $subdir/watcher.c $subdir/fe.c $subdir/pe.c"
-  else
-    AC_MSG_ERROR([unknown])
-  fi
+  export OLD_CPPFLAGS="$CPPFLAGS"
+  export CPPFLAGS="$CPPFLAGS $INCLUDES"
+  AC_TRY_COMPILE([#include <php_version.h>], [
+    #if PHP_MAJOR_VERSION > 5
+    # error PHP > 5
+    #endif
+  ], [
+    AC_MSG_ERROR([PHP 5.x is not supported])
+  ])
+  export CPPFLAGS="$OLD_CPPFLAGS"
+  PHP_EV_SOURCES="src/evwrap.c src/util.c src/ev.c src/watcher.c src/fe.c src/pe.c"
 
   AC_DEFINE(HAVE_EV, 1, [ ])
 
