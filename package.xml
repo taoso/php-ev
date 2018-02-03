@@ -38,36 +38,7 @@
       <file role="doc" name="TODO.md"/>
       <file role="src" name="config.m4"/>
       <file role="src" name="config.w32"/>
-      <dir name="php5">
-        <file role="src" name="check.c"/>
-        <file role="src" name="child.c"/>
-        <file role="src" name="common.h"/>
-        <file role="src" name="embed.c"/>
-        <file role="src" name="embed.h"/>
-        <file role="src" name="ev.c"/>
-        <file role="src" name="evwrap.c"/>
-        <file role="src" name="fe.c"/>
-        <file role="src" name="fe.h"/>
-        <file role="src" name="fork.c"/>
-        <file role="src" name="idle.c"/>
-        <file role="src" name="io.c"/>
-        <file role="src" name="loop.c"/>
-        <file role="src" name="macros.h"/>
-        <file role="src" name="pe.c"/>
-        <file role="src" name="periodic.c"/>
-        <file role="src" name="php_ev.h"/>
-        <file role="src" name="prepare.c"/>
-        <file role="src" name="priv.h"/>
-        <file role="src" name="signal.c"/>
-        <file role="src" name="stat.c"/>
-        <file role="src" name="timer.c"/>
-        <file role="src" name="types.h"/>
-        <file role="src" name="util.c"/>
-        <file role="src" name="util.h"/>
-        <file role="src" name="watcher.c"/>
-        <file role="src" name="watcher.h"/>
-      </dir>
-      <dir name="php7">
+      <dir name="src">
         <file role="src" name="check.c"/>
         <file role="src" name="child.c"/>
         <file role="src" name="common.h"/>
