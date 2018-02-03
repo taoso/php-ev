@@ -551,7 +551,6 @@ const php_ev_property_entry ev_watcher_property_entries[] = {
 
 /* {{{ ev_io_property_entries[] */
 const php_ev_property_entry ev_io_property_entries[] = {
-	{"fd",     sizeof("fd")     - 1, ev_io_prop_fd_read,     NULL, NULL},
 	{"events", sizeof("events") - 1, ev_io_prop_events_read, NULL, NULL},
     {NULL, 0, NULL, NULL, NULL}
 };

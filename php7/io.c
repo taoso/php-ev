@@ -65,6 +65,9 @@ void php_ev_io_object_ctor(INTERNAL_FUNCTION_PARAMETERS, zval *loop, zend_bool c
 	o_self = Z_EV_OBJECT_P(self);
 	o_self->ptr = (void *) w;
 
+	zend_string *name = zend_string_init("fd", sizeof("fd")-1, 0);
+	zend_update_property_ex(ev_io_class_entry_ptr, self, name, z_fd);
+
 	if (start) {
 		PHP_EV_WATCHER_START(ev_io, w);
 	}

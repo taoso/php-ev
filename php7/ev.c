@@ -332,31 +332,13 @@ static int php_ev_has_property(zval *object, zval *member, int has_set_exists, v
 
 	return ret;
 } /* }}} */
+static HashTable * php_ev_get_properties(zval *object);
 
 /* {{{ php_ev_object_get_debug_info */
 static HashTable * php_ev_object_get_debug_info(zval *object, int *is_temp)
 {
-	php_ev_object       *obj = Z_EV_OBJECT_P(object);
-	HashTable           *props   = obj->prop_handler;
-	HashTable           *retval;
-	php_ev_prop_handler *entry;
-
-	ALLOC_HASHTABLE(retval);
-	ZEND_INIT_SYMTABLE_EX(retval, zend_hash_num_elements(props) + 1, 0);
-
-	ZEND_HASH_FOREACH_PTR(props, entry) {
-		zval rv, member;
-		zval *value;
-		ZVAL_STR(&member, entry->name);
-		value = php_ev_read_property(object, &member, BP_VAR_IS, 0, &rv);
-		if (value != &EG(uninitialized_zval)) {
-			zend_hash_add(retval, Z_STR(member), value);
-		}
-	} ZEND_HASH_FOREACH_END();
-
-	*is_temp = 1;
-
-	return retval;
+	*is_temp = 0;
+	return php_ev_get_properties(object);
 }
 /* }}} */
 
